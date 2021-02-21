@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/gosimple/slug"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -35,6 +36,7 @@ func (u *User) BeforeInsert(ctx context.Context) (context.Context, error) {
 		return ctx, err
 	}
 	u.Password = string(hashedPassword)
+	u.Slug = slug.Make(u.DisplayName)
 
 	return ctx, nil
 }

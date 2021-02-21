@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/gosimple/slug"
 )
 
 type Profession struct {
@@ -20,6 +21,15 @@ type Profession struct {
 
 func (p *Profession) BeforeInsert(ctx context.Context) (context.Context, error) {
 	p.CreatedAt = time.Now()
+	p.Slug = slug.Make(p.Name)
+
+	return ctx, nil
+}
+
+func (p *Profession) BeforeUpdate(ctx context.Context) (context.Context, error) {
+	if p.Name != "" {
+		p.Slug = slug.Make(p.Name)
+	}
 
 	return ctx, nil
 }
