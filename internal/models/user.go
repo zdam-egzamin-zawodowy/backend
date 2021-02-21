@@ -132,10 +132,10 @@ func (f *UserFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, err
 	}
 
 	if !isZero(f.Slug) {
-		q = q.Where(buildConditionArray(addAliasToColumnName("tag", alias)), pg.Array(f.Slug))
+		q = q.Where(buildConditionArray(addAliasToColumnName("slug", alias)), pg.Array(f.Slug))
 	}
 	if !isZero(f.SlugNEQ) {
-		q = q.Where(buildConditionNotInArray(addAliasToColumnName("tag", alias)), pg.Array(f.SlugNEQ))
+		q = q.Where(buildConditionNotInArray(addAliasToColumnName("slug", alias)), pg.Array(f.SlugNEQ))
 	}
 
 	if !isZero(f.Activated) {
@@ -143,29 +143,29 @@ func (f *UserFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, err
 	}
 
 	if !isZero(f.DisplayName) {
-		q = q.Where(buildConditionArray(addAliasToColumnName("name", alias)), pg.Array(f.DisplayName))
+		q = q.Where(buildConditionArray(addAliasToColumnName("display_name", alias)), pg.Array(f.DisplayName))
 	}
 	if !isZero(f.DisplayNameNEQ) {
-		q = q.Where(buildConditionNotInArray(addAliasToColumnName("name", alias)), pg.Array(f.DisplayNameNEQ))
+		q = q.Where(buildConditionNotInArray(addAliasToColumnName("display_name", alias)), pg.Array(f.DisplayNameNEQ))
 	}
 	if !isZero(f.DisplayNameMATCH) {
-		q = q.Where(buildConditionMatch(addAliasToColumnName("name", alias)), f.DisplayNameMATCH)
+		q = q.Where(buildConditionMatch(addAliasToColumnName("display_name", alias)), f.DisplayNameMATCH)
 	}
 	if !isZero(f.DisplayNameIEQ) {
-		q = q.Where(buildConditionIEQ(addAliasToColumnName("name", alias)), f.DisplayNameIEQ)
+		q = q.Where(buildConditionIEQ(addAliasToColumnName("display_name", alias)), f.DisplayNameIEQ)
 	}
 
 	if !isZero(f.Email) {
-		q = q.Where(buildConditionArray(addAliasToColumnName("name", alias)), pg.Array(f.Email))
+		q = q.Where(buildConditionArray(addAliasToColumnName("email", alias)), pg.Array(f.Email))
 	}
 	if !isZero(f.EmailNEQ) {
-		q = q.Where(buildConditionNotInArray(addAliasToColumnName("name", alias)), pg.Array(f.EmailNEQ))
+		q = q.Where(buildConditionNotInArray(addAliasToColumnName("email", alias)), pg.Array(f.EmailNEQ))
 	}
 	if !isZero(f.EmailMATCH) {
-		q = q.Where(buildConditionMatch(addAliasToColumnName("name", alias)), f.EmailMATCH)
+		q = q.Where(buildConditionMatch(addAliasToColumnName("email", alias)), f.EmailMATCH)
 	}
 	if !isZero(f.EmailIEQ) {
-		q = q.Where(buildConditionIEQ(addAliasToColumnName("name", alias)), f.EmailIEQ)
+		q = q.Where(buildConditionIEQ(addAliasToColumnName("email", alias)), f.EmailIEQ)
 	}
 
 	if !isZero(f.CreatedAt) {
