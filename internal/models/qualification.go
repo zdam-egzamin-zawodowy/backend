@@ -31,3 +31,15 @@ func (q *Qualification) BeforeUpdate(ctx context.Context) (context.Context, erro
 
 	return ctx, nil
 }
+
+type QualificationToProfession struct {
+	QualificationID int `json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
+	ProfessionID    int `json:"professionID" xml:"professionID" gqlgen:"professionID"`
+}
+
+type QualificationInput struct {
+	Name        string
+	Description string
+	Code        string
+	Formula     string
+}
