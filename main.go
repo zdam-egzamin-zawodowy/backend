@@ -7,11 +7,15 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/db"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/mode"
+	envutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/env"
 )
 
 func init() {
@@ -25,6 +29,14 @@ func init() {
 }
 
 func main() {
+	_, err := db.New(&db.Config{
+		DebugHook: envutils.GetenvBool("LOG_DB_QUERIES"),
+	})
+	if err != nil {
+		logrus.Fatal(errors.Wrap(err, "Error establishing a database connection"))
+	}
+	logrus.Info("Database connection established")
+
 	router := gin.Default()
 	if mode.Get() == mode.DevelopmentMode {
 		router.Use(cors.New(cors.Config{
@@ -35,7 +47,7 @@ func main() {
 			ExposeHeaders:    []string{"X-Access-Token", "X-Refresh-Token"},
 			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
 			AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
-			AllowWebSockets:  true,
+			AllowWebSockets:  false,
 		}))
 	}
 
