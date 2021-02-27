@@ -10,6 +10,7 @@ import (
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
+	"github.com/sethvargo/go-password/password"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 )
 
@@ -19,26 +20,29 @@ const (
 	`
 )
 
-func init() {
-	orm.RegisterTable((*models.QualificationToProfession)(nil))
-}
+var log = logrus.WithField("package", "internal/db")
 
 type Config struct {
 	DebugHook bool
 }
 
+func init() {
+	orm.RegisterTable((*models.QualificationToProfession)(nil))
+}
+
 func New(cfg *Config) (*pg.DB, error) {
 	db := pg.Connect(prepareOptions())
-	if err := createSchema(db); err != nil {
-		return nil, err
-	}
 
 	if cfg != nil {
 		if cfg.DebugHook {
 			db.AddQueryHook(DebugHook{
-				Entry: logrus.WithField("package", "internal/db"),
+				Entry: log,
 			})
 		}
+	}
+
+	if err := createSchema(db); err != nil {
+		return nil, err
 	}
 
 	return db, nil
@@ -60,7 +64,7 @@ func createSchema(db *pg.DB) error {
 			return errors.Wrap(err, "createSchema")
 		}
 
-		models := []interface{}{
+		modelsToCreate := []interface{}{
 			(*models.User)(nil),
 			(*models.Profession)(nil),
 			(*models.Qualification)(nil),
@@ -68,7 +72,7 @@ func createSchema(db *pg.DB) error {
 			(*models.Question)(nil),
 		}
 
-		for _, model := range models {
+		for _, model := range modelsToCreate {
 			err := tx.Model(model).CreateTable(&orm.CreateTableOptions{
 				IfNotExists:   true,
 				FKConstraints: true,
@@ -76,6 +80,35 @@ func createSchema(db *pg.DB) error {
 			if err != nil {
 				return errors.Wrap(err, "createSchema")
 			}
+		}
+
+		total, err := db.Model(modelsToCreate[0]).Where("role = ?", models.RoleAdmin).Count()
+		if err != nil {
+			return errors.Wrap(err, "createSchema")
+		}
+		if total == 0 {
+			activated := true
+			pswd, err := password.Generate(16, 4, 4, true, false)
+			if err != nil {
+				return errors.Wrap(err, "createSchema")
+			}
+			email := "admin@admin.com"
+			_, err = tx.
+				Model(&models.User{
+					DisplayName: "admin",
+					Email:       email,
+					Role:        models.RoleAdmin,
+					Activated:   &activated,
+					Password:    pswd,
+				}).
+				Insert()
+			if err != nil {
+				return errors.Wrap(err, "createSchema")
+			}
+			log.
+				WithField("email", email).
+				WithField("password", pswd).
+				Info("Admin account has been created")
 		}
 
 		return nil

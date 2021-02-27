@@ -39,7 +39,7 @@ func (ucase *usecase) UpdateOne(ctx context.Context, id int, input *models.Profe
 		return nil, fmt.Errorf(messageInvalidID)
 	}
 	if err := ucase.validateInput(input, validateOptions{true}); err != nil {
-
+		return nil, err
 	}
 	items, err := ucase.professionRepository.UpdateMany(ctx,
 		&models.ProfessionFilter{

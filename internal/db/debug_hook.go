@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"strings"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/sirupsen/logrus"
@@ -22,7 +23,7 @@ func (logger DebugHook) BeforeQuery(ctx context.Context, evt *pg.QueryEvent) (co
 	if evt.Err != nil {
 		logger.Entry.Errorf("%s executing a query:\n%s\n", evt.Err, q)
 	} else {
-		logger.Entry.Info(string(q))
+		logger.Entry.Info(strings.TrimSpace(string(q)))
 	}
 
 	return ctx, nil
