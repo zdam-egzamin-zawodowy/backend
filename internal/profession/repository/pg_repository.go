@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
@@ -16,13 +17,16 @@ type pgRepository struct {
 }
 
 type PGRepositoryConfig struct {
-	db *pg.DB
+	DB *pg.DB
 }
 
-func NewPGRepository(cfg PGRepositoryConfig) profession.Repository {
-	return &pgRepository{
-		cfg.db,
+func NewPGRepository(cfg *PGRepositoryConfig) (profession.Repository, error) {
+	if cfg == nil || cfg.DB == nil {
+		return nil, fmt.Errorf("profession/pg_repository: *pg.DB is required")
 	}
+	return &pgRepository{
+		cfg.DB,
+	}, nil
 }
 
 func (repo *pgRepository) Store(ctx context.Context, input *models.ProfessionInput) (*models.Profession, error) {
@@ -33,14 +37,14 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.ProfessionInp
 		Returning("*").
 		Insert(); err != nil {
 		if strings.Contains(err.Error(), "name") {
-			return nil, errorutils.Wrap(err, nameIsAlreadyTaken)
+			return nil, errorutils.Wrap(err, messageNameIsAlreadyTaken)
 		}
-		return nil, errorutils.Wrap(err, failedToSaveModel)
+		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
 	}
 	return item, nil
 }
 
-func (repo *pgRepository) Update(ctx context.Context, f *models.ProfessionFilter, input *models.ProfessionInput) ([]*models.Profession, error) {
+func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.ProfessionFilter, input *models.ProfessionInput) ([]*models.Profession, error) {
 	items := []*models.Profession{}
 	if _, err := repo.
 		Model(&items).
@@ -48,11 +52,11 @@ func (repo *pgRepository) Update(ctx context.Context, f *models.ProfessionFilter
 		Returning("*").
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
-		Update(); err != nil {
+		Update(); err != nil && err != pg.ErrNoRows {
 		if strings.Contains(err.Error(), "name") {
-			return nil, errorutils.Wrap(err, nameIsAlreadyTaken)
+			return nil, errorutils.Wrap(err, messageNameIsAlreadyTaken)
 		}
-		return nil, errorutils.Wrap(err, failedToSaveModel)
+		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
 	}
 	return items, nil
 }
@@ -64,8 +68,8 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.ProfessionFilter
 		Context(ctx).
 		Returning("*").
 		Apply(f.Where).
-		Delete(); err != nil {
-		return nil, errorutils.Wrap(err, failedToDeleteModel)
+		Delete(); err != nil && err != pg.ErrNoRows {
+		return nil, errorutils.Wrap(err, messageFailedToDeleteModel)
 	}
 	return items, nil
 }
@@ -87,7 +91,7 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig
 		err = query.Select()
 	}
 	if err != nil && err != pg.ErrNoRows {
-		return nil, 0, errorutils.Wrap(err, failedToFetchModel)
+		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
 }

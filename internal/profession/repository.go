@@ -16,7 +16,7 @@ type FetchConfig struct {
 
 type Repository interface {
 	Store(ctx context.Context, input *models.ProfessionInput) (*models.Profession, error)
-	Update(ctx context.Context, f *models.ProfessionFilter, input *models.ProfessionInput) ([]*models.Profession, error)
+	UpdateMany(ctx context.Context, f *models.ProfessionFilter, input *models.ProfessionInput) ([]*models.Profession, error)
 	Delete(ctx context.Context, f *models.ProfessionFilter) ([]*models.Profession, error)
 	Fetch(ctx context.Context, cfg *FetchConfig) ([]*models.Profession, int, error)
 }
