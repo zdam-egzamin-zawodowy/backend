@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
@@ -27,12 +28,18 @@ func New(cfg *Config) (profession.Usecase, error) {
 }
 
 func (ucase *usecase) Store(ctx context.Context, input *models.ProfessionInput) (*models.Profession, error) {
+	if err := ucase.validateInput(input, validateOptions{false}); err != nil {
+		return nil, err
+	}
 	return ucase.professionRepository.Store(ctx, input)
 }
 
 func (ucase *usecase) UpdateOne(ctx context.Context, id int, input *models.ProfessionInput) (*models.Profession, error) {
 	if id <= 0 {
 		return nil, fmt.Errorf(messageInvalidID)
+	}
+	if err := ucase.validateInput(input, validateOptions{true}); err != nil {
+
 	}
 	items, err := ucase.professionRepository.UpdateMany(ctx,
 		&models.ProfessionFilter{
@@ -55,7 +62,7 @@ func (ucase *usecase) Delete(ctx context.Context, f *models.ProfessionFilter) ([
 func (ucase *usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*models.Profession, int, error) {
 	if cfg == nil {
 		cfg = &profession.FetchConfig{
-			Limit: 100,
+			Limit: profession.DefaultLimit,
 			Count: true,
 		}
 	}
@@ -95,4 +102,28 @@ func (ucase *usecase) GetBySlug(ctx context.Context, slug string) (*models.Profe
 		return nil, fmt.Errorf(messageItemNotFound)
 	}
 	return items[0], nil
+}
+
+type validateOptions struct {
+	nameCanBeNil bool
+}
+
+func (ucase *usecase) validateInput(input *models.ProfessionInput, opts validateOptions) error {
+	if input.IsEmpty() {
+		return fmt.Errorf(messageEmptyPayload)
+	}
+
+	if input.Name != nil {
+		trimmedName := strings.TrimSpace(*input.Name)
+		input.Name = &trimmedName
+		if trimmedName == "" {
+			return fmt.Errorf(messageNameIsRequired)
+		} else if len(trimmedName) > profession.MaxNameLength {
+			return fmt.Errorf(messageNameIsTooLong, profession.MaxNameLength)
+		}
+	} else if !opts.nameCanBeNil {
+		return fmt.Errorf(messageNameIsRequired)
+	}
+
+	return nil
 }
