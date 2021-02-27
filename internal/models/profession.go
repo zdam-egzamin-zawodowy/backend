@@ -40,6 +40,10 @@ type ProfessionInput struct {
 	Description *string `json:"description,omitempty" xml:"description" gqlgen:"description"`
 }
 
+func (input *ProfessionInput) IsEmpty() bool {
+	return input == nil && input.Name == nil && input.Description == nil
+}
+
 func (input *ProfessionInput) ToProfession() *Profession {
 	p := &Profession{}
 	if input.Name != nil {
@@ -49,6 +53,19 @@ func (input *ProfessionInput) ToProfession() *Profession {
 		p.Description = *input.Description
 	}
 	return p
+}
+
+func (input *ProfessionInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
+	if !input.IsEmpty() {
+		if input.Name != nil {
+			q.Set("name = ?", *input.Name)
+		}
+		if input.Description != nil {
+			q.Set("description = ?", *input.Description)
+		}
+	}
+
+	return q, nil
 }
 
 type ProfessionFilter struct {
@@ -74,6 +91,10 @@ type ProfessionFilter struct {
 }
 
 func (f *ProfessionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, error) {
+	if f == nil {
+		return q, nil
+	}
+
 	if !isZero(f.ID) {
 		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
 	}

@@ -79,6 +79,10 @@ type QualificationFilterOr struct {
 }
 
 func (f *QualificationFilterOr) WhereWithAlias(q *orm.Query, alias string) *orm.Query {
+	if f == nil {
+		return q
+	}
+
 	q = q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
 		if !isZero(f.NameMATCH) {
 			q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("name", alias)), f.NameMATCH)
@@ -134,6 +138,10 @@ type QualificationFilter struct {
 }
 
 func (f *QualificationFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, error) {
+	if f == nil {
+		return q, nil
+	}
+
 	if !isZero(f.ID) {
 		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
 	}
