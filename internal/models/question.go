@@ -11,19 +11,21 @@ import (
 )
 
 type Question struct {
+	tableName struct{} `pg:"alias:question"`
+
 	ID              int            `json:"id" xml:"id" gqlgen:"id"`
 	From            string         `pg:",unique:group_1" json:"from" xml:"from" gqlgen:"from"`
 	Content         string         `pg:",unique:group_1,notnull" json:"content" xml:"content" gqlgen:"content"`
 	Explanation     string         `json:"explanation" xml:"explanation" gqlgen:"explanation"`
 	CorrectAnswer   Answer         `pg:",unique:group_1,notnull" json:"correctAnswer" xml:"correctAnswer" gqlgen:"correctAnswer"`
 	Image           string         `json:"image" xml:"image" gqlgen:"image"`
-	AnswerA         Answer         `json:"answerA" xml:"answerA" gqlgen:"answerA"`
+	AnswerA         Answer         `pg:"answer_a" json:"answerA" xml:"answerA" gqlgen:"answerA"`
 	AnswerAImage    string         `pg:"answer_a_image" json:"answerAImage" xml:"answerAImage" gqlgen:"answerAImage"`
-	AnswerB         Answer         `json:"answerB" xml:"answerB" gqlgen:"answerB"`
+	AnswerB         Answer         `pg:"answer_b" json:"answerB" xml:"answerB" gqlgen:"answerB"`
 	AnswerBImage    string         `pg:"answer_b_image" json:"answerBImage" xml:"answerBImage" gqlgen:"answerBImage"`
-	AnswerC         Answer         `json:"answerC" xml:"answerC" gqlgen:"answerC"`
+	AnswerC         Answer         `pg:"answer_c" json:"answerC" xml:"answerC" gqlgen:"answerC"`
 	AnswerCImage    string         `pg:"answer_c_image" json:"answerCImage" xml:"answerCImage" gqlgen:"answerCImage"`
-	AnswerD         Answer         `json:"answerD" xml:"answerD" gqlgen:"answerD"`
+	AnswerD         Answer         `pg:"answer_d" json:"answerD" xml:"answerD" gqlgen:"answerD"`
 	AnswerDImage    string         `pg:"answer_d_image" json:"answerDImage" xml:"answerDImage" gqlgen:"answerDImage"`
 	QualificationID int            `pg:",unique:group_1,on_delete:CASCADE" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
 	Qualification   *Qualification `pg:"rel:has-one" json:"qualification" xml:"qualification" gqlgen:"qualification"`
