@@ -38,9 +38,9 @@ func (q *Qualification) BeforeUpdate(ctx context.Context) (context.Context, erro
 }
 
 type QualificationToProfession struct {
-	QualificationID int            `pg:"on_delete:CASCADE" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
+	QualificationID int            `pg:"on_delete:CASCADE,unique:group_1" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
 	Qualification   *Qualification `pg:"rel:has-one" json:"qualification" xml:"qualification" gqlgen:"qualification"`
-	ProfessionID    int            `pg:"on_delete:CASCADE" json:"professionID" xml:"professionID" gqlgen:"professionID"`
+	ProfessionID    int            `pg:"on_delete:CASCADE,unique:group_1" json:"professionID" xml:"professionID" gqlgen:"professionID"`
 	Profession      *Qualification `pg:"rel:has-one" json:"profession" xml:"profession" gqlgen:"profession"`
 }
 
@@ -51,6 +51,16 @@ type QualificationInput struct {
 	Formula              *string `json:"formula" xml:"formula" gqlgen:"formula"`
 	AssociateProfession  []int   `json:"associateProfession" xml:"associateProfession" gqlgen:"associateProfession"`
 	DissociateProfession []int   `json:"dissociateProfession" xml:"dissociateProfession" gqlgen:"dissociateProfession"`
+}
+
+func (input *QualificationInput) IsEmpty() bool {
+	return input == nil &&
+		input.Name == nil &&
+		input.Code == nil &&
+		input.Formula == nil &&
+		input.Description == nil &&
+		len(input.AssociateProfession) == 0 &&
+		len(input.DissociateProfession) == 0
 }
 
 func (input *QualificationInput) ToQualification() *Qualification {
@@ -68,6 +78,19 @@ func (input *QualificationInput) ToQualification() *Qualification {
 		q.Formula = *input.Formula
 	}
 	return q
+}
+
+func (input *QualificationInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
+	if !input.IsEmpty() {
+		if input.Name != nil {
+			q.Set("name = ?", *input.Name)
+		}
+		if input.Description != nil {
+			q.Set("description = ?", *input.Description)
+		}
+	}
+
+	return q, nil
 }
 
 type QualificationFilterOr struct {

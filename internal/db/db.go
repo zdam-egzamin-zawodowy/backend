@@ -82,7 +82,7 @@ func createSchema(db *pg.DB) error {
 			}
 		}
 
-		total, err := db.Model(modelsToCreate[0]).Where("role = ?", models.RoleAdmin).Count()
+		total, err := tx.Model(modelsToCreate[0]).Where("role = ?", models.RoleAdmin).Count()
 		if err != nil {
 			return errors.Wrap(err, "createSchema")
 		}

@@ -16,7 +16,7 @@ type Profession struct {
 	ID          int       `json:"id,omitempty" xml:"id" gqlgen:"id"`
 	Slug        string    `json:"slug" pg:",unique" xml:"slug" gqlgen:"slug"`
 	Name        string    `json:"name,omitempty" pg:",unique" xml:"name" gqlgen:"name"`
-	Description string    `json:"description,omitempty" pg:",use_zero" xml:"description" gqlgen:"description"`
+	Description string    `json:"description,omitempty" xml:"description" gqlgen:"description"`
 	CreatedAt   time.Time `json:"createdAt,omitempty" pg:"default:now()" xml:"createdAt" gqlgen:"createdAt"`
 }
 
