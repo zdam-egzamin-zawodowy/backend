@@ -6,6 +6,7 @@ import (
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
+	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 )
 
 type usecase struct {
@@ -58,6 +59,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([
 			Count: true,
 		}
 	}
+	cfg.Sort = sqlutils.SanitizeSortExpressions(cfg.Sort)
 	return ucase.professionRepository.Fetch(ctx, cfg)
 }
 
