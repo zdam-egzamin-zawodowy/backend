@@ -70,7 +70,8 @@ func createSchema(db *pg.DB) error {
 
 		for _, model := range models {
 			err := tx.Model(model).CreateTable(&orm.CreateTableOptions{
-				IfNotExists: true,
+				IfNotExists:   true,
+				FKConstraints: true,
 			})
 			if err != nil {
 				return errors.Wrap(err, "createSchema")
