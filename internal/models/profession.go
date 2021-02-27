@@ -11,7 +11,7 @@ import (
 )
 
 type Profession struct {
-	tableName struct{} `pg:"alias:profession" json:"tableName" xml:"tableName" gqlgen:"tableName"`
+	tableName struct{} `pg:"alias:profession"`
 
 	ID          int       `json:"id,omitempty" xml:"id" gqlgen:"id"`
 	Slug        string    `json:"slug" pg:",unique" xml:"slug" gqlgen:"slug"`

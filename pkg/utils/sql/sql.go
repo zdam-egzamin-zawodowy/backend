@@ -1,6 +1,9 @@
 package sqlutils
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func AddAliasToColumnName(column, prefix string) string {
 	if prefix != "" && !strings.HasPrefix(column, prefix+".") {
@@ -49,4 +52,12 @@ func BuildConditionArray(column string) string {
 
 func BuildConditionNotInArray(column string) string {
 	return "NOT (" + BuildConditionArray(column) + ")"
+}
+
+func BuildCountColumnExpr(column, alias string) string {
+	base := fmt.Sprintf("count(%s)", column)
+	if alias != "" {
+		return base + " as " + alias
+	}
+	return base
 }
