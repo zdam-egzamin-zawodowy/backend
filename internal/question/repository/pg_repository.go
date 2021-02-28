@@ -53,7 +53,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.QuestionInput
 	return item, nil
 }
 
-func (repo *pgRepository) FindByIDAndUpdate(ctx context.Context, id int, input *models.QuestionInput) (*models.Question, error) {
+func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *models.QuestionInput) (*models.Question, error) {
 	item := &models.Question{}
 	baseQuery := repo.
 		Model(item).
