@@ -36,11 +36,11 @@ func (storage *fileStorage) Put(file io.Reader, filename string) error {
 	return nil
 }
 
-func (storage *fileStorage) Delete(filename string) error {
+func (storage *fileStorage) Remove(filename string) error {
 	fullPath := path.Join(storage.basePath, filename)
 	err := os.Remove(fullPath)
 	if err != nil {
-		return errors.Wrap(err, "FileStorage.Delete")
+		return errors.Wrap(err, "FileStorage.Remove")
 	}
 	return nil
 }

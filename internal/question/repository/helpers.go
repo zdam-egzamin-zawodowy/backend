@@ -1,0 +1,123 @@
+package repository
+
+import (
+	"path/filepath"
+
+	"github.com/99designs/gqlgen/graphql"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/utils"
+)
+
+func saveImages(storage filestorage.FileStorage, destination *models.Question, input *models.QuestionInput) {
+	images := [...]*graphql.Upload{
+		input.Image,
+		input.AnswerAImage,
+		input.AnswerBImage,
+		input.AnswerCImage,
+		input.AnswerDImage,
+	}
+	filenames := [...]string{
+		destination.Image,
+		destination.AnswerAImage,
+		destination.AnswerBImage,
+		destination.AnswerCImage,
+		destination.AnswerDImage,
+	}
+
+	for index, file := range images {
+		if file != nil {
+			generated := false
+			if filenames[index] == "" {
+				generated = true
+				filenames[index] = utils.GenerateFilename(filepath.Ext(file.Filename))
+			}
+			err := storage.Put(file.File, filenames[index])
+			if err != nil && generated {
+				filenames[index] = ""
+			}
+		}
+	}
+
+	destination.Image = filenames[0]
+	destination.AnswerAImage = filenames[1]
+	destination.AnswerBImage = filenames[2]
+	destination.AnswerCImage = filenames[3]
+	destination.AnswerDImage = filenames[4]
+}
+
+func deleteImages(storage filestorage.FileStorage, filenames []string) {
+	for _, filename := range filenames {
+		storage.Remove(filename)
+	}
+}
+
+func deleteImagesBasedOnInput(storage filestorage.FileStorage, question *models.Question, input *models.QuestionInput) {
+	filenames := []string{}
+
+	if input.DeleteImage != nil &&
+		*input.DeleteImage &&
+		input.Image == nil &&
+		question.Image != "" {
+		filenames = append(filenames, question.Image)
+		question.Image = ""
+	}
+
+	if input.DeleteAnswerAImage != nil &&
+		*input.DeleteAnswerAImage &&
+		input.AnswerAImage == nil &&
+		question.AnswerAImage != "" {
+		filenames = append(filenames, question.AnswerAImage)
+		question.AnswerAImage = ""
+	}
+
+	if input.DeleteAnswerBImage != nil &&
+		*input.DeleteAnswerBImage &&
+		input.AnswerBImage == nil &&
+		question.AnswerBImage != "" {
+		filenames = append(filenames, question.AnswerBImage)
+		question.AnswerBImage = ""
+	}
+
+	if input.DeleteAnswerCImage != nil &&
+		*input.DeleteAnswerCImage &&
+		input.AnswerCImage == nil &&
+		question.AnswerCImage != "" {
+		filenames = append(filenames, question.AnswerCImage)
+		question.AnswerCImage = ""
+	}
+
+	if input.DeleteAnswerDImage != nil &&
+		*input.DeleteAnswerDImage &&
+		input.AnswerDImage == nil &&
+		question.AnswerDImage != "" {
+		filenames = append(filenames, question.AnswerDImage)
+		question.AnswerDImage = ""
+	}
+
+	deleteImages(storage, filenames)
+}
+
+func getAllFilenamesAndDeleteImages(storage filestorage.FileStorage, questions []*models.Question) {
+	filenames := []string{}
+
+	for _, question := range questions {
+		if question.Image != "" {
+			filenames = append(filenames, question.Image)
+		}
+		if question.AnswerAImage != "" {
+			filenames = append(filenames, question.AnswerAImage)
+		}
+		if question.AnswerBImage != "" {
+			filenames = append(filenames, question.AnswerBImage)
+		}
+		if question.AnswerCImage != "" {
+			filenames = append(filenames, question.AnswerCImage)
+		}
+		if question.AnswerDImage != "" {
+			filenames = append(filenames, question.AnswerDImage)
+		}
+	}
+
+	deleteImages(storage, filenames)
+}
