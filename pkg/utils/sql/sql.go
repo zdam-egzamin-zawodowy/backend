@@ -46,6 +46,10 @@ func BuildConditionIEQ(column string) string {
 	return column + " ILIKE ?"
 }
 
+func BuildConditionIn(column string) string {
+	return column + " IN (?)"
+}
+
 func BuildConditionArray(column string) string {
 	return column + " = ANY(?)"
 }

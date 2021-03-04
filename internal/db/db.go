@@ -88,7 +88,7 @@ func createSchema(db *pg.DB) error {
 		}
 		if total == 0 {
 			activated := true
-			pswd, err := password.Generate(16, 4, 4, true, false)
+			pswd, err := password.Generate(15, 4, 2, true, false)
 			if err != nil {
 				return errors.Wrap(err, "createSchema")
 			}

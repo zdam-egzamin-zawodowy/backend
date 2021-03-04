@@ -75,6 +75,8 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 	}
 
 	repo.saveImages(item, input)
+	repo.deleteImagesBasedOnInput(item, input)
+
 	if _, err := baseQuery.
 		Clone().
 		Set("image = ?", item.Image).
@@ -85,7 +87,6 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 		Update(); err != nil && err != pg.ErrNoRows {
 		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
 	}
-	repo.deleteImagesBasedOnInput(item, input)
 
 	return item, nil
 }
@@ -126,4 +127,21 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) 
 		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
+}
+
+func (repo *pgRepository) GenerateTest(ctx context.Context, cfg *question.GenerateTestConfig) ([]*models.Question, error) {
+	subquery := repo.
+		Model(&models.Question{}).
+		Column("id").
+		Where(sqlutils.BuildConditionArray("qualification_id"), cfg.Qualifications).
+		Limit(cfg.Limit)
+	items := []*models.Question{}
+	if err := repo.
+		Model(&items).
+		Context(ctx).
+		Where(sqlutils.BuildConditionIn("id"), subquery).
+		Select(); err != nil && err != pg.ErrNoRows {
+		return nil, errorutils.Wrap(err, messageFailedToFetchModel)
+	}
+	return items, nil
 }
