@@ -17,7 +17,7 @@ import (
 
 type pgRepository struct {
 	*pg.DB
-	fileStorage filestorage.FileStorage
+	*repository
 }
 
 type PGRepositoryConfig struct {
@@ -31,7 +31,9 @@ func NewPGRepository(cfg *PGRepositoryConfig) (question.Repository, error) {
 	}
 	return &pgRepository{
 		cfg.DB,
-		cfg.FileStorage,
+		&repository{
+			fileStorage: cfg.FileStorage,
+		},
 	}, nil
 }
 
@@ -48,7 +50,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.QuestionInput
 		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
 	}
 
-	saveImages(repo.fileStorage, item, input)
+	repo.saveImages(item, input)
 
 	return item, nil
 }
@@ -72,9 +74,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
 	}
 
-	saveImages(repo.fileStorage, item, input)
-	deleteImagesBasedOnInput(repo.fileStorage, item, input)
-
+	repo.saveImages(item, input)
 	if _, err := baseQuery.
 		Clone().
 		Set("image = ?", item.Image).
@@ -83,9 +83,9 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 		Set("answer_c_image = ?", item.AnswerCImage).
 		Set("answer_d_image = ?", item.AnswerDImage).
 		Update(); err != nil && err != pg.ErrNoRows {
-
 		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
 	}
+	repo.deleteImagesBasedOnInput(item, input)
 
 	return item, nil
 }
@@ -101,7 +101,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.QuestionFilter) 
 		return nil, errorutils.Wrap(err, messageFailedToDeleteModel)
 	}
 
-	go getAllFilenamesAndDeleteImages(repo.fileStorage, items)
+	go repo.getAllFilenamesAndDeleteImages(items)
 
 	return items, nil
 }

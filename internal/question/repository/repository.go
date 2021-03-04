@@ -9,7 +9,11 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/utils"
 )
 
-func saveImages(storage filestorage.FileStorage, destination *models.Question, input *models.QuestionInput) {
+type repository struct {
+	fileStorage filestorage.FileStorage
+}
+
+func (repo *repository) saveImages(destination *models.Question, input *models.QuestionInput) {
 	images := [...]*graphql.Upload{
 		input.Image,
 		input.AnswerAImage,
@@ -32,7 +36,7 @@ func saveImages(storage filestorage.FileStorage, destination *models.Question, i
 				generated = true
 				filenames[index] = utils.GenerateFilename(filepath.Ext(file.Filename))
 			}
-			err := storage.Put(file.File, filenames[index])
+			err := repo.fileStorage.Put(file.File, filenames[index])
 			if err != nil && generated {
 				filenames[index] = ""
 			}
@@ -46,13 +50,13 @@ func saveImages(storage filestorage.FileStorage, destination *models.Question, i
 	destination.AnswerDImage = filenames[4]
 }
 
-func deleteImages(storage filestorage.FileStorage, filenames []string) {
+func (repo *repository) deleteImages(filenames []string) {
 	for _, filename := range filenames {
-		storage.Remove(filename)
+		repo.fileStorage.Remove(filename)
 	}
 }
 
-func deleteImagesBasedOnInput(storage filestorage.FileStorage, question *models.Question, input *models.QuestionInput) {
+func (repo *repository) deleteImagesBasedOnInput(question *models.Question, input *models.QuestionInput) {
 	filenames := []string{}
 
 	if input.DeleteImage != nil &&
@@ -95,10 +99,10 @@ func deleteImagesBasedOnInput(storage filestorage.FileStorage, question *models.
 		question.AnswerDImage = ""
 	}
 
-	deleteImages(storage, filenames)
+	repo.deleteImages(filenames)
 }
 
-func getAllFilenamesAndDeleteImages(storage filestorage.FileStorage, questions []*models.Question) {
+func (repo *repository) getAllFilenamesAndDeleteImages(questions []*models.Question) {
 	filenames := []string{}
 
 	for _, question := range questions {
@@ -119,5 +123,5 @@ func getAllFilenamesAndDeleteImages(storage filestorage.FileStorage, questions [
 		}
 	}
 
-	deleteImages(storage, filenames)
+	repo.deleteImages(filenames)
 }
