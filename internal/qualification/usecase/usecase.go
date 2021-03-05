@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
@@ -34,7 +33,7 @@ func (ucase *usecase) Store(ctx context.Context, input *models.QualificationInpu
 	return ucase.qualificationRepository.Store(ctx, input)
 }
 
-func (ucase *usecase) UpdateOne(ctx context.Context, id int, input *models.QualificationInput) (*models.Qualification, error) {
+func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.QualificationInput) (*models.Qualification, error) {
 	if id <= 0 {
 		return nil, fmt.Errorf(messageInvalidID)
 	}
@@ -114,11 +113,9 @@ func (ucase *usecase) validateInput(input *models.QualificationInput, opts valid
 	}
 
 	if input.Name != nil {
-		trimmedName := strings.TrimSpace(*input.Name)
-		input.Name = &trimmedName
-		if trimmedName == "" {
+		if *input.Name == "" {
 			return fmt.Errorf(messageNameIsRequired)
-		} else if len(trimmedName) > qualification.MaxNameLength {
+		} else if len(*input.Name) > qualification.MaxNameLength {
 			return fmt.Errorf(messageNameIsTooLong, qualification.MaxNameLength)
 		}
 	} else if !opts.allowNilValues {
@@ -126,9 +123,7 @@ func (ucase *usecase) validateInput(input *models.QualificationInput, opts valid
 	}
 
 	if input.Code != nil {
-		trimmedCode := strings.TrimSpace(*input.Code)
-		input.Code = &trimmedCode
-		if trimmedCode == "" {
+		if *input.Code == "" {
 			return fmt.Errorf(messageCodeIsRequired)
 		}
 	} else if !opts.allowNilValues {

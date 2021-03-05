@@ -50,20 +50,20 @@ func (repo *repository) saveImages(destination *models.Question, input *models.Q
 	destination.AnswerDImage = filenames[4]
 }
 
-func (repo *repository) deleteImages(filenames []string) {
-	for _, filename := range filenames {
-		repo.fileStorage.Remove(filename)
+func (repo *repository) deleteImages(images []string) {
+	for _, image := range images {
+		repo.fileStorage.Remove(image)
 	}
 }
 
 func (repo *repository) deleteImagesBasedOnInput(question *models.Question, input *models.QuestionInput) {
-	filenames := []string{}
+	images := []string{}
 
 	if input.DeleteImage != nil &&
 		*input.DeleteImage &&
 		input.Image == nil &&
 		question.Image != "" {
-		filenames = append(filenames, question.Image)
+		images = append(images, question.Image)
 		question.Image = ""
 	}
 
@@ -71,7 +71,7 @@ func (repo *repository) deleteImagesBasedOnInput(question *models.Question, inpu
 		*input.DeleteAnswerAImage &&
 		input.AnswerAImage == nil &&
 		question.AnswerAImage != "" {
-		filenames = append(filenames, question.AnswerAImage)
+		images = append(images, question.AnswerAImage)
 		question.AnswerAImage = ""
 	}
 
@@ -79,7 +79,7 @@ func (repo *repository) deleteImagesBasedOnInput(question *models.Question, inpu
 		*input.DeleteAnswerBImage &&
 		input.AnswerBImage == nil &&
 		question.AnswerBImage != "" {
-		filenames = append(filenames, question.AnswerBImage)
+		images = append(images, question.AnswerBImage)
 		question.AnswerBImage = ""
 	}
 
@@ -87,7 +87,7 @@ func (repo *repository) deleteImagesBasedOnInput(question *models.Question, inpu
 		*input.DeleteAnswerCImage &&
 		input.AnswerCImage == nil &&
 		question.AnswerCImage != "" {
-		filenames = append(filenames, question.AnswerCImage)
+		images = append(images, question.AnswerCImage)
 		question.AnswerCImage = ""
 	}
 
@@ -95,33 +95,33 @@ func (repo *repository) deleteImagesBasedOnInput(question *models.Question, inpu
 		*input.DeleteAnswerDImage &&
 		input.AnswerDImage == nil &&
 		question.AnswerDImage != "" {
-		filenames = append(filenames, question.AnswerDImage)
+		images = append(images, question.AnswerDImage)
 		question.AnswerDImage = ""
 	}
 
-	repo.deleteImages(filenames)
+	repo.deleteImages(images)
 }
 
-func (repo *repository) getAllFilenamesAndDeleteImages(questions []*models.Question) {
-	filenames := []string{}
+func (repo *repository) getAllImagesAndDelete(questions []*models.Question) {
+	images := []string{}
 
 	for _, question := range questions {
 		if question.Image != "" {
-			filenames = append(filenames, question.Image)
+			images = append(images, question.Image)
 		}
 		if question.AnswerAImage != "" {
-			filenames = append(filenames, question.AnswerAImage)
+			images = append(images, question.AnswerAImage)
 		}
 		if question.AnswerBImage != "" {
-			filenames = append(filenames, question.AnswerBImage)
+			images = append(images, question.AnswerBImage)
 		}
 		if question.AnswerCImage != "" {
-			filenames = append(filenames, question.AnswerCImage)
+			images = append(images, question.AnswerCImage)
 		}
 		if question.AnswerDImage != "" {
-			filenames = append(filenames, question.AnswerDImage)
+			images = append(images, question.AnswerDImage)
 		}
 	}
 
-	repo.deleteImages(filenames)
+	repo.deleteImages(images)
 }

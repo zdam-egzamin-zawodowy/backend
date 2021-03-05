@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
@@ -34,7 +33,7 @@ func (ucase *usecase) Store(ctx context.Context, input *models.ProfessionInput) 
 	return ucase.professionRepository.Store(ctx, input)
 }
 
-func (ucase *usecase) UpdateOne(ctx context.Context, id int, input *models.ProfessionInput) (*models.Profession, error) {
+func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.ProfessionInput) (*models.Profession, error) {
 	if id <= 0 {
 		return nil, fmt.Errorf(messageInvalidID)
 	}
@@ -114,11 +113,9 @@ func (ucase *usecase) validateInput(input *models.ProfessionInput, opts validate
 	}
 
 	if input.Name != nil {
-		trimmedName := strings.TrimSpace(*input.Name)
-		input.Name = &trimmedName
-		if trimmedName == "" {
+		if *input.Name == "" {
 			return fmt.Errorf(messageNameIsRequired)
-		} else if len(trimmedName) > profession.MaxNameLength {
+		} else if len(*input.Name) > profession.MaxNameLength {
 			return fmt.Errorf(messageNameIsTooLong, profession.MaxNameLength)
 		}
 	} else if !opts.nameCanBeNil {

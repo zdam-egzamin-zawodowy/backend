@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
@@ -35,7 +34,7 @@ func (ucase *usecase) Store(ctx context.Context, input *models.UserInput) (*mode
 	return ucase.userRepository.Store(ctx, input)
 }
 
-func (ucase *usecase) UpdateOne(ctx context.Context, id int, input *models.UserInput) (*models.User, error) {
+func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.UserInput) (*models.User, error) {
 	if id <= 0 {
 		return nil, fmt.Errorf(messageInvalidID)
 	}
@@ -131,11 +130,10 @@ func (ucase *usecase) validateInput(input *models.UserInput, opts validateOption
 	}
 
 	if input.DisplayName != nil {
-		trimmedDisplayName := strings.TrimSpace(*input.DisplayName)
-		input.DisplayName = &trimmedDisplayName
-		if len(trimmedDisplayName) < user.MinDisplayNameLength {
+		displayNameLength := len(*input.DisplayName)
+		if displayNameLength < user.MinDisplayNameLength {
 			return fmt.Errorf(messageDisplayNameIsRequired)
-		} else if len(trimmedDisplayName) > user.MaxDisplayNameLength {
+		} else if displayNameLength > user.MaxDisplayNameLength {
 			return fmt.Errorf(messageDisplayNameIsTooLong, user.MaxDisplayNameLength)
 		}
 	} else if !opts.acceptNilValues {
@@ -143,9 +141,7 @@ func (ucase *usecase) validateInput(input *models.UserInput, opts validateOption
 	}
 
 	if input.Email != nil {
-		trimmedEmail := strings.TrimSpace(*input.Email)
-		input.Email = &trimmedEmail
-		if !utils.IsEmailValid(trimmedEmail) {
+		if !utils.IsEmailValid(*input.Email) {
 			return fmt.Errorf(messageEmailIsInvalid)
 		}
 	} else if !opts.acceptNilValues {
@@ -153,9 +149,9 @@ func (ucase *usecase) validateInput(input *models.UserInput, opts validateOption
 	}
 
 	if input.Password != nil {
-		trimmedPassword := strings.ToLower(strings.TrimSpace(*input.Password))
-		input.Password = &trimmedPassword
-		if len(trimmedPassword) > user.MaxPasswordLength || len(trimmedPassword) < user.MinPasswordLength {
+		password := *input.Password
+		passwordLength := len(password)
+		if passwordLength > user.MaxPasswordLength || passwordLength < user.MinPasswordLength {
 			return fmt.Errorf(messagePasswordInvalidLength, user.MinPasswordLength, user.MaxPasswordLength)
 		}
 	} else if !opts.acceptNilValues {

@@ -102,7 +102,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.QuestionFilter) 
 		return nil, errorutils.Wrap(err, messageFailedToDeleteModel)
 	}
 
-	go repo.getAllFilenamesAndDeleteImages(items)
+	go repo.getAllImagesAndDelete(items)
 
 	return items, nil
 }
