@@ -56,6 +56,11 @@ input UserFilter {
   createdAtLTE: Time
 }
 
+type UserWithToken {
+  token: String!
+  user: User!
+}
+
 extend type Query {
   users(
     filter: UserFilter
@@ -80,6 +85,9 @@ extend type Mutation {
   deleteUsers(ids: [ID!]!): [User!]
     @authenticated(yes: true)
     @hasRole(role: ADMIN)
-  signIn(email: String!, password: String!, staySignedIn: Boolean): User
-    @authenticated(yes: false)
+  signIn(
+    email: String!
+    password: String!
+    staySignedIn: Boolean
+  ): UserWithToken @authenticated(yes: false)
 }

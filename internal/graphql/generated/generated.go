@@ -143,6 +143,11 @@ type ComplexityRoot struct {
 		Items func(childComplexity int) int
 		Total func(childComplexity int) int
 	}
+
+	UserWithToken struct {
+		Token func(childComplexity int) int
+		User  func(childComplexity int) int
+	}
 }
 
 type MutationResolver interface {
@@ -160,7 +165,7 @@ type MutationResolver interface {
 	UpdateUser(ctx context.Context, id int, input models.UserInput) (*models.User, error)
 	UpdateManyUsers(ctx context.Context, ids []int, input models.UserInput) ([]*models.User, error)
 	DeleteUsers(ctx context.Context, ids []int) ([]*models.User, error)
-	SignIn(ctx context.Context, email string, password string, staySignedIn *bool) (*models.User, error)
+	SignIn(ctx context.Context, email string, password string, staySignedIn *bool) (*UserWithToken, error)
 }
 type QueryResolver interface {
 	Professions(ctx context.Context, filter *models.ProfessionFilter, limit *int, offset *int, sort []string) (*ProfessionList, error)
@@ -763,6 +768,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserList.Total(childComplexity), true
 
+	case "UserWithToken.token":
+		if e.complexity.UserWithToken.Token == nil {
+			break
+		}
+
+		return e.complexity.UserWithToken.Token(childComplexity), true
+
+	case "UserWithToken.user":
+		if e.complexity.UserWithToken.User == nil {
+			break
+		}
+
+		return e.complexity.UserWithToken.User(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -1142,6 +1161,11 @@ input UserFilter {
   createdAtLTE: Time
 }
 
+type UserWithToken {
+  token: String!
+  user: User!
+}
+
 extend type Query {
   users(
     filter: UserFilter
@@ -1166,8 +1190,11 @@ extend type Mutation {
   deleteUsers(ids: [ID!]!): [User!]
     @authenticated(yes: true)
     @hasRole(role: ADMIN)
-  signIn(email: String!, password: String!, staySignedIn: Boolean): User
-    @authenticated(yes: false)
+  signIn(
+    email: String!
+    password: String!
+    staySignedIn: Boolean
+  ): UserWithToken @authenticated(yes: false)
 }
 `, BuiltIn: false},
 }
@@ -2822,10 +2849,10 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*models.User); ok {
+		if data, ok := tmp.(*UserWithToken); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/models.User`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated.UserWithToken`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2834,9 +2861,9 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*models.User)
+	res := resTmp.(*UserWithToken)
 	fc.Result = res
-	return ec.marshalOUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUserWithToken2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋgraphqlᚋgeneratedᚐUserWithToken(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Profession_id(ctx context.Context, field graphql.CollectedField, obj *models.Profession) (ret graphql.Marshaler) {
@@ -4775,6 +4802,76 @@ func (ec *executionContext) _UserList_items(ctx context.Context, field graphql.C
 	res := resTmp.([]*models.User)
 	fc.Result = res
 	return ec.marshalOUser2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐUserᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserWithToken_token(ctx context.Context, field graphql.CollectedField, obj *UserWithToken) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserWithToken",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserWithToken_user(ctx context.Context, field graphql.CollectedField, obj *UserWithToken) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserWithToken",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -7377,6 +7474,38 @@ func (ec *executionContext) _UserList(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var userWithTokenImplementors = []string{"UserWithToken"}
+
+func (ec *executionContext) _UserWithToken(ctx context.Context, sel ast.SelectionSet, obj *UserWithToken) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userWithTokenImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserWithToken")
+		case "token":
+			out.Values[i] = ec._UserWithToken_token(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "user":
+			out.Values[i] = ec._UserWithToken_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var __DirectiveImplementors = []string{"__Directive"}
 
 func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionSet, obj *introspection.Directive) graphql.Marshaler {
@@ -8645,6 +8774,13 @@ func (ec *executionContext) unmarshalOUserFilter2ᚖgithubᚗcomᚋzdamᚑegzami
 	}
 	res, err := ec.unmarshalInputUserFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOUserWithToken2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋgraphqlᚋgeneratedᚐUserWithToken(ctx context.Context, sel ast.SelectionSet, v *UserWithToken) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserWithToken(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

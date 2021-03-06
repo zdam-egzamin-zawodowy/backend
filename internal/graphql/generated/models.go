@@ -25,3 +25,8 @@ type UserList struct {
 	Total int            `json:"total"`
 	Items []*models.User `json:"items"`
 }
+
+type UserWithToken struct {
+	Token string       `json:"token"`
+	User  *models.User `json:"user"`
+}
