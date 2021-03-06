@@ -5,8 +5,8 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
@@ -57,5 +57,15 @@ func (r *queryResolver) Questions(
 }
 
 func (r *questionResolver) Qualification(ctx context.Context, obj *models.Question) (*models.Qualification, error) {
-	panic(fmt.Errorf("not implemented"))
+	if obj != nil && obj.Qualification != nil {
+		return obj.Qualification, nil
+	}
+
+	if obj != nil || obj.QualificationID > 0 {
+		if dataloader, err := middleware.DataLoaderFromContext(ctx); err == nil && dataloader != nil {
+			return dataloader.QualificationByID.Load(obj.QualificationID)
+		}
+	}
+
+	return nil, nil
 }

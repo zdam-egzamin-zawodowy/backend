@@ -39,10 +39,10 @@ func UserFromContext(ctx context.Context) (*models.User, error) {
 		return nil, err
 	}
 
-	gc, ok := user.(*models.User)
+	u, ok := user.(*models.User)
 	if !ok {
 		err := fmt.Errorf("*models.User has wrong type")
 		return nil, err
 	}
-	return gc, nil
+	return u, nil
 }
