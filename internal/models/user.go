@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
@@ -84,6 +85,25 @@ func (input *UserInput) ToUser() *User {
 		u.Role = *input.Role
 	}
 	return u
+}
+
+func (input *UserInput) Sanitize() *UserInput {
+	if input.DisplayName != nil {
+		trimmed := strings.TrimSpace(*input.DisplayName)
+		input.DisplayName = &trimmed
+	}
+
+	if input.Password != nil {
+		sanitized := strings.ToLower(strings.TrimSpace(*input.Password))
+		input.Password = &sanitized
+	}
+
+	if input.Email != nil {
+		sanitized := strings.ToLower(strings.TrimSpace(*input.Email))
+		input.Email = &sanitized
+	}
+
+	return input
 }
 
 func (input *UserInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {

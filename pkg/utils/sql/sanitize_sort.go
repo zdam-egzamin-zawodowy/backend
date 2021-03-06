@@ -37,14 +37,14 @@ func SanitizeSort(sort string) string {
 }
 
 func SanitizeSorts(sorts []string) []string {
-	sanitizedExprs := []string{}
+	sanitizedSorts := []string{}
 	for _, sort := range sorts {
 		sanitized := SanitizeSort(sort)
 		if sanitized != "" {
-			sanitizedExprs = append(sanitizedExprs, sanitized)
+			sanitizedSorts = append(sanitizedSorts, sanitized)
 		}
 	}
-	return sanitizedExprs
+	return sanitizedSorts
 }
 
 type buffer struct {

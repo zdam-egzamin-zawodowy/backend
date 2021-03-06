@@ -28,7 +28,7 @@ func New(cfg *Config) (user.Usecase, error) {
 }
 
 func (ucase *usecase) Store(ctx context.Context, input *models.UserInput) (*models.User, error) {
-	if err := ucase.validateInput(input, validateOptions{false}); err != nil {
+	if err := ucase.validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.userRepository.Store(ctx, input)
@@ -43,7 +43,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.U
 		&models.UserFilter{
 			ID: []int{id},
 		},
-		input,
+		input.Sanitize(),
 	)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (ucase *usecase) UpdateMany(ctx context.Context, f *models.UserFilter, inpu
 	if f == nil {
 		return []*models.User{}, nil
 	}
-	if err := ucase.validateInput(input, validateOptions{true}); err != nil {
+	if err := ucase.validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
 	}
 	items, err := ucase.userRepository.UpdateMany(ctx, f, input)
@@ -149,8 +149,7 @@ func (ucase *usecase) validateInput(input *models.UserInput, opts validateOption
 	}
 
 	if input.Password != nil {
-		password := *input.Password
-		passwordLength := len(password)
+		passwordLength := len(*input.Password)
 		if passwordLength > user.MaxPasswordLength || passwordLength < user.MinPasswordLength {
 			return fmt.Errorf(messagePasswordInvalidLength, user.MinPasswordLength, user.MaxPasswordLength)
 		}
