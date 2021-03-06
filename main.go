@@ -9,6 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/db"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -37,20 +38,7 @@ func main() {
 	}
 	logrus.Info("Database connection established")
 
-	router := gin.Default()
-	if mode.Get() == mode.DevelopmentMode {
-		router.Use(cors.New(cors.Config{
-			AllowOriginFunc: func(string) bool {
-				return true
-			},
-			AllowCredentials: true,
-			ExposeHeaders:    []string{"X-Access-Token", "X-Refresh-Token"},
-			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-			AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
-			AllowWebSockets:  false,
-		}))
-	}
-
+	router := setupRouter()
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: router,
@@ -85,4 +73,24 @@ func setupLogger() {
 	customFormatter.TimestampFormat = "2006-01-02 15:04:05"
 	customFormatter.FullTimestamp = true
 	logrus.SetFormatter(customFormatter)
+}
+
+func setupRouter() *gin.Engine {
+	router := gin.New()
+
+	router.Use(middleware.Logger(logrus.WithField("hostname", "api")), gin.Recovery())
+	if mode.Get() == mode.DevelopmentMode {
+		router.Use(cors.New(cors.Config{
+			AllowOriginFunc: func(string) bool {
+				return true
+			},
+			AllowCredentials: true,
+			ExposeHeaders:    []string{"Authorization"},
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+			AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+			AllowWebSockets:  false,
+		}))
+	}
+
+	return router
 }
