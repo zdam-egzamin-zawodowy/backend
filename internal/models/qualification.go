@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/go-pg/pg/v10"
@@ -61,6 +62,27 @@ func (input *QualificationInput) IsEmpty() bool {
 		input.Description == nil &&
 		len(input.AssociateProfession) == 0 &&
 		len(input.DissociateProfession) == 0
+}
+
+func (input *QualificationInput) Sanitize() *QualificationInput {
+	if input.Name != nil {
+		trimmed := strings.TrimSpace(*input.Name)
+		input.Name = &trimmed
+	}
+	if input.Description != nil {
+		trimmed := strings.TrimSpace(*input.Description)
+		input.Description = &trimmed
+	}
+	if input.Code != nil {
+		trimmed := strings.TrimSpace(*input.Code)
+		input.Code = &trimmed
+	}
+	if input.Formula != nil {
+		trimmed := strings.TrimSpace(*input.Formula)
+		input.Formula = &trimmed
+	}
+
+	return input
 }
 
 func (input *QualificationInput) ToQualification() *Qualification {

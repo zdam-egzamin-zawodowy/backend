@@ -27,7 +27,7 @@ func New(cfg *Config) (qualification.Usecase, error) {
 }
 
 func (ucase *usecase) Store(ctx context.Context, input *models.QualificationInput) (*models.Qualification, error) {
-	if err := ucase.validateInput(input, validateOptions{false}); err != nil {
+	if err := ucase.validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.qualificationRepository.Store(ctx, input)
@@ -37,7 +37,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.Q
 	if id <= 0 {
 		return nil, fmt.Errorf(messageInvalidID)
 	}
-	if err := ucase.validateInput(input, validateOptions{true}); err != nil {
+	if err := ucase.validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
 	}
 	items, err := ucase.qualificationRepository.UpdateMany(ctx,
