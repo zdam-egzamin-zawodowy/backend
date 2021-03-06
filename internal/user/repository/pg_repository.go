@@ -45,11 +45,9 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.UserInput) (*
 }
 
 func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.UserFilter, input *models.UserInput) ([]*models.User, error) {
-	items := []*models.User{}
 	if _, err := repo.
-		Model(&items).
+		Model(&models.User{}).
 		Context(ctx).
-		Returning("*").
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
 		Update(); err != nil && err != pg.ErrNoRows {
@@ -57,6 +55,13 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.UserFilter, 
 			return nil, errorutils.Wrap(err, messageEmailIsAlreadyTaken)
 		}
 		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+	}
+	items, _, err := repo.Fetch(ctx, &user.FetchConfig{
+		Count:  false,
+		Filter: f,
+	})
+	if err != nil {
+		return nil, err
 	}
 	return items, nil
 }

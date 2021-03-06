@@ -1,6 +1,6 @@
 enum Role {
-  ADMIN
-  USER
+  Admin
+  User
 }
 
 type User {
@@ -67,24 +67,24 @@ extend type Query {
     limit: Int
     offset: Int
     sort: [String!]
-  ): UserList! @authenticated(yes: true) @hasRole(role: ADMIN)
-  user(id: Int!): User @authenticated(yes: true) @hasRole(role: ADMIN)
+  ): UserList! @authenticated(yes: true) @hasRole(role: Admin)
+  user(id: Int!): User @authenticated(yes: true) @hasRole(role: Admin)
   me: User
 }
 
 extend type Mutation {
   createUser(input: UserInput!): User
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   updateUser(id: ID!, input: UserInput!): User
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   updateManyUsers(ids: [ID!]!, input: UpdateManyUsersInput!): [User!]
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   deleteUsers(ids: [ID!]!): [User!]
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   signIn(
     email: String!
     password: String!

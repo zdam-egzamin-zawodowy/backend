@@ -162,7 +162,7 @@ func (ucase *usecase) validateInput(input *models.UserInput, opts validateOption
 			return fmt.Errorf(messageInvalidRole)
 		}
 	} else if !opts.acceptNilValues {
-		return fmt.Errorf(messagePasswordIsRequired)
+		return fmt.Errorf(messageInvalidRole)
 	}
 
 	return nil

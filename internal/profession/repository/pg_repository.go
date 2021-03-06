@@ -45,11 +45,9 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.ProfessionInp
 }
 
 func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.ProfessionFilter, input *models.ProfessionInput) ([]*models.Profession, error) {
-	items := []*models.Profession{}
 	if _, err := repo.
-		Model(&items).
+		Model(&models.Profession{}).
 		Context(ctx).
-		Returning("*").
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
 		Update(); err != nil && err != pg.ErrNoRows {
@@ -57,6 +55,13 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.ProfessionFi
 			return nil, errorutils.Wrap(err, messageNameIsAlreadyTaken)
 		}
 		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+	}
+	items, _, err := repo.Fetch(ctx, &profession.FetchConfig{
+		Count:  false,
+		Filter: f,
+	})
+	if err != nil {
+		return nil, err
 	}
 	return items, nil
 }

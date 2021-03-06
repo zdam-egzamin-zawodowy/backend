@@ -104,7 +104,7 @@ func (input *UserInput) ToUser() *User {
 func (input *UserInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.DisplayName != nil {
-			q.Set("display_name = ?", *input.DisplayName)
+			q = q.Set("display_name = ?", *input.DisplayName)
 		}
 
 		if input.Password != nil {
@@ -112,19 +112,19 @@ func (input *UserInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 			if err != nil {
 				return q, err
 			}
-			q.Set("password = ?", string(hashedPassword))
+			q = q.Set("password = ?", string(hashedPassword))
 		}
 
 		if input.Email != nil {
-			q.Set("name = ?", *input.Email)
+			q = q.Set("name = ?", *input.Email)
 		}
 
 		if input.Role != nil {
-			q.Set("role = ?", *input.Role)
+			q = q.Set("role = ?", *input.Role)
 		}
 
 		if input.Activated != nil {
-			q.Set("activated = ?", *input.Activated)
+			q = q.Set("activated = ?", *input.Activated)
 		}
 	}
 

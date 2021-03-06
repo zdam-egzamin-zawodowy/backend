@@ -42,7 +42,7 @@ type QualificationToProfession struct {
 	QualificationID int            `pg:"on_delete:CASCADE,unique:group_1" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
 	Qualification   *Qualification `pg:"rel:has-one" json:"qualification" xml:"qualification" gqlgen:"qualification"`
 	ProfessionID    int            `pg:"on_delete:CASCADE,unique:group_1" json:"professionID" xml:"professionID" gqlgen:"professionID"`
-	Profession      *Qualification `pg:"rel:has-one" json:"profession" xml:"profession" gqlgen:"profession"`
+	Profession      *Profession    `pg:"rel:has-one" json:"profession" xml:"profession" gqlgen:"profession"`
 }
 
 type QualificationInput struct {
@@ -101,10 +101,16 @@ func (input *QualificationInput) ToQualification() *Qualification {
 func (input *QualificationInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.Name != nil {
-			q.Set("name = ?", *input.Name)
+			q = q.Set("name = ?", *input.Name)
+		}
+		if input.Code != nil {
+			q = q.Set("code = ?", *input.Code)
+		}
+		if input.Formula != nil {
+			q = q.Set("formula = ?", *input.Formula)
 		}
 		if input.Description != nil {
-			q.Set("description = ?", *input.Description)
+			q = q.Set("description = ?", *input.Description)
 		}
 	}
 

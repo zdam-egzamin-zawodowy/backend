@@ -907,13 +907,13 @@ extend type Query {
 extend type Mutation {
   createProfession(input: ProfessionInput!): Profession
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   updateProfession(id: ID!, input: ProfessionInput!): Profession
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   deleteProfessions(ids: [ID!]!): [Profession!]
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
 }
 `, BuiltIn: false},
 	{Name: "schema/qualification.graphql", Input: `type Qualification {
@@ -995,13 +995,13 @@ extend type Query {
 extend type Mutation {
   createQualification(input: QualificationInput!): Qualification
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   updateQualification(id: ID!, input: QualificationInput!): Qualification
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   deleteQualifications(ids: [ID!]!): [Qualification!]
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
 }
 `, BuiltIn: false},
 	{Name: "schema/question.graphql", Input: `enum Answer {
@@ -1084,28 +1084,28 @@ extend type Query {
     limit: Int
     offset: Int
     sort: [String!]
-  ): QuestionList! @authenticated(yes: true) @hasRole(role: ADMIN)
+  ): QuestionList! @authenticated(yes: true) @hasRole(role: Admin)
   generateTest(qualificationIDs: [ID!]!, limit: Int): [Question!]
 }
 
 extend type Mutation {
   createQuestion(input: QuestionInput!): Question
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   updateQuestion(id: ID!, input: QuestionInput!): Question
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   deleteQuestions(ids: [ID!]!): [Question!]
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
 }
 `, BuiltIn: false},
 	{Name: "schema/scalars.graphql", Input: `scalar Time
 scalar Upload
 `, BuiltIn: false},
 	{Name: "schema/user.graphql", Input: `enum Role {
-  ADMIN
-  USER
+  Admin
+  User
 }
 
 type User {
@@ -1172,24 +1172,24 @@ extend type Query {
     limit: Int
     offset: Int
     sort: [String!]
-  ): UserList! @authenticated(yes: true) @hasRole(role: ADMIN)
-  user(id: Int!): User @authenticated(yes: true) @hasRole(role: ADMIN)
+  ): UserList! @authenticated(yes: true) @hasRole(role: Admin)
+  user(id: Int!): User @authenticated(yes: true) @hasRole(role: Admin)
   me: User
 }
 
 extend type Mutation {
   createUser(input: UserInput!): User
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   updateUser(id: ID!, input: UserInput!): User
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   updateManyUsers(ids: [ID!]!, input: UpdateManyUsersInput!): [User!]
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   deleteUsers(ids: [ID!]!): [User!]
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   signIn(
     email: String!
     password: String!
@@ -1854,7 +1854,7 @@ func (ec *executionContext) _Mutation_createProfession(ctx context.Context, fiel
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -1927,7 +1927,7 @@ func (ec *executionContext) _Mutation_updateProfession(ctx context.Context, fiel
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2000,7 +2000,7 @@ func (ec *executionContext) _Mutation_deleteProfessions(ctx context.Context, fie
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2073,7 +2073,7 @@ func (ec *executionContext) _Mutation_createQualification(ctx context.Context, f
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2146,7 +2146,7 @@ func (ec *executionContext) _Mutation_updateQualification(ctx context.Context, f
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2219,7 +2219,7 @@ func (ec *executionContext) _Mutation_deleteQualifications(ctx context.Context, 
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2292,7 +2292,7 @@ func (ec *executionContext) _Mutation_createQuestion(ctx context.Context, field 
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2365,7 +2365,7 @@ func (ec *executionContext) _Mutation_updateQuestion(ctx context.Context, field 
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2438,7 +2438,7 @@ func (ec *executionContext) _Mutation_deleteQuestions(ctx context.Context, field
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2511,7 +2511,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2584,7 +2584,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2657,7 +2657,7 @@ func (ec *executionContext) _Mutation_updateManyUsers(ctx context.Context, field
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -2730,7 +2730,7 @@ func (ec *executionContext) _Mutation_deleteUsers(ctx context.Context, field gra
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -3573,7 +3573,7 @@ func (ec *executionContext) _Query_questions(ctx context.Context, field graphql.
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -3688,7 +3688,7 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}
@@ -3764,7 +3764,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 			return ec.directives.Authenticated(ctx, nil, directive0, yes)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐRole(ctx, "Admin")
 			if err != nil {
 				return nil, err
 			}

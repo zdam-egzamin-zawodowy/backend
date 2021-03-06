@@ -78,18 +78,18 @@ extend type Query {
     limit: Int
     offset: Int
     sort: [String!]
-  ): QuestionList! @authenticated(yes: true) @hasRole(role: ADMIN)
+  ): QuestionList! @authenticated(yes: true) @hasRole(role: Admin)
   generateTest(qualificationIDs: [ID!]!, limit: Int): [Question!]
 }
 
 extend type Mutation {
   createQuestion(input: QuestionInput!): Question
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   updateQuestion(id: ID!, input: QuestionInput!): Question
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
   deleteQuestions(ids: [ID!]!): [Question!]
     @authenticated(yes: true)
-    @hasRole(role: ADMIN)
+    @hasRole(role: Admin)
 }

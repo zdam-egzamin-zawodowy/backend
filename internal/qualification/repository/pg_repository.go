@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 
 	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
@@ -68,19 +70,28 @@ func (repo *pgRepository) UpdateMany(
 ) ([]*models.Qualification, error) {
 	items := []*models.Qualification{}
 	err := repo.RunInTransaction(ctx, func(tx *pg.Tx) error {
-		if _, err := tx.
+		if input.Name != nil || input.Code != nil || input.Description != nil || input.Formula != nil {
+			if _, err := tx.
+				Model(&models.Qualification{}).
+				Context(ctx).
+				Apply(input.ApplyUpdate).
+				Apply(f.Where).
+				Update(); err != nil && err != pg.ErrNoRows {
+				if strings.Contains(err.Error(), "name") {
+					return errorutils.Wrap(err, messageNameIsAlreadyTaken)
+				} else if strings.Contains(err.Error(), "code") {
+					return errorutils.Wrap(err, messageCodeIsAlreadyTaken)
+				}
+				return errorutils.Wrap(err, messageFailedToSaveModel)
+			}
+		}
+
+		if err := tx.
 			Model(&items).
 			Context(ctx).
-			Returning("*").
-			Apply(input.ApplyUpdate).
 			Apply(f.Where).
-			Update(); err != nil && err != pg.ErrNoRows {
-			if strings.Contains(err.Error(), "name") {
-				return errorutils.Wrap(err, messageNameIsAlreadyTaken)
-			} else if strings.Contains(err.Error(), "code") {
-				return errorutils.Wrap(err, messageCodeIsAlreadyTaken)
-			}
-			return errorutils.Wrap(err, messageFailedToSaveModel)
+			Select(); err != nil && err != pg.ErrNoRows {
+			return errorutils.Wrap(err, messageFailedToFetchModel)
 		}
 
 		qualificationIDs := make([]int, len(items))
@@ -107,7 +118,10 @@ func (repo *pgRepository) UpdateMany(
 						})
 					}
 				}
-				tx.Model(&toInsert).Insert()
+				_, err := tx.Model(&toInsert).Insert()
+				if err != nil {
+					logrus.Debug(errors.Wrap(err, "Couldn't insert []*models.QualificationToProfession{}"))
+				}
 			}
 		}
 

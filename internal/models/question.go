@@ -130,31 +130,31 @@ func (input *QuestionInput) ToQuestion() *Question {
 func (input *QuestionInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.Content != nil {
-			q.Set("content = ?", *input.Content)
+			q = q.Set("content = ?", *input.Content)
 		}
 		if input.From != nil {
-			q.Set("from = ?", *input.From)
+			q = q.Set("from = ?", *input.From)
 		}
 		if input.Explanation != nil {
-			q.Set("explanation = ?", *input.Explanation)
+			q = q.Set("explanation = ?", *input.Explanation)
 		}
 		if input.CorrectAnswer != nil {
-			q.Set("correct_answer = ?", *input.CorrectAnswer)
+			q = q.Set("correct_answer = ?", *input.CorrectAnswer)
 		}
 		if input.AnswerA != nil {
-			q.Set("answer_a = ?", *input.AnswerA)
+			q = q.Set("answer_a = ?", *input.AnswerA)
 		}
 		if input.AnswerB != nil {
-			q.Set("answer_b = ?", *input.AnswerB)
+			q = q.Set("answer_b = ?", *input.AnswerB)
 		}
 		if input.AnswerC != nil {
-			q.Set("answer_c = ?", *input.AnswerC)
+			q = q.Set("answer_c = ?", *input.AnswerC)
 		}
 		if input.AnswerD != nil {
-			q.Set("answer_d = ?", *input.AnswerD)
+			q = q.Set("answer_d = ?", *input.AnswerD)
 		}
 		if input.QualificationID != nil {
-			q.Set("qualification_id = ?", *input.QualificationID)
+			q = q.Set("qualification_id = ?", *input.QualificationID)
 		}
 	}
 

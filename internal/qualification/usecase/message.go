@@ -2,9 +2,9 @@ package usecase
 
 const (
 	messageInvalidID      = "Niepoprawne ID."
-	messageItemNotFound   = "Nie znaleziono zawodu."
+	messageItemNotFound   = "Nie znaleziono kwalifikacji."
 	messageEmptyPayload   = "Nie wprowadzono jakichkolwiek danych."
-	messageNameIsRequired = "Nazwa zawodu jest wymagana."
+	messageNameIsRequired = "Nazwa kwalifikacji jest wymagana."
 	messageCodeIsRequired = "Oznaczenie kwalifikacji jest wymagane."
-	messageNameIsTooLong  = "Nazwa zawodu może się składać z maksymalnie %d znaków."
+	messageNameIsTooLong  = "Nazwa kwalifikacji może się składać z maksymalnie %d znaków."
 )
