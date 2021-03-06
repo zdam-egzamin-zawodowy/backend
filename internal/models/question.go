@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -78,6 +79,23 @@ func (input *QuestionInput) IsEmpty() bool {
 		input.AnswerDImage == nil &&
 		input.Image == nil &&
 		input.QualificationID == nil
+}
+
+func (input *QuestionInput) Sanitize() *QuestionInput {
+	if input.Content != nil {
+		trimmed := strings.TrimSpace(*input.Content)
+		input.Content = &trimmed
+	}
+	if input.From != nil {
+		trimmed := strings.TrimSpace(*input.From)
+		input.From = &trimmed
+	}
+	if input.Explanation != nil {
+		trimmed := strings.TrimSpace(*input.Explanation)
+		input.Explanation = &trimmed
+	}
+
+	return input
 }
 
 func (input *QuestionInput) ToQuestion() *Question {
