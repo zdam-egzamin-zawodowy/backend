@@ -57,7 +57,6 @@ type ComplexityRoot struct {
 		DeleteQualifications func(childComplexity int, ids []int) int
 		DeleteQuestions      func(childComplexity int, ids []int) int
 		DeleteUsers          func(childComplexity int, ids []int) int
-		GenerateTest         func(childComplexity int, qualificationIDs []int, limit *int) int
 		SignIn               func(childComplexity int, email string, password string, staySignedIn *bool) int
 		UpdateManyUsers      func(childComplexity int, ids []int, input models.UserInput) int
 		UpdateProfession     func(childComplexity int, id int, input models.ProfessionInput) int
@@ -95,6 +94,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		GenerateTest   func(childComplexity int, qualificationIDs []int, limit *int) int
 		Me             func(childComplexity int) int
 		Profession     func(childComplexity int, id *int, slug *string) int
 		Professions    func(childComplexity int, filter *models.ProfessionFilter, limit *int, offset *int, sort []string) int
@@ -160,7 +160,6 @@ type MutationResolver interface {
 	CreateQuestion(ctx context.Context, input models.QuestionInput) (*models.Question, error)
 	UpdateQuestion(ctx context.Context, id int, input models.QuestionInput) (*models.Question, error)
 	DeleteQuestions(ctx context.Context, ids []int) ([]*models.Question, error)
-	GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*models.Question, error)
 	CreateUser(ctx context.Context, input models.UserInput) (*models.User, error)
 	UpdateUser(ctx context.Context, id int, input models.UserInput) (*models.User, error)
 	UpdateManyUsers(ctx context.Context, ids []int, input models.UserInput) ([]*models.User, error)
@@ -173,6 +172,7 @@ type QueryResolver interface {
 	Qualifications(ctx context.Context, filter *models.QualificationFilter, limit *int, offset *int, sort []string) (*QualificationList, error)
 	Qualification(ctx context.Context, id *int, slug *string) (*models.Qualification, error)
 	Questions(ctx context.Context, filter *models.QuestionFilter, limit *int, offset *int, sort []string) (*QuestionList, error)
+	GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*models.Question, error)
 	Users(ctx context.Context, filter *models.UserFilter, limit *int, offset *int, sort []string) (*UserList, error)
 	User(ctx context.Context, id int) (*models.User, error)
 	Me(ctx context.Context) (*models.User, error)
@@ -291,18 +291,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteUsers(childComplexity, args["ids"].([]int)), true
-
-	case "Mutation.generateTest":
-		if e.complexity.Mutation.GenerateTest == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_generateTest_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.GenerateTest(childComplexity, args["qualificationIDs"].([]int), args["limit"].(*int)), true
 
 	case "Mutation.signIn":
 		if e.complexity.Mutation.SignIn == nil {
@@ -487,6 +475,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.QualificationList.Total(childComplexity), true
+
+	case "Query.generateTest":
+		if e.complexity.Query.GenerateTest == nil {
+			break
+		}
+
+		args, err := ec.field_Query_generateTest_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GenerateTest(childComplexity, args["qualificationIDs"].([]int), args["limit"].(*int)), true
 
 	case "Query.me":
 		if e.complexity.Query.Me == nil {
@@ -1085,6 +1085,7 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): QuestionList! @authenticated(yes: true) @hasRole(role: ADMIN)
+  generateTest(qualificationIDs: [ID!]!, limit: Int): [Question!]
 }
 
 extend type Mutation {
@@ -1097,7 +1098,6 @@ extend type Mutation {
   deleteQuestions(ids: [ID!]!): [Question!]
     @authenticated(yes: true)
     @hasRole(role: ADMIN)
-  generateTest(qualificationIDs: [ID!]!, limit: Int): [Question!]
 }
 `, BuiltIn: false},
 	{Name: "schema/scalars.graphql", Input: `scalar Time
@@ -1354,30 +1354,6 @@ func (ec *executionContext) field_Mutation_deleteUsers_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_generateTest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 []int
-	if tmp, ok := rawArgs["qualificationIDs"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qualificationIDs"))
-		arg0, err = ec.unmarshalNID2ᚕintᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["qualificationIDs"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["limit"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["limit"] = arg1
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_signIn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1543,6 +1519,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_generateTest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []int
+	if tmp, ok := rawArgs["qualificationIDs"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qualificationIDs"))
+		arg0, err = ec.unmarshalNID2ᚕintᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["qualificationIDs"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg1
 	return args, nil
 }
 
@@ -2459,45 +2459,6 @@ func (ec *executionContext) _Mutation_deleteQuestions(ctx context.Context, field
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/zdam-egzamin-zawodowy/backend/internal/models.Question`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*models.Question)
-	fc.Result = res
-	return ec.marshalOQuestion2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐQuestionᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_generateTest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_generateTest_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().GenerateTest(rctx, args["qualificationIDs"].([]int), args["limit"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3647,6 +3608,45 @@ func (ec *executionContext) _Query_questions(ctx context.Context, field graphql.
 	res := resTmp.(*QuestionList)
 	fc.Result = res
 	return ec.marshalNQuestionList2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋgraphqlᚋgeneratedᚐQuestionList(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_generateTest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_generateTest_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GenerateTest(rctx, args["qualificationIDs"].([]int), args["limit"].(*int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Question)
+	fc.Result = res
+	return ec.marshalOQuestion2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐQuestionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_users(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6978,8 +6978,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_updateQuestion(ctx, field)
 		case "deleteQuestions":
 			out.Values[i] = ec._Mutation_deleteQuestions(ctx, field)
-		case "generateTest":
-			out.Values[i] = ec._Mutation_generateTest(ctx, field)
 		case "createUser":
 			out.Values[i] = ec._Mutation_createUser(ctx, field)
 		case "updateUser":
@@ -7231,6 +7229,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
+				return res
+			})
+		case "generateTest":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_generateTest(ctx, field)
 				return res
 			})
 		case "users":

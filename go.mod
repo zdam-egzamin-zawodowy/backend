@@ -11,7 +11,9 @@ require (
 	github.com/go-pg/pg/v10 v10.7.7
 	github.com/google/uuid v1.2.0
 	github.com/gosimple/slug v1.9.0
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/joho/godotenv v1.3.0
+	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sethvargo/go-password v0.2.0
 	github.com/sirupsen/logrus v1.8.0

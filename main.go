@@ -7,14 +7,30 @@ import (
 	"os/signal"
 	"time"
 
+	graphqlhttpdelivery "github.com/zdam-egzamin-zawodowy/backend/internal/graphql/delivery/http"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/directive"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/resolvers"
+
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
+	authusecase "github.com/zdam-egzamin-zawodowy/backend/internal/auth/usecase"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/db"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/dataloader"
+	professionrepository "github.com/zdam-egzamin-zawodowy/backend/internal/profession/repository"
+	professionusecase "github.com/zdam-egzamin-zawodowy/backend/internal/profession/usecase"
+	qualificationrepository "github.com/zdam-egzamin-zawodowy/backend/internal/qualification/repository"
+	qualificationusecase "github.com/zdam-egzamin-zawodowy/backend/internal/qualification/usecase"
+	questionrepository "github.com/zdam-egzamin-zawodowy/backend/internal/question/repository"
+	questionusecase "github.com/zdam-egzamin-zawodowy/backend/internal/question/usecase"
+	userrepository "github.com/zdam-egzamin-zawodowy/backend/internal/user/repository"
+	userusecase "github.com/zdam-egzamin-zawodowy/backend/internal/user/usecase"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/mode"
 	envutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/env"
 )
@@ -30,7 +46,11 @@ func init() {
 }
 
 func main() {
-	_, err := db.New(&db.Config{
+	fileStorage := filestorage.New(&filestorage.Config{
+		BasePath: os.Getenv("FILE_STORAGE_PATH"),
+	})
+
+	dbConn, err := db.New(&db.Config{
 		DebugHook: envutils.GetenvBool("LOG_DB_QUERIES"),
 	})
 	if err != nil {
@@ -38,7 +58,85 @@ func main() {
 	}
 	logrus.Info("Database connection established")
 
+	//repositories
+	userRepository, err := userrepository.NewPGRepository(&userrepository.PGRepositoryConfig{
+		DB: dbConn,
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	professionRepository, err := professionrepository.NewPGRepository(&professionrepository.PGRepositoryConfig{
+		DB: dbConn,
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	qualificationRepository, err := qualificationrepository.NewPGRepository(&qualificationrepository.PGRepositoryConfig{
+		DB: dbConn,
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	questionRepository, err := questionrepository.NewPGRepository(&questionrepository.PGRepositoryConfig{
+		DB:          dbConn,
+		FileStorage: fileStorage,
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	//usecases
+	authUsecase, err := authusecase.New(&authusecase.Config{
+		UserRepository: userRepository,
+		TokenGenerator: jwt.NewTokenGenerator(os.Getenv("ACCESS_SECRET")),
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	userUsecase, err := userusecase.New(&userusecase.Config{
+		UserRepository: userRepository,
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	professionUsecase, err := professionusecase.New(&professionusecase.Config{
+		ProfessionRepository: professionRepository,
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	qualificationUsecase, err := qualificationusecase.New(&qualificationusecase.Config{
+		QualificationRepository: qualificationRepository,
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	questionUsecase, err := questionusecase.New(&questionusecase.Config{
+		QuestionRepository: questionRepository,
+	})
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	router := setupRouter()
+	graphql := router.Group("")
+	graphql.Use(
+		middleware.GinContextToContext(),
+		middleware.DataLoaderToContext(dataloader.Config{
+			QualificationRepo: qualificationRepository,
+		}),
+		middleware.Authenticate(authUsecase),
+	)
+	graphqlhttpdelivery.Attach(graphql, graphqlhttpdelivery.Config{
+		Resolver: &resolvers.Resolver{
+			AuthUsecase:          authUsecase,
+			UserUsecase:          userUsecase,
+			ProfessionUsecase:    professionUsecase,
+			QualificationUsecase: qualificationUsecase,
+			QuestionUsecase:      questionUsecase,
+		},
+		Directive: &directive.Directive{},
+	})
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: router,

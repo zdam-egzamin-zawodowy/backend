@@ -92,8 +92,8 @@ func (repo *pgRepository) UpdateMany(
 			if len(input.DissociateProfession) > 0 {
 				tx.
 					Model(&models.QualificationToProfession{}).
-					Where(sqlutils.BuildConditionArray("profession_id"), input.DissociateProfession).
-					Where(sqlutils.BuildConditionArray("qualification_id"), qualificationIDs).
+					Where(sqlutils.BuildConditionArray("profession_id"), pg.Array(input.DissociateProfession)).
+					Where(sqlutils.BuildConditionArray("qualification_id"), pg.Array(qualificationIDs)).
 					Delete()
 			}
 

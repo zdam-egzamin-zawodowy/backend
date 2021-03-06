@@ -27,7 +27,7 @@ func (r *mutationResolver) DeleteQuestions(ctx context.Context, ids []int) ([]*m
 	})
 }
 
-func (r *mutationResolver) GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*models.Question, error) {
+func (r *queryResolver) GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*models.Question, error) {
 	return r.QuestionUsecase.GenerateTest(ctx, &question.GenerateTestConfig{
 		Qualifications: qualificationIDs,
 		Limit:          utils.SafeIntPointer(limit, question.TestMaxLimit),

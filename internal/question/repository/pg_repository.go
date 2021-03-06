@@ -140,7 +140,8 @@ func (repo *pgRepository) GenerateTest(ctx context.Context, cfg *question.Genera
 	subquery := repo.
 		Model(&models.Question{}).
 		Column("id").
-		Where(sqlutils.BuildConditionArray("qualification_id"), cfg.Qualifications).
+		Where(sqlutils.BuildConditionArray("qualification_id"), pg.Array(cfg.Qualifications)).
+		OrderExpr("random()").
 		Limit(cfg.Limit)
 	items := []*models.Question{}
 	if err := repo.

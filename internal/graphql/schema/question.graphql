@@ -79,6 +79,7 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): QuestionList! @authenticated(yes: true) @hasRole(role: ADMIN)
+  generateTest(qualificationIDs: [ID!]!, limit: Int): [Question!]
 }
 
 extend type Mutation {
@@ -91,5 +92,4 @@ extend type Mutation {
   deleteQuestions(ids: [ID!]!): [Question!]
     @authenticated(yes: true)
     @hasRole(role: ADMIN)
-  generateTest(qualificationIDs: [ID!]!, limit: Int): [Question!]
 }
