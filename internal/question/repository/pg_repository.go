@@ -11,6 +11,7 @@ import (
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 
 	"github.com/go-pg/pg/v10"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/db"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
 )
@@ -116,6 +117,12 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) 
 		Context(ctx).
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
+		Apply(db.Sort{
+			Relationships: map[string]string{
+				"qualification": "qualification",
+			},
+			Orders: cfg.Sort,
+		}.Apply).
 		Apply(cfg.Filter.Where)
 
 	if cfg.Count {

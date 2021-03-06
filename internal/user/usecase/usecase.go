@@ -79,7 +79,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*mode
 			Count: true,
 		}
 	}
-	cfg.Sort = sqlutils.SanitizeSortExpressions(cfg.Sort)
+	cfg.Sort = sqlutils.SanitizeSorts(cfg.Sort)
 	return ucase.userRepository.Fetch(ctx, cfg)
 }
 

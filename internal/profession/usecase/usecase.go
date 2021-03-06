@@ -65,7 +65,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([
 			Count: true,
 		}
 	}
-	cfg.Sort = sqlutils.SanitizeSortExpressions(cfg.Sort)
+	cfg.Sort = sqlutils.SanitizeSorts(cfg.Sort)
 	return ucase.professionRepository.Fetch(ctx, cfg)
 }
 

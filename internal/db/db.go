@@ -14,12 +14,6 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 )
 
-const (
-	extensions = `
-		CREATE EXTENSION IF NOT EXISTS tsm_system_rows;
-	`
-)
-
 var log = logrus.WithField("package", "internal/db")
 
 type Config struct {
@@ -60,10 +54,6 @@ func prepareOptions() *pg.Options {
 
 func createSchema(db *pg.DB) error {
 	return db.RunInTransaction(context.Background(), func(tx *pg.Tx) error {
-		if _, err := tx.Exec(extensions); err != nil {
-			return errors.Wrap(err, "createSchema")
-		}
-
 		modelsToCreate := []interface{}{
 			(*models.User)(nil),
 			(*models.Profession)(nil),

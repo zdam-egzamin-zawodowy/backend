@@ -8,16 +8,18 @@ import (
 )
 
 var (
-	sortexprRegex = regexp.MustCompile(`^[\p{L}\_\.]+$`)
+	sortRegex = regexp.MustCompile(`^[\p{L}\_\.]+$`)
 )
 
-func SanitizeSortExpression(expr string) string {
-	trimmed := strings.TrimSpace(expr)
+func SanitizeSort(sort string) string {
+	trimmed := strings.TrimSpace(sort)
 	splitted := strings.Split(trimmed, " ")
 	length := len(splitted)
-	if length != 2 || !sortexprRegex.Match([]byte(splitted[0])) {
+
+	if length != 2 || !sortRegex.Match([]byte(splitted[0])) {
 		return ""
 	}
+
 	table := ""
 	column := splitted[0]
 	if strings.Contains(splitted[0], ".") {
@@ -25,17 +27,19 @@ func SanitizeSortExpression(expr string) string {
 		table = underscore(columnAndTable[0]) + "."
 		column = columnAndTable[1]
 	}
-	keyword := "ASC"
+
+	direction := "ASC"
 	if strings.ToUpper(splitted[1]) == "DESC" {
-		keyword = "DESC"
+		direction = "DESC"
 	}
-	return strings.ToLower(table+underscore(column)) + " " + keyword
+
+	return strings.ToLower(table+underscore(column)) + " " + direction
 }
 
-func SanitizeSortExpressions(exprs []string) []string {
+func SanitizeSorts(sorts []string) []string {
 	sanitizedExprs := []string{}
-	for _, expr := range exprs {
-		sanitized := SanitizeSortExpression(expr)
+	for _, sort := range sorts {
+		sanitized := SanitizeSort(sort)
 		if sanitized != "" {
 			sanitizedExprs = append(sanitizedExprs, sanitized)
 		}
