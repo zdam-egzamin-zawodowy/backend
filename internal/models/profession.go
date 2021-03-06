@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/go-pg/pg/v10"
@@ -42,6 +43,19 @@ type ProfessionInput struct {
 
 func (input *ProfessionInput) IsEmpty() bool {
 	return input == nil && input.Name == nil && input.Description == nil
+}
+
+func (input *ProfessionInput) Sanitize() *ProfessionInput {
+	if input.Name != nil {
+		trimmed := strings.TrimSpace(*input.Name)
+		input.Name = &trimmed
+	}
+	if input.Description != nil {
+		trimmed := strings.TrimSpace(*input.Description)
+		input.Description = &trimmed
+	}
+
+	return input
 }
 
 func (input *ProfessionInput) ToProfession() *Profession {

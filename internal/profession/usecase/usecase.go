@@ -27,7 +27,7 @@ func New(cfg *Config) (profession.Usecase, error) {
 }
 
 func (ucase *usecase) Store(ctx context.Context, input *models.ProfessionInput) (*models.Profession, error) {
-	if err := ucase.validateInput(input, validateOptions{false}); err != nil {
+	if err := ucase.validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.professionRepository.Store(ctx, input)
@@ -37,7 +37,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.P
 	if id <= 0 {
 		return nil, fmt.Errorf(messageInvalidID)
 	}
-	if err := ucase.validateInput(input, validateOptions{true}); err != nil {
+	if err := ucase.validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
 	}
 	items, err := ucase.professionRepository.UpdateMany(ctx,
