@@ -1,0 +1,61 @@
+type Profession {
+  id: ID!
+  slug: String!
+  name: String!
+  description: String
+  createdAt: Time!
+}
+
+type ProfessionList {
+  total: Int!
+  items: [Profession!]
+}
+
+input ProfessionInput {
+  name: String
+  description: String
+}
+
+input ProfessionFilter {
+  id: [ID!]
+  idNEQ: [ID!]
+
+  slug: [String!]
+  slugNEQ: [String!]
+
+  name: [String!]
+  nameNEQ: [String!]
+  nameIEQ: String
+  nameMATCH: String
+
+  descriptionIEQ: String
+  descriptionMATCH: String
+
+  createdAt: Time
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+}
+
+extend type Query {
+  professions(
+    filter: ProfessionFilter
+    limit: Int
+    offset: Int
+    sort: [String!]
+  ): ProfessionList!
+  profession(id: Int, slug: String): Profession
+}
+
+extend type Mutation {
+  createProfession(input: ProfessionInput!): Profession
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  updateProfession(id: ID!, input: ProfessionInput!): Profession
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  deleteProfessions(ids: [ID!]!): [Profession!]
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+}
