@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -30,33 +31,71 @@ type Question struct {
 	QualificationID int            `pg:",unique:group_1,on_delete:CASCADE" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
 	Qualification   *Qualification `pg:"rel:has-one" json:"qualification" xml:"qualification" gqlgen:"qualification"`
 	CreatedAt       time.Time      `json:"createdAt,omitempty" pg:"default:now()" xml:"createdAt" gqlgen:"createdAt"`
+	UpdatedAt       time.Time      `pg:"default:now()" json:"updatedAt" xml:"updatedAt" gqlgen:"updatedAt"`
 }
 
 func (q *Question) BeforeInsert(ctx context.Context) (context.Context, error) {
 	q.CreatedAt = time.Now()
+	q.UpdatedAt = time.Now()
 
 	return ctx, nil
 }
 
 type QuestionInput struct {
-	Content          *string         `json:"content" xml:"content" gqlgen:"content"`
-	From             *string         `json:"from" xml:"from" gqlgen:"from"`
-	Explanation      *string         `json:"explanation" xml:"explanation" gqlgen:"explanation"`
-	CorrectAnswer    *Answer         `json:"correctAnswer" xml:"correctAnswer" gqlgen:"correctAnswer"`
-	AnswerA          *Answer         `gqlgen:"answerA" json:"answerA" xml:"answerA"`
-	AnswerB          *Answer         `gqlgen:"answerB" json:"answerB" xml:"answerB"`
-	AnswerC          *Answer         `gqlgen:"answerC" json:"answerC" xml:"answerC"`
-	AnswerD          *Answer         `gqlgen:"answerD" json:"answerD" xml:"answerD"`
-	QualificationID  *int            `gqlgen:"qualificationID" json:"qualificationID" xml:"qualificationID"`
-	Image            *graphql.Upload `json:"image" xml:"image" gqlgen:"image"`
-	AnswerAImage     *graphql.Upload `json:"answerAImage" gqlgen:"answerAImage" xml:"answerAImage"`
-	AnswerAImagePath *string         `json:"answerAImagePath" gqlgen:"answerAImagePath" xml:"answerAImagePath"`
-	AnswerBImage     *graphql.Upload `json:"answerBImage" gqlgen:"answerBImage" xml:"answerBImage"`
-	AnswerBImagePath *string         `json:"answerBImagePath" gqlgen:"answerBImagePath" xml:"answerBImagePath"`
-	AnswerCImage     *graphql.Upload `json:"answerCImage" gqlgen:"answerCImage" xml:"answerCImage"`
-	AnswerCImagePath *string         `json:"answerCImagePath" gqlgen:"answerCImagePath" xml:"answerCImagePath"`
-	AnswerDImage     *graphql.Upload `json:"answerDImage" gqlgen:"answerDImage" xml:"answerDImage"`
-	AnswerDImagePath *string         `json:"answerDImagePath" gqlgen:"answerDImagePath" xml:"answerDImagePath"`
+	Content            *string         `json:"content" xml:"content" gqlgen:"content"`
+	From               *string         `json:"from" xml:"from" gqlgen:"from"`
+	Explanation        *string         `json:"explanation" xml:"explanation" gqlgen:"explanation"`
+	CorrectAnswer      *Answer         `json:"correctAnswer" xml:"correctAnswer" gqlgen:"correctAnswer"`
+	AnswerA            *Answer         `gqlgen:"answerA" json:"answerA" xml:"answerA"`
+	AnswerB            *Answer         `gqlgen:"answerB" json:"answerB" xml:"answerB"`
+	AnswerC            *Answer         `gqlgen:"answerC" json:"answerC" xml:"answerC"`
+	AnswerD            *Answer         `gqlgen:"answerD" json:"answerD" xml:"answerD"`
+	QualificationID    *int            `gqlgen:"qualificationID" json:"qualificationID" xml:"qualificationID"`
+	Image              *graphql.Upload `json:"image" xml:"image" gqlgen:"image"`
+	DeleteImage        *bool           `json:"deleteImage" xml:"deleteImage" gqlgen:"deleteImage"`
+	AnswerAImage       *graphql.Upload `json:"answerAImage" gqlgen:"answerAImage" xml:"answerAImage"`
+	DeleteAnswerAImage *bool           `json:"deleteAnswerAImage" xml:"deleteAnswerAImage" gqlgen:"deleteAnswerAImage"`
+	AnswerBImage       *graphql.Upload `json:"answerBImage" gqlgen:"answerBImage" xml:"answerBImage"`
+	DeleteAnswerBImage *bool           `json:"deleteAnswerBImage" xml:"deleteAnswerBImage" gqlgen:"deleteAnswerBImage"`
+	AnswerCImage       *graphql.Upload `json:"answerCImage" gqlgen:"answerCImage" xml:"answerCImage"`
+	DeleteAnswerCImage *bool           `json:"deleteAnswerCImage" xml:"deleteAnswerCImage" gqlgen:"deleteAnswerCImage"`
+	AnswerDImage       *graphql.Upload `json:"answerDImage" gqlgen:"answerDImage" xml:"answerDImage"`
+	DeleteAnswerDImage *bool           `json:"deleteAnswerDImage" xml:"deleteAnswerDImage" gqlgen:"deleteAnswerDImage"`
+}
+
+func (input *QuestionInput) IsEmpty() bool {
+	return input == nil &&
+		input.Content == nil &&
+		input.From == nil &&
+		input.Explanation == nil &&
+		input.CorrectAnswer == nil &&
+		input.AnswerA == nil &&
+		input.AnswerAImage == nil &&
+		input.AnswerB == nil &&
+		input.AnswerBImage == nil &&
+		input.AnswerC == nil &&
+		input.AnswerCImage == nil &&
+		input.AnswerD == nil &&
+		input.AnswerDImage == nil &&
+		input.Image == nil &&
+		input.QualificationID == nil
+}
+
+func (input *QuestionInput) Sanitize() *QuestionInput {
+	if input.Content != nil {
+		trimmed := strings.TrimSpace(*input.Content)
+		input.Content = &trimmed
+	}
+	if input.From != nil {
+		trimmed := strings.TrimSpace(*input.From)
+		input.From = &trimmed
+	}
+	if input.Explanation != nil {
+		trimmed := strings.TrimSpace(*input.Explanation)
+		input.Explanation = &trimmed
+	}
+
+	return input
 }
 
 func (input *QuestionInput) ToQuestion() *Question {
@@ -76,31 +115,53 @@ func (input *QuestionInput) ToQuestion() *Question {
 	if input.AnswerA != nil {
 		q.AnswerA = *input.AnswerA
 	}
-	if input.AnswerAImagePath != nil {
-		q.AnswerAImage = *input.AnswerAImagePath
-	}
 	if input.AnswerB != nil {
 		q.AnswerB = *input.AnswerB
-	}
-	if input.AnswerBImagePath != nil {
-		q.AnswerBImage = *input.AnswerBImagePath
 	}
 	if input.AnswerC != nil {
 		q.AnswerC = *input.AnswerC
 	}
-	if input.AnswerCImagePath != nil {
-		q.AnswerCImage = *input.AnswerCImagePath
-	}
 	if input.AnswerD != nil {
 		q.AnswerD = *input.AnswerD
-	}
-	if input.AnswerDImagePath != nil {
-		q.AnswerDImage = *input.AnswerDImagePath
 	}
 	if input.QualificationID != nil {
 		q.QualificationID = *input.QualificationID
 	}
 	return q
+}
+
+func (input *QuestionInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
+	if !input.IsEmpty() {
+		if input.Content != nil {
+			q.Set("content = ?", *input.Content)
+		}
+		if input.From != nil {
+			q.Set("from = ?", *input.From)
+		}
+		if input.Explanation != nil {
+			q.Set("explanation = ?", *input.Explanation)
+		}
+		if input.CorrectAnswer != nil {
+			q.Set("correct_answer = ?", *input.CorrectAnswer)
+		}
+		if input.AnswerA != nil {
+			q.Set("answer_a = ?", *input.AnswerA)
+		}
+		if input.AnswerB != nil {
+			q.Set("answer_b = ?", *input.AnswerB)
+		}
+		if input.AnswerC != nil {
+			q.Set("answer_c = ?", *input.AnswerC)
+		}
+		if input.AnswerD != nil {
+			q.Set("answer_d = ?", *input.AnswerD)
+		}
+		if input.QualificationID != nil {
+			q.Set("qualification_id = ?", *input.QualificationID)
+		}
+	}
+
+	return q, nil
 }
 
 type QuestionFilter struct {
@@ -124,6 +185,10 @@ type QuestionFilter struct {
 }
 
 func (f *QuestionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, error) {
+	if f == nil {
+		return q, nil
+	}
+
 	if !isZero(f.ID) {
 		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
 	}

@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	EnvMode         = "MODE"
+	EnvKey          = "MODE"
 	DevelopmentMode = "development"
 	ProductionMode  = "production"
 	TestMode        = "test"
@@ -14,7 +14,7 @@ const (
 var mode = DevelopmentMode
 
 func init() {
-	Set(os.Getenv(EnvMode))
+	Set(os.Getenv(EnvKey))
 }
 
 func Set(value string) {

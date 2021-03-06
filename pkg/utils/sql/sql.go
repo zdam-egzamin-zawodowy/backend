@@ -5,9 +5,9 @@ import (
 	"strings"
 )
 
-func AddAliasToColumnName(column, prefix string) string {
-	if prefix != "" && !strings.HasPrefix(column, prefix+".") {
-		column = WrapStringInDoubleQuotes(prefix) + "." + WrapStringInDoubleQuotes(column)
+func AddAliasToColumnName(column, alias string) string {
+	if alias != "" && !strings.HasPrefix(column, alias+".") {
+		column = WrapStringInDoubleQuotes(alias) + "." + WrapStringInDoubleQuotes(column)
 	} else {
 		column = WrapStringInDoubleQuotes(column)
 	}
@@ -44,6 +44,10 @@ func BuildConditionMatch(column string) string {
 
 func BuildConditionIEQ(column string) string {
 	return column + " ILIKE ?"
+}
+
+func BuildConditionIn(column string) string {
+	return column + " IN (?)"
 }
 
 func BuildConditionArray(column string) string {

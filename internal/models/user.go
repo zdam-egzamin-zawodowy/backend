@@ -2,13 +2,13 @@ package models
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
-	"github.com/gosimple/slug"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -17,8 +17,7 @@ type User struct {
 	tableName struct{} `pg:"alias:user"`
 
 	ID                            int       `json:"id" pg:",pk" xml:"id" gqlgen:"id"`
-	Slug                          string    `json:"slug" pg:",unique" xml:"slug" gqlgen:"slug"`
-	DisplayName                   string    `json:"displayName" pg:",use_zero" xml:"displayName" gqlgen:"displayName"`
+	DisplayName                   string    `json:"displayName" pg:",use_zero,notnull" xml:"displayName" gqlgen:"displayName"`
 	Password                      string    `json:"-" gqlgen:"-" xml:"password"`
 	Email                         string    `json:"email" pg:",unique" xml:"email" gqlgen:"email"`
 	CreatedAt                     time.Time `json:"createdAt" pg:"default:now()" xml:"createdAt" gqlgen:"createdAt"`
@@ -38,19 +37,6 @@ func (u *User) BeforeInsert(ctx context.Context) (context.Context, error) {
 		return ctx, err
 	}
 	u.Password = string(hashedPassword)
-	u.Slug = slug.Make(u.DisplayName)
-
-	return ctx, nil
-}
-
-func (u *User) BeforeUpdate(ctx context.Context) (context.Context, error) {
-	if cost, _ := bcrypt.Cost([]byte(u.Password)); u.Password != "" && cost == 0 {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return ctx, err
-		}
-		u.Password = string(hashedPassword)
-	}
 
 	return ctx, nil
 }
@@ -73,6 +59,15 @@ type UserInput struct {
 	Activated   *bool   `json:"activated" xml:"activated" gqlgen:"activated"`
 }
 
+func (input *UserInput) IsEmpty() bool {
+	return input == nil &&
+		input.DisplayName == nil &&
+		input.Password == nil &&
+		input.Email == nil &&
+		input.Role == nil &&
+		input.Activated == nil
+}
+
 func (input *UserInput) ToUser() *User {
 	u := &User{
 		Activated: input.Activated,
@@ -92,12 +87,58 @@ func (input *UserInput) ToUser() *User {
 	return u
 }
 
+func (input *UserInput) Sanitize() *UserInput {
+	if input.DisplayName != nil {
+		trimmed := strings.TrimSpace(*input.DisplayName)
+		input.DisplayName = &trimmed
+	}
+
+	if input.Password != nil {
+		sanitized := strings.ToLower(strings.TrimSpace(*input.Password))
+		input.Password = &sanitized
+	}
+
+	if input.Email != nil {
+		sanitized := strings.ToLower(strings.TrimSpace(*input.Email))
+		input.Email = &sanitized
+	}
+
+	return input
+}
+
+func (input *UserInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
+	if !input.IsEmpty() {
+		if input.DisplayName != nil {
+			q.Set("display_name = ?", *input.DisplayName)
+		}
+
+		if input.Password != nil {
+			hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), bcrypt.DefaultCost)
+			if err != nil {
+				return q, err
+			}
+			q.Set("password = ?", string(hashedPassword))
+		}
+
+		if input.Email != nil {
+			q.Set("name = ?", *input.Email)
+		}
+
+		if input.Role != nil {
+			q.Set("role = ?", *input.Role)
+		}
+
+		if input.Activated != nil {
+			q.Set("activated = ?", *input.Activated)
+		}
+	}
+
+	return q, nil
+}
+
 type UserFilter struct {
 	ID    []int `json:"id" xml:"id" gqlgen:"id"`
 	IDNEQ []int `json:"idNEQ" xml:"idNEQ" gqlgen:"idNEQ"`
-
-	Slug    []string `json:"slug" xml:"slug" gqlgen:"slug"`
-	SlugNEQ []string `json:"slugNEQ" xml:"slugNEQ" gqlgen:"slugNEQ"`
 
 	Activated *bool `json:"activated" xml:"activated" gqlgen:"activated"`
 
@@ -122,18 +163,15 @@ type UserFilter struct {
 }
 
 func (f *UserFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, error) {
+	if f == nil {
+		return q, nil
+	}
+
 	if !isZero(f.ID) {
 		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
 	}
 	if !isZero(f.IDNEQ) {
 		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.IDNEQ))
-	}
-
-	if !isZero(f.Slug) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("slug", alias)), pg.Array(f.Slug))
-	}
-	if !isZero(f.SlugNEQ) {
-		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("slug", alias)), pg.Array(f.SlugNEQ))
 	}
 
 	if !isZero(f.Activated) {

@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/go-pg/pg/v10"
@@ -38,9 +39,9 @@ func (q *Qualification) BeforeUpdate(ctx context.Context) (context.Context, erro
 }
 
 type QualificationToProfession struct {
-	QualificationID int            `pg:"on_delete:CASCADE" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
+	QualificationID int            `pg:"on_delete:CASCADE,unique:group_1" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
 	Qualification   *Qualification `pg:"rel:has-one" json:"qualification" xml:"qualification" gqlgen:"qualification"`
-	ProfessionID    int            `pg:"on_delete:CASCADE" json:"professionID" xml:"professionID" gqlgen:"professionID"`
+	ProfessionID    int            `pg:"on_delete:CASCADE,unique:group_1" json:"professionID" xml:"professionID" gqlgen:"professionID"`
 	Profession      *Qualification `pg:"rel:has-one" json:"profession" xml:"profession" gqlgen:"profession"`
 }
 
@@ -51,6 +52,37 @@ type QualificationInput struct {
 	Formula              *string `json:"formula" xml:"formula" gqlgen:"formula"`
 	AssociateProfession  []int   `json:"associateProfession" xml:"associateProfession" gqlgen:"associateProfession"`
 	DissociateProfession []int   `json:"dissociateProfession" xml:"dissociateProfession" gqlgen:"dissociateProfession"`
+}
+
+func (input *QualificationInput) IsEmpty() bool {
+	return input == nil &&
+		input.Name == nil &&
+		input.Code == nil &&
+		input.Formula == nil &&
+		input.Description == nil &&
+		len(input.AssociateProfession) == 0 &&
+		len(input.DissociateProfession) == 0
+}
+
+func (input *QualificationInput) Sanitize() *QualificationInput {
+	if input.Name != nil {
+		trimmed := strings.TrimSpace(*input.Name)
+		input.Name = &trimmed
+	}
+	if input.Description != nil {
+		trimmed := strings.TrimSpace(*input.Description)
+		input.Description = &trimmed
+	}
+	if input.Code != nil {
+		trimmed := strings.TrimSpace(*input.Code)
+		input.Code = &trimmed
+	}
+	if input.Formula != nil {
+		trimmed := strings.TrimSpace(*input.Formula)
+		input.Formula = &trimmed
+	}
+
+	return input
 }
 
 func (input *QualificationInput) ToQualification() *Qualification {
@@ -70,6 +102,19 @@ func (input *QualificationInput) ToQualification() *Qualification {
 	return q
 }
 
+func (input *QualificationInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
+	if !input.IsEmpty() {
+		if input.Name != nil {
+			q.Set("name = ?", *input.Name)
+		}
+		if input.Description != nil {
+			q.Set("description = ?", *input.Description)
+		}
+	}
+
+	return q, nil
+}
+
 type QualificationFilterOr struct {
 	NameMATCH string `json:"nameMATCH" xml:"nameMATCH" gqlgen:"nameMATCH"`
 	NameIEQ   string `gqlgen:"nameIEQ" json:"nameIEQ" xml:"nameIEQ"`
@@ -79,6 +124,10 @@ type QualificationFilterOr struct {
 }
 
 func (f *QualificationFilterOr) WhereWithAlias(q *orm.Query, alias string) *orm.Query {
+	if f == nil {
+		return q
+	}
+
 	q = q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
 		if !isZero(f.NameMATCH) {
 			q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("name", alias)), f.NameMATCH)
@@ -134,6 +183,10 @@ type QualificationFilter struct {
 }
 
 func (f *QualificationFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, error) {
+	if f == nil {
+		return q, nil
+	}
+
 	if !isZero(f.ID) {
 		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
 	}
