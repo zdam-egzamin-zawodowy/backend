@@ -11,3 +11,57 @@ resolver:
   package: resolvers
   type: Resolver
 struct_tag: gqlgen
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Role:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.Role
+  User:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.User
+  UserFilter:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.UserFilter
+  UserInput:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.UserInput
+  UpdateManyUsersInput:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.UserInput
+  Profession:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.Profession
+  ProfessionFilter:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.ProfessionFilter
+  ProfessionInput:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.ProfessionInput
+  Qualification:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.Qualification
+  QualificationFilter:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.QualificationFilter
+  QualificationFilterOr:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.QualificationFilterOr
+  QualificationInput:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.QualificationInput
+  Answer:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.Answer
+  Question:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.Question
+  QuestionFilter:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.QuestionFilter
+  QuestionInput:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.QuestionInput

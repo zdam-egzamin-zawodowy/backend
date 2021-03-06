@@ -10,8 +10,8 @@ import (
 type Role string
 
 const (
-	RoleUser  Role = "user"
 	RoleAdmin Role = "admin"
+	RoleUser  Role = "user"
 )
 
 func (role Role) IsValid() bool {

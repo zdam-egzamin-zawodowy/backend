@@ -1,0 +1,95 @@
+enum Answer {
+  A
+  B
+  C
+  D
+}
+
+type Question {
+  id: ID!
+  from: String
+  content: String!
+  explanation: String
+  correctAnswer: Answer!
+  image: String
+  answerA: Answer
+  answerAImage: String
+  answerB: Answer
+  answerBImage: String
+  answerC: Answer
+  answerCImage: String
+  answerD: Answer
+  answerDImage: String
+  qualification: Qualification @goField(forceResolver: true)
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type QuestionList {
+  total: Int!
+  items: [Question!]
+}
+
+input QuestionInput {
+  content: String
+  from: String
+  explanation: String
+  correctAnswer: Answer
+  qualificationID: Int
+  image: Upload
+  deleteImage: Boolean
+  answerA: Answer
+  answerAImage: Upload
+  deleteAnswerAImage: Boolean
+  answerB: Answer
+  answerBImage: Upload
+  deleteAnswerBImage: Boolean
+  answerC: Answer
+  answerCImage: Upload
+  deleteAnswerCImage: Boolean
+  answerD: Answer
+  answerDImage: Upload
+  deleteAnswerDImage: Boolean
+}
+
+input QuestionFilter {
+  id: [ID!]
+  idNEQ: [ID!]
+
+  from: [String!]
+
+  contentIEQ: String
+  contentMATCH: String
+
+  qualificationID: [Int!]
+  qualificationIDNEQ: [Int!]
+  qualificationFilter: QualificationFilter
+
+  createdAt: Time
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+}
+
+extend type Query {
+  questions(
+    filter: QuestionFilter
+    limit: Int
+    offset: Int
+    sort: [String!]
+  ): QuestionList! @authenticated(yes: true) @hasRole(role: ADMIN)
+}
+
+extend type Mutation {
+  createQuestion(input: QuestionInput!): Question
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  updateQuestion(id: ID!, input: QuestionInput!): Question
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  deleteQuestions(ids: [ID!]!): [Question!]
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  generateTest(qualificationIDs: [ID!]!, limit: Int): [Question!]
+}

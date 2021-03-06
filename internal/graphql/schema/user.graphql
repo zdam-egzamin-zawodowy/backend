@@ -1,0 +1,85 @@
+enum Role {
+  ADMIN
+  USER
+}
+
+type User {
+  id: ID!
+  displayName: String!
+  role: Role!
+  email: String!
+  activated: Boolean!
+  createdAt: Time!
+}
+
+type UserList {
+  total: Int!
+  items: [User!]
+}
+
+input UserInput {
+  displayName: String
+  password: String
+  email: String
+  role: Role
+  activated: Boolean
+}
+
+input UpdateManyUsersInput {
+  role: Role
+  activated: Boolean
+}
+
+input UserFilter {
+  id: [ID!]
+  idNEQ: [ID!]
+
+  activated: Boolean
+
+  displayName: [String!]
+  displayNameNEQ: [String!]
+  displayNameIEQ: String
+  displayNameMATCH: String
+
+  email: [String!]
+  emailNEQ: [String!]
+  emailIEQ: String
+  emailMATCH: String
+
+  role: [Role!]
+  roleNEQ: [Role!]
+
+  createdAt: Time
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+}
+
+extend type Query {
+  users(
+    filter: UserFilter
+    limit: Int
+    offset: Int
+    sort: [String!]
+  ): UserList! @authenticated(yes: true) @hasRole(role: ADMIN)
+  user(id: Int!): User @authenticated(yes: true) @hasRole(role: ADMIN)
+  me: User
+}
+
+extend type Mutation {
+  createUser(input: UserInput!): User
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  updateUser(id: ID!, input: UserInput!): User
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  updateManyUsers(ids: [ID!]!, input: UpdateManyUsersInput!): [User!]
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  deleteUsers(ids: [ID!]!): [User!]
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  signIn(email: String!, password: String!, staySignedIn: Boolean): User
+    @authenticated(yes: false)
+}

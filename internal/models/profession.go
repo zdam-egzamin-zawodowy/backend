@@ -47,12 +47,10 @@ func (input *ProfessionInput) IsEmpty() bool {
 
 func (input *ProfessionInput) Sanitize() *ProfessionInput {
 	if input.Name != nil {
-		trimmed := strings.TrimSpace(*input.Name)
-		input.Name = &trimmed
+		*input.Name = strings.TrimSpace(*input.Name)
 	}
 	if input.Description != nil {
-		trimmed := strings.TrimSpace(*input.Description)
-		input.Description = &trimmed
+		*input.Description = strings.TrimSpace(*input.Description)
 	}
 
 	return input

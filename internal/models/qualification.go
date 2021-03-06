@@ -66,20 +66,16 @@ func (input *QualificationInput) IsEmpty() bool {
 
 func (input *QualificationInput) Sanitize() *QualificationInput {
 	if input.Name != nil {
-		trimmed := strings.TrimSpace(*input.Name)
-		input.Name = &trimmed
+		*input.Name = strings.TrimSpace(*input.Name)
 	}
 	if input.Description != nil {
-		trimmed := strings.TrimSpace(*input.Description)
-		input.Description = &trimmed
+		*input.Description = strings.TrimSpace(*input.Description)
 	}
 	if input.Code != nil {
-		trimmed := strings.TrimSpace(*input.Code)
-		input.Code = &trimmed
+		*input.Code = strings.TrimSpace(*input.Code)
 	}
 	if input.Formula != nil {
-		trimmed := strings.TrimSpace(*input.Formula)
-		input.Formula = &trimmed
+		*input.Formula = strings.TrimSpace(*input.Formula)
 	}
 
 	return input
@@ -155,6 +151,9 @@ type QualificationFilter struct {
 	Slug    []string `json:"slug" xml:"slug" gqlgen:"slug"`
 	SlugNEQ []string `json:"slugNEQ" xml:"slugNEQ" gqlgen:"slugNEQ"`
 
+	Formula    []string `gqlgen:"formula" json:"formula" xml:"formula"`
+	FormulaNEQ []string `json:"formulaNEQ" xml:"formulaNEQ" gqlgen:"formulaNEQ"`
+
 	Name      []string `gqlgen:"name" json:"name" xml:"name"`
 	NameNEQ   []string `json:"nameNEQ" xml:"nameNEQ" gqlgen:"nameNEQ"`
 	NameMATCH string   `json:"nameMATCH" xml:"nameMATCH" gqlgen:"nameMATCH"`
@@ -164,9 +163,6 @@ type QualificationFilter struct {
 	CodeNEQ   []string `json:"codeNEQ" xml:"codeNEQ" gqlgen:"codeNEQ"`
 	CodeMATCH string   `json:"codeMATCH" xml:"codeMATCH" gqlgen:"codeMATCH"`
 	CodeIEQ   string   `gqlgen:"codeIEQ" json:"codeIEQ" xml:"codeIEQ"`
-
-	Formula    []string `gqlgen:"formula" json:"formula" xml:"formula"`
-	FormulaNEQ []string `json:"formulaNEQ" xml:"formulaNEQ" gqlgen:"formulaNEQ"`
 
 	DescriptionMATCH string `gqlgen:"descriptionMATCH" json:"descriptionMATCH" xml:"descriptionMATCH"`
 	DescriptionIEQ   string `json:"descriptionIEQ" xml:"descriptionIEQ" gqlgen:"descriptionIEQ"`

@@ -1,0 +1,87 @@
+type Qualification {
+  id: ID!
+  slug: String!
+  name: String!
+  code: String!
+  formula: String
+  description: String
+  createdAt: Time!
+}
+
+type QualificationList {
+  total: Int!
+  items: [Qualification!]
+}
+
+input QualificationInput {
+  name: String
+  description: String
+  code: String
+  formula: String
+  associateProfession: [Int!]
+  dissociateProfession: [Int!]
+}
+
+input QualificationFilterOr {
+  nameMatch: String
+  nameIEQ: String
+
+  codeMatch: String
+  codeIEQ: String
+}
+
+input QualificationFilter {
+  id: [ID!]
+  idNEQ: [ID!]
+
+  slug: [String!]
+  slugNEQ: [String!]
+
+  formula: [String!]
+  formulaNEQ: [String!]
+
+  name: [String!]
+  nameNEQ: [String!]
+  nameIEQ: String
+  nameMATCH: String
+
+  code: [String!]
+  codeNEQ: [String!]
+  codeIEQ: String
+  codeMATCH: String
+
+  descriptionIEQ: String
+  descriptionMATCH: String
+
+  professionID: [Int!]
+
+  createdAt: Time
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+
+  or: QualificationFilterOr
+}
+
+extend type Query {
+  qualifications(
+    filter: QualificationFilter
+    limit: Int
+    offset: Int
+    sort: [String!]
+  ): QualificationList!
+  qualification(id: Int, slug: String): Qualification
+}
+
+extend type Mutation {
+  createQualification(input: QualificationInput!): Qualification
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  updateQualification(id: ID!, input: QualificationInput!): Qualification
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+  deleteQualifications(ids: [ID!]!): [Qualification!]
+    @authenticated(yes: true)
+    @hasRole(role: ADMIN)
+}

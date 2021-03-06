@@ -83,16 +83,13 @@ func (input *QuestionInput) IsEmpty() bool {
 
 func (input *QuestionInput) Sanitize() *QuestionInput {
 	if input.Content != nil {
-		trimmed := strings.TrimSpace(*input.Content)
-		input.Content = &trimmed
+		*input.Content = strings.TrimSpace(*input.Content)
 	}
 	if input.From != nil {
-		trimmed := strings.TrimSpace(*input.From)
-		input.From = &trimmed
+		*input.From = strings.TrimSpace(*input.From)
 	}
 	if input.Explanation != nil {
-		trimmed := strings.TrimSpace(*input.Explanation)
-		input.Explanation = &trimmed
+		*input.Explanation = strings.TrimSpace(*input.Explanation)
 	}
 
 	return input
