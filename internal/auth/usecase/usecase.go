@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
@@ -77,7 +76,7 @@ func (ucase *usecase) GetUserByCredentials(ctx context.Context, email, password 
 
 	user := users[0]
 	if err := user.CompareHashAndPassword(password); err != nil {
-		return nil, fmt.Errorf(messageInvalidCredentials)
+		return nil, errorutils.Wrap(err, messageInvalidCredentials)
 	}
 
 	return user, nil

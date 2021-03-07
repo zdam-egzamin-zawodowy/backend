@@ -73,7 +73,7 @@ func (input *UserInput) Sanitize() *UserInput {
 		*input.DisplayName = strings.TrimSpace(*input.DisplayName)
 	}
 	if input.Password != nil {
-		*input.Password = strings.ToLower(strings.TrimSpace(*input.Password))
+		*input.Password = strings.TrimSpace(*input.Password)
 	}
 	if input.Email != nil {
 		*input.Email = strings.ToLower(strings.TrimSpace(*input.Email))
