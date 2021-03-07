@@ -64,6 +64,14 @@ func (input *QualificationInput) IsEmpty() bool {
 		len(input.DissociateProfession) == 0
 }
 
+func (input *QualificationInput) HasBasicDataToUpdate() bool {
+	return input != nil &&
+		(input.Name != nil ||
+			input.Code != nil ||
+			input.Formula != nil ||
+			input.Description != nil)
+}
+
 func (input *QualificationInput) Sanitize() *QualificationInput {
 	if input.Name != nil {
 		*input.Name = strings.TrimSpace(*input.Name)

@@ -43,7 +43,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.Qualification
 			Insert(); err != nil {
 			if strings.Contains(err.Error(), "name") {
 				return errorutils.Wrap(err, messageNameIsAlreadyTaken)
-			} else if strings.Contains(err.Error(), "code") {
+			} else if strings.Contains(err.Error(), "code") || strings.Contains(err.Error(), "slug") {
 				return errorutils.Wrap(err, messageCodeIsAlreadyTaken)
 			}
 			return errorutils.Wrap(err, messageFailedToSaveModel)
@@ -70,7 +70,7 @@ func (repo *pgRepository) UpdateMany(
 ) ([]*models.Qualification, error) {
 	items := []*models.Qualification{}
 	err := repo.RunInTransaction(ctx, func(tx *pg.Tx) error {
-		if input.Name != nil || input.Code != nil || input.Description != nil || input.Formula != nil {
+		if input.HasBasicDataToUpdate() {
 			if _, err := tx.
 				Model(&models.Qualification{}).
 				Context(ctx).
@@ -79,7 +79,7 @@ func (repo *pgRepository) UpdateMany(
 				Update(); err != nil && err != pg.ErrNoRows {
 				if strings.Contains(err.Error(), "name") {
 					return errorutils.Wrap(err, messageNameIsAlreadyTaken)
-				} else if strings.Contains(err.Error(), "code") {
+				} else if strings.Contains(err.Error(), "code") || strings.Contains(err.Error(), "slug") {
 					return errorutils.Wrap(err, messageCodeIsAlreadyTaken)
 				}
 				return errorutils.Wrap(err, messageFailedToSaveModel)

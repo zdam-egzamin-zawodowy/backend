@@ -36,7 +36,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.ProfessionInp
 		Context(ctx).
 		Returning("*").
 		Insert(); err != nil {
-		if strings.Contains(err.Error(), "name") {
+		if strings.Contains(err.Error(), "name") || strings.Contains(err.Error(), "slug") {
 			return nil, errorutils.Wrap(err, messageNameIsAlreadyTaken)
 		}
 		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
@@ -51,7 +51,7 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.ProfessionFi
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
 		Update(); err != nil && err != pg.ErrNoRows {
-		if strings.Contains(err.Error(), "name") {
+		if strings.Contains(err.Error(), "name") || strings.Contains(err.Error(), "slug") {
 			return nil, errorutils.Wrap(err, messageNameIsAlreadyTaken)
 		}
 		return nil, errorutils.Wrap(err, messageFailedToSaveModel)

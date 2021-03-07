@@ -81,6 +81,18 @@ func (input *QuestionInput) IsEmpty() bool {
 		input.QualificationID == nil
 }
 
+func (input *QuestionInput) HasBasicDataToUpdate() bool {
+	return input != nil &&
+		(input.Content != nil ||
+			input.Explanation != nil ||
+			input.CorrectAnswer != nil ||
+			input.AnswerA != nil ||
+			input.AnswerB != nil ||
+			input.AnswerC != nil ||
+			input.AnswerD != nil ||
+			input.QualificationID != nil)
+}
+
 func (input *QuestionInput) Sanitize() *QuestionInput {
 	if input.Content != nil {
 		*input.Content = strings.TrimSpace(*input.Content)
