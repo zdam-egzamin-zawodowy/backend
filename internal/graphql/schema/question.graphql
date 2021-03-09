@@ -1,8 +1,8 @@
 enum Answer {
-  A
-  B
-  C
-  D
+  a
+  b
+  c
+  d
 }
 
 type Question {
@@ -78,18 +78,18 @@ extend type Query {
     limit: Int
     offset: Int
     sort: [String!]
-  ): QuestionList! @authenticated(yes: true) @hasRole(role: Admin)
+  ): QuestionList! @authenticated(yes: true) @hasRole(role: admin)
   generateTest(qualificationIDs: [ID!]!, limit: Int): [Question!]
 }
 
 extend type Mutation {
   createQuestion(input: QuestionInput!): Question
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
   updateQuestion(id: ID!, input: QuestionInput!): Question
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
   deleteQuestions(ids: [ID!]!): [Question!]
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
 }

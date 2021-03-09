@@ -51,11 +51,11 @@ extend type Query {
 extend type Mutation {
   createProfession(input: ProfessionInput!): Profession
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
   updateProfession(id: ID!, input: ProfessionInput!): Profession
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
   deleteProfessions(ids: [ID!]!): [Profession!]
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
 }

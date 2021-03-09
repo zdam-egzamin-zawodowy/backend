@@ -77,11 +77,11 @@ extend type Query {
 extend type Mutation {
   createQualification(input: QualificationInput!): Qualification
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
   updateQualification(id: ID!, input: QualificationInput!): Qualification
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
   deleteQualifications(ids: [ID!]!): [Qualification!]
     @authenticated(yes: true)
-    @hasRole(role: Admin)
+    @hasRole(role: admin)
 }
