@@ -30,6 +30,14 @@ input UpdateManyUsersInput {
   activated: Boolean
 }
 
+input UserFilterOr {
+  displayNameIEQ: String
+  displayNameMATCH: String
+
+  emailIEQ: String
+  emailMATCH: String
+}
+
 input UserFilter {
   id: [ID!]
   idNEQ: [ID!]
@@ -54,6 +62,8 @@ input UserFilter {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
+
+  or: UserFilterOr
 }
 
 type UserWithToken {

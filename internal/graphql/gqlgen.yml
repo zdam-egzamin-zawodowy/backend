@@ -26,6 +26,9 @@ models:
   UserFilter:
     model:
       - github.com/zdam-egzamin-zawodowy/backend/internal/models.UserFilter
+  UserFilterOr:
+    model:
+      - github.com/zdam-egzamin-zawodowy/backend/internal/models.UserFilterOr
   UserInput:
     model:
       - github.com/zdam-egzamin-zawodowy/backend/internal/models.UserInput

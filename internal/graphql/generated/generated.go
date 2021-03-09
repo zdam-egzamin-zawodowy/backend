@@ -1135,6 +1135,14 @@ input UpdateManyUsersInput {
   activated: Boolean
 }
 
+input UserFilterOr {
+  displayNameIEQ: String
+  displayNameMATCH: String
+
+  emailIEQ: String
+  emailMATCH: String
+}
+
 input UserFilter {
   id: [ID!]
   idNEQ: [ID!]
@@ -1159,6 +1167,8 @@ input UserFilter {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
+
+  or: UserFilterOr
 }
 
 type UserWithToken {
@@ -6879,6 +6889,58 @@ func (ec *executionContext) unmarshalInputUserFilter(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOUserFilterOr2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐUserFilterOr(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUserFilterOr(ctx context.Context, obj interface{}) (models.UserFilterOr, error) {
+	var it models.UserFilterOr
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "displayNameIEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("displayNameIEQ"))
+			it.DisplayNameIEQ, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "displayNameMATCH":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("displayNameMATCH"))
+			it.DisplayNameMATCH, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "emailIEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailIEQ"))
+			it.EmailIEQ, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "emailMATCH":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailMATCH"))
+			it.EmailMATCH, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -8782,6 +8844,14 @@ func (ec *executionContext) unmarshalOUserFilter2ᚖgithubᚗcomᚋzdamᚑegzami
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputUserFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOUserFilterOr2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐUserFilterOr(ctx context.Context, v interface{}) (*models.UserFilterOr, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUserFilterOr(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

@@ -131,6 +131,45 @@ func (input *UserInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	return q, nil
 }
 
+type UserFilterOr struct {
+	DisplayNameIEQ   string `json:"displayNameIEQ" xml:"displayNameIEQ" gqlgen:"displayNameIEQ"`
+	DisplayNameMATCH string `json:"displayNameMATCH" xml:"displayNameMATCH" gqlgen:"displayNameMATCH"`
+
+	EmailIEQ   string `json:"emailIEQ" xml:"emailIEQ" gqlgen:"emailIEQ"`
+	EmailMATCH string `json:"emailMATCH" xml:"emailMATCH" gqlgen:"emailMATCH"`
+}
+
+func (f *UserFilterOr) WhereWithAlias(q *orm.Query, alias string) *orm.Query {
+	if f == nil {
+		return q
+	}
+
+	q = q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
+		if !isZero(f.DisplayNameMATCH) {
+			q = q.Where(
+				sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("display_name", alias)),
+				f.DisplayNameMATCH,
+			)
+		}
+		if !isZero(f.DisplayNameIEQ) {
+			q = q.Where(
+				sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("display_name", alias)),
+				f.DisplayNameIEQ,
+			)
+		}
+
+		if !isZero(f.EmailMATCH) {
+			q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("email", alias)), f.EmailMATCH)
+		}
+		if !isZero(f.EmailIEQ) {
+			q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("email", alias)), f.EmailIEQ)
+		}
+
+		return q, nil
+	})
+	return q
+}
+
 type UserFilter struct {
 	ID    []int `json:"id" xml:"id" gqlgen:"id"`
 	IDNEQ []int `json:"idNEQ" xml:"idNEQ" gqlgen:"idNEQ"`
@@ -155,6 +194,8 @@ type UserFilter struct {
 	CreatedAtGTE time.Time `json:"createdAtGTE" xml:"createdAtGTE" gqlgen:"createdAtGTE"`
 	CreatedAtLT  time.Time `json:"createdAtLT" xml:"createdAtLT" gqlgen:"createdAtLT"`
 	CreatedAtLTE time.Time `json:"createdAtLTE" xml:"createdAtLTE" gqlgen:"createdAtLTE"`
+
+	Or *UserFilterOr
 }
 
 func (f *UserFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, error) {
@@ -213,6 +254,10 @@ func (f *UserFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, err
 	}
 	if !isZero(f.CreatedAtLTE) {
 		q = q.Where(sqlutils.BuildConditionLTE(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtLTE)
+	}
+
+	if f.Or != nil {
+		q = f.Or.WhereWithAlias(q, alias)
 	}
 
 	return q, nil
