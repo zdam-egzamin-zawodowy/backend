@@ -1,6 +1,6 @@
 package question
 
 const (
-	DefaultLimit = 100
-	TestMaxLimit = 40
+	FetchMaxLimit = 500
+	TestMaxLimit  = 40
 )

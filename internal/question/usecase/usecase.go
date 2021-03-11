@@ -67,9 +67,12 @@ func (ucase *usecase) Delete(ctx context.Context, f *models.QuestionFilter) ([]*
 func (ucase *usecase) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*models.Question, int, error) {
 	if cfg == nil {
 		cfg = &question.FetchConfig{
-			Limit: question.DefaultLimit,
+			Limit: question.FetchMaxLimit,
 			Count: true,
 		}
+	}
+	if cfg.Limit > question.FetchMaxLimit {
+		cfg.Limit = question.FetchMaxLimit
 	}
 	cfg.Sort = sqlutils.SanitizeSorts(cfg.Sort)
 	return ucase.questionRepository.Fetch(ctx, cfg)
