@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 
 	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
@@ -118,10 +116,7 @@ func (repo *pgRepository) UpdateMany(
 						})
 					}
 				}
-				_, err := tx.Model(&toInsert).Insert()
-				if err != nil {
-					logrus.Debug(errors.Wrap(err, "Couldn't insert []*models.QualificationToProfession{}"))
-				}
+				tx.Model(&toInsert).Insert()
 			}
 		}
 
@@ -152,7 +147,8 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *qualification.FetchCon
 		Context(ctx).
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
-		Apply(cfg.Filter.Where)
+		Apply(cfg.Filter.Where).
+		Order(cfg.Sort...)
 
 	if cfg.Count {
 		total, err = query.SelectAndCount()

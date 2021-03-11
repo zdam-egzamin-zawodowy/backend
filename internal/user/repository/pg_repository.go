@@ -88,7 +88,8 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*
 		Context(ctx).
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
-		Apply(cfg.Filter.Where)
+		Apply(cfg.Filter.Where).
+		Order(cfg.Sort...)
 
 	if cfg.Count {
 		total, err = query.SelectAndCount()
