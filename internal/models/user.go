@@ -116,7 +116,7 @@ func (input *UserInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 		}
 
 		if input.Email != nil {
-			q = q.Set("name = ?", *input.Email)
+			q = q.Set("email = ?", *input.Email)
 		}
 
 		if input.Role != nil {
