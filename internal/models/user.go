@@ -146,23 +146,23 @@ func (f *UserFilterOr) WhereWithAlias(q *orm.Query, alias string) *orm.Query {
 
 	q = q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
 		if !isZero(f.DisplayNameMATCH) {
-			q = q.Where(
+			q = q.WhereOr(
 				sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("display_name", alias)),
 				f.DisplayNameMATCH,
 			)
 		}
 		if !isZero(f.DisplayNameIEQ) {
-			q = q.Where(
+			q = q.WhereOr(
 				sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("display_name", alias)),
 				f.DisplayNameIEQ,
 			)
 		}
 
 		if !isZero(f.EmailMATCH) {
-			q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("email", alias)), f.EmailMATCH)
+			q = q.WhereOr(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("email", alias)), f.EmailMATCH)
 		}
 		if !isZero(f.EmailIEQ) {
-			q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("email", alias)), f.EmailIEQ)
+			q = q.WhereOr(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("email", alias)), f.EmailIEQ)
 		}
 
 		return q, nil

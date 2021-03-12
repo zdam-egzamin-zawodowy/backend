@@ -140,17 +140,17 @@ func (f *QualificationFilterOr) WhereWithAlias(q *orm.Query, alias string) *orm.
 
 	q = q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
 		if !isZero(f.NameMATCH) {
-			q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("name", alias)), f.NameMATCH)
+			q = q.WhereOr(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("name", alias)), f.NameMATCH)
 		}
 		if !isZero(f.NameIEQ) {
-			q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("name", alias)), f.NameIEQ)
+			q = q.WhereOr(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("name", alias)), f.NameIEQ)
 		}
 
 		if !isZero(f.CodeMATCH) {
-			q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("code", alias)), f.CodeMATCH)
+			q = q.WhereOr(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("code", alias)), f.CodeMATCH)
 		}
 		if !isZero(f.CodeIEQ) {
-			q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("code", alias)), f.CodeIEQ)
+			q = q.WhereOr(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("code", alias)), f.CodeIEQ)
 		}
 
 		return q, nil
