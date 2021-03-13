@@ -1020,13 +1020,13 @@ type Question {
   explanation: String
   correctAnswer: Answer!
   image: String
-  answerA: Answer
+  answerA: String
   answerAImage: String
-  answerB: Answer
+  answerB: String
   answerBImage: String
-  answerC: Answer
+  answerC: String
   answerCImage: String
-  answerD: Answer
+  answerD: String
   answerDImage: String
   qualification: Qualification @goField(forceResolver: true)
   createdAt: Time!
@@ -1046,16 +1046,16 @@ input QuestionInput {
   qualificationID: Int
   image: Upload
   deleteImage: Boolean
-  answerA: Answer
+  answerA: String
   answerAImage: Upload
   deleteAnswerAImage: Boolean
-  answerB: Answer
+  answerB: String
   answerBImage: Upload
   deleteAnswerBImage: Boolean
-  answerC: Answer
+  answerC: String
   answerCImage: Upload
   deleteAnswerCImage: Boolean
-  answerD: Answer
+  answerD: String
   answerDImage: Upload
   deleteAnswerDImage: Boolean
 }
@@ -4141,9 +4141,9 @@ func (ec *executionContext) _Question_answerA(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(models.Answer)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Question_answerAImage(ctx context.Context, field graphql.CollectedField, obj *models.Question) (ret graphql.Marshaler) {
@@ -4205,9 +4205,9 @@ func (ec *executionContext) _Question_answerB(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(models.Answer)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Question_answerBImage(ctx context.Context, field graphql.CollectedField, obj *models.Question) (ret graphql.Marshaler) {
@@ -4269,9 +4269,9 @@ func (ec *executionContext) _Question_answerC(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(models.Answer)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Question_answerCImage(ctx context.Context, field graphql.CollectedField, obj *models.Question) (ret graphql.Marshaler) {
@@ -4333,9 +4333,9 @@ func (ec *executionContext) _Question_answerD(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(models.Answer)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Question_answerDImage(ctx context.Context, field graphql.CollectedField, obj *models.Question) (ret graphql.Marshaler) {
@@ -6623,7 +6623,7 @@ func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("answerA"))
-			it.AnswerA, err = ec.unmarshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx, v)
+			it.AnswerA, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6647,7 +6647,7 @@ func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("answerB"))
-			it.AnswerB, err = ec.unmarshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx, v)
+			it.AnswerB, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6671,7 +6671,7 @@ func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("answerC"))
-			it.AnswerC, err = ec.unmarshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx, v)
+			it.AnswerC, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6695,7 +6695,7 @@ func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("answerD"))
-			it.AnswerD, err = ec.unmarshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx, v)
+			it.AnswerD, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8326,16 +8326,6 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalOAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx context.Context, v interface{}) (models.Answer, error) {
-	var res models.Answer
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx context.Context, sel ast.SelectionSet, v models.Answer) graphql.Marshaler {
-	return v
 }
 
 func (ec *executionContext) unmarshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐAnswer(ctx context.Context, v interface{}) (*models.Answer, error) {

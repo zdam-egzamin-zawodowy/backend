@@ -12,13 +12,13 @@ type Question {
   explanation: String
   correctAnswer: Answer!
   image: String
-  answerA: Answer
+  answerA: String
   answerAImage: String
-  answerB: Answer
+  answerB: String
   answerBImage: String
-  answerC: Answer
+  answerC: String
   answerCImage: String
-  answerD: Answer
+  answerD: String
   answerDImage: String
   qualification: Qualification @goField(forceResolver: true)
   createdAt: Time!
@@ -38,16 +38,16 @@ input QuestionInput {
   qualificationID: Int
   image: Upload
   deleteImage: Boolean
-  answerA: Answer
+  answerA: String
   answerAImage: Upload
   deleteAnswerAImage: Boolean
-  answerB: Answer
+  answerB: String
   answerBImage: Upload
   deleteAnswerBImage: Boolean
-  answerC: Answer
+  answerC: String
   answerCImage: Upload
   deleteAnswerCImage: Boolean
-  answerD: Answer
+  answerD: String
   answerDImage: Upload
   deleteAnswerDImage: Boolean
 }

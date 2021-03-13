@@ -20,13 +20,13 @@ type Question struct {
 	Explanation     string         `json:"explanation" xml:"explanation" gqlgen:"explanation"`
 	CorrectAnswer   Answer         `pg:",unique:group_1,notnull" json:"correctAnswer" xml:"correctAnswer" gqlgen:"correctAnswer"`
 	Image           string         `json:"image" xml:"image" gqlgen:"image"`
-	AnswerA         Answer         `pg:"answer_a" json:"answerA" xml:"answerA" gqlgen:"answerA"`
+	AnswerA         string         `pg:"answer_a" json:"answerA" xml:"answerA" gqlgen:"answerA"`
 	AnswerAImage    string         `pg:"answer_a_image" json:"answerAImage" xml:"answerAImage" gqlgen:"answerAImage"`
-	AnswerB         Answer         `pg:"answer_b" json:"answerB" xml:"answerB" gqlgen:"answerB"`
+	AnswerB         string         `pg:"answer_b" json:"answerB" xml:"answerB" gqlgen:"answerB"`
 	AnswerBImage    string         `pg:"answer_b_image" json:"answerBImage" xml:"answerBImage" gqlgen:"answerBImage"`
-	AnswerC         Answer         `pg:"answer_c" json:"answerC" xml:"answerC" gqlgen:"answerC"`
+	AnswerC         string         `pg:"answer_c" json:"answerC" xml:"answerC" gqlgen:"answerC"`
 	AnswerCImage    string         `pg:"answer_c_image" json:"answerCImage" xml:"answerCImage" gqlgen:"answerCImage"`
-	AnswerD         Answer         `pg:"answer_d" json:"answerD" xml:"answerD" gqlgen:"answerD"`
+	AnswerD         string         `pg:"answer_d" json:"answerD" xml:"answerD" gqlgen:"answerD"`
 	AnswerDImage    string         `pg:"answer_d_image" json:"answerDImage" xml:"answerDImage" gqlgen:"answerDImage"`
 	QualificationID int            `pg:",unique:group_1,on_delete:CASCADE" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
 	Qualification   *Qualification `pg:"rel:has-one" json:"qualification" xml:"qualification" gqlgen:"qualification"`
@@ -46,10 +46,10 @@ type QuestionInput struct {
 	From               *string         `json:"from" xml:"from" gqlgen:"from"`
 	Explanation        *string         `json:"explanation" xml:"explanation" gqlgen:"explanation"`
 	CorrectAnswer      *Answer         `json:"correctAnswer" xml:"correctAnswer" gqlgen:"correctAnswer"`
-	AnswerA            *Answer         `gqlgen:"answerA" json:"answerA" xml:"answerA"`
-	AnswerB            *Answer         `gqlgen:"answerB" json:"answerB" xml:"answerB"`
-	AnswerC            *Answer         `gqlgen:"answerC" json:"answerC" xml:"answerC"`
-	AnswerD            *Answer         `gqlgen:"answerD" json:"answerD" xml:"answerD"`
+	AnswerA            *string         `gqlgen:"answerA" json:"answerA" xml:"answerA"`
+	AnswerB            *string         `gqlgen:"answerB" json:"answerB" xml:"answerB"`
+	AnswerC            *string         `gqlgen:"answerC" json:"answerC" xml:"answerC"`
+	AnswerD            *string         `gqlgen:"answerD" json:"answerD" xml:"answerD"`
 	QualificationID    *int            `gqlgen:"qualificationID" json:"qualificationID" xml:"qualificationID"`
 	Image              *graphql.Upload `json:"image" xml:"image" gqlgen:"image"`
 	DeleteImage        *bool           `json:"deleteImage" xml:"deleteImage" gqlgen:"deleteImage"`
@@ -102,6 +102,18 @@ func (input *QuestionInput) Sanitize() *QuestionInput {
 	}
 	if input.Explanation != nil {
 		*input.Explanation = strings.TrimSpace(*input.Explanation)
+	}
+	if input.AnswerA != nil {
+		*input.AnswerA = strings.TrimSpace(*input.AnswerA)
+	}
+	if input.AnswerB != nil {
+		*input.AnswerB = strings.TrimSpace(*input.AnswerB)
+	}
+	if input.AnswerC != nil {
+		*input.AnswerC = strings.TrimSpace(*input.AnswerC)
+	}
+	if input.AnswerD != nil {
+		*input.AnswerD = strings.TrimSpace(*input.AnswerD)
 	}
 
 	return input

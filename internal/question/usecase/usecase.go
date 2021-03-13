@@ -141,26 +141,26 @@ func validateInput(input *models.QuestionInput, opts validateOptions) error {
 	}
 
 	if input.AnswerA != nil {
-		if !input.AnswerA.IsValid() {
-			return fmt.Errorf(messageAnswerIsInvalid, "A")
+		if *input.AnswerA == "" {
+			return fmt.Errorf(messageAnswerIsRequired, "A")
 		}
 	}
 
 	if input.AnswerB != nil {
-		if !input.AnswerB.IsValid() {
-			return fmt.Errorf(messageAnswerIsInvalid, "B")
+		if *input.AnswerA == "" {
+			return fmt.Errorf(messageAnswerIsRequired, "B")
 		}
 	}
 
 	if input.AnswerC != nil {
-		if !input.AnswerC.IsValid() {
-			return fmt.Errorf(messageAnswerIsInvalid, "C")
+		if *input.AnswerC == "" {
+			return fmt.Errorf(messageAnswerIsRequired, "C")
 		}
 	}
 
 	if input.AnswerD != nil {
-		if !input.AnswerD.IsValid() {
-			return fmt.Errorf(messageAnswerIsInvalid, "D")
+		if *input.AnswerD == "" {
+			return fmt.Errorf(messageAnswerIsRequired, "D")
 		}
 	}
 
@@ -172,25 +172,25 @@ func validateInput(input *models.QuestionInput, opts validateOptions) error {
 
 	if input.AnswerAImage != nil {
 		if !validateMimeType(input.AnswerAImage.ContentType) {
-			return fmt.Errorf(messageAnswerIsInvalid, "Obrazek odpowiedź A")
+			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź A")
 		}
 	}
 
 	if input.AnswerBImage != nil {
 		if !validateMimeType(input.AnswerBImage.ContentType) {
-			return fmt.Errorf(messageAnswerIsInvalid, "Obrazek odpowiedź B")
+			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź B")
 		}
 	}
 
 	if input.AnswerCImage != nil {
 		if !validateMimeType(input.AnswerCImage.ContentType) {
-			return fmt.Errorf(messageAnswerIsInvalid, "Obrazek odpowiedź C")
+			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź C")
 		}
 	}
 
 	if input.AnswerDImage != nil {
 		if !validateMimeType(input.AnswerDImage.ContentType) {
-			return fmt.Errorf(messageAnswerIsInvalid, "Obrazek odpowiedź D")
+			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź D")
 		}
 	}
 
