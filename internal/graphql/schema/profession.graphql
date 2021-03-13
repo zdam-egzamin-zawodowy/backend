@@ -31,6 +31,8 @@ input ProfessionFilter {
   descriptionIEQ: String
   descriptionMATCH: String
 
+  qualificationID: [ID!]
+
   createdAt: Time
   createdAtGT: Time
   createdAtGTE: Time

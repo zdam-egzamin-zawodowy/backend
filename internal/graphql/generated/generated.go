@@ -887,6 +887,8 @@ input ProfessionFilter {
   descriptionIEQ: String
   descriptionMATCH: String
 
+  qualificationID: [ID!]
+
   createdAt: Time
   createdAtGT: Time
   createdAtGTE: Time
@@ -6054,6 +6056,14 @@ func (ec *executionContext) unmarshalInputProfessionFilter(ctx context.Context, 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionMATCH"))
 			it.DescriptionMATCH, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "qualificationID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qualificationID"))
+			it.QualificationID, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
