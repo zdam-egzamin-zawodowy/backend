@@ -252,7 +252,6 @@ func (f *QualificationFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Q
 	}
 
 	if !isZero(f.ProfessionID) {
-		// q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("formula", alias)), pg.Array(f.Formula))
 		sliceLength := len(f.ProfessionID)
 		subquery := q.
 			New().

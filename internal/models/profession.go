@@ -95,6 +95,8 @@ type ProfessionFilter struct {
 	DescriptionMATCH string `gqlgen:"descriptionMATCH" json:"descriptionMATCH" xml:"descriptionMATCH"`
 	DescriptionIEQ   string `json:"descriptionIEQ" xml:"descriptionIEQ" gqlgen:"descriptionIEQ"`
 
+	QualificationID []int `gqlgen:"qualificationID" xml:"qualificationID" json:"qualificationID"`
+
 	CreatedAt    time.Time `gqlgen:"createdAt" json:"createdAt" xml:"createdAt"`
 	CreatedAtGT  time.Time `gqlgen:"createdAtGT" json:"createdAtGT" xml:"createdAtGT"`
 	CreatedAtGTE time.Time `json:"createdAtGTE" xml:"createdAtGTE" gqlgen:"createdAtGTE"`
@@ -139,6 +141,21 @@ func (f *ProfessionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Quer
 	}
 	if !isZero(f.DescriptionIEQ) {
 		q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("description", alias)), f.DescriptionIEQ)
+	}
+
+	if !isZero(f.QualificationID) {
+		sliceLength := len(f.QualificationID)
+		subquery := q.
+			New().
+			Model(&QualificationToProfession{}).
+			ColumnExpr(sqlutils.BuildCountColumnExpr("qualification_id", "count")).
+			Column("profession_id").
+			Where(sqlutils.BuildConditionArray("qualification_id"), pg.Array(f.QualificationID)).
+			Group("profession_id")
+
+		q = q.
+			Join(`INNER JOIN (?) AS qualification_to_professions ON qualification_to_professions.profession_id = profession.id`, subquery).
+			Where(sqlutils.BuildConditionGTE("count"), sliceLength)
 	}
 
 	if !isZero(f.CreatedAt) {
