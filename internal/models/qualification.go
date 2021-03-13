@@ -109,16 +109,16 @@ func (input *QualificationInput) ToQualification() *Qualification {
 func (input *QualificationInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.Name != nil {
-			q = q.Set("name = ?", *input.Name)
+			q = q.Set(sqlutils.BuildConditionEquals("name"), *input.Name)
 		}
 		if input.Code != nil {
-			q = q.Set("code = ?", *input.Code)
+			q = q.Set(sqlutils.BuildConditionEquals("code"), *input.Code)
 		}
 		if input.Formula != nil {
-			q = q.Set("formula = ?", *input.Formula)
+			q = q.Set(sqlutils.BuildConditionEquals("formula"), *input.Formula)
 		}
 		if input.Description != nil {
-			q = q.Set("description = ?", *input.Description)
+			q = q.Set(sqlutils.BuildConditionEquals("description"), *input.Description)
 		}
 	}
 

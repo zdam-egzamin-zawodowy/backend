@@ -104,7 +104,7 @@ func (input *UserInput) ToUser() *User {
 func (input *UserInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.DisplayName != nil {
-			q = q.Set("display_name = ?", *input.DisplayName)
+			q = q.Set(sqlutils.BuildConditionEquals("display_name"), *input.DisplayName)
 		}
 
 		if input.Password != nil {
@@ -112,19 +112,19 @@ func (input *UserInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 			if err != nil {
 				return q, err
 			}
-			q = q.Set("password = ?", string(hashedPassword))
+			q = q.Set(sqlutils.BuildConditionEquals("password"), string(hashedPassword))
 		}
 
 		if input.Email != nil {
-			q = q.Set("email = ?", *input.Email)
+			q = q.Set(sqlutils.BuildConditionEquals("email"), *input.Email)
 		}
 
 		if input.Role != nil {
-			q = q.Set("role = ?", *input.Role)
+			q = q.Set(sqlutils.BuildConditionEquals("role"), *input.Role)
 		}
 
 		if input.Activated != nil {
-			q = q.Set("activated = ?", *input.Activated)
+			q = q.Set(sqlutils.BuildConditionEquals("activated"), *input.Activated)
 		}
 	}
 

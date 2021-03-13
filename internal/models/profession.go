@@ -70,10 +70,10 @@ func (input *ProfessionInput) ToProfession() *Profession {
 func (input *ProfessionInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.Name != nil {
-			q = q.Set("name = ?", *input.Name)
+			q = q.Set(sqlutils.BuildConditionEquals("name"), *input.Name)
 		}
 		if input.Description != nil {
-			q = q.Set("description = ?", *input.Description)
+			q = q.Set(sqlutils.BuildConditionEquals("description"), *input.Description)
 		}
 	}
 
