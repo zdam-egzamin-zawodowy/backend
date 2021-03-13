@@ -28,7 +28,7 @@ func New(cfg *Config) (user.Usecase, error) {
 }
 
 func (ucase *usecase) Store(ctx context.Context, input *models.UserInput) (*models.User, error) {
-	if err := ucase.validateInput(input.Sanitize(), validateOptions{false}); err != nil {
+	if err := validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.userRepository.Store(ctx, input)
@@ -58,7 +58,7 @@ func (ucase *usecase) UpdateMany(ctx context.Context, f *models.UserFilter, inpu
 	if f == nil {
 		return []*models.User{}, nil
 	}
-	if err := ucase.validateInput(input.Sanitize(), validateOptions{true}); err != nil {
+	if err := validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
 	}
 	items, err := ucase.userRepository.UpdateMany(ctx, f, input)
@@ -124,7 +124,7 @@ type validateOptions struct {
 	acceptNilValues bool
 }
 
-func (ucase *usecase) validateInput(input *models.UserInput, opts validateOptions) error {
+func validateInput(input *models.UserInput, opts validateOptions) error {
 	if input.IsEmpty() {
 		return fmt.Errorf(messageEmptyPayload)
 	}

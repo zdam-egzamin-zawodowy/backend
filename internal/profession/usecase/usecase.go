@@ -27,7 +27,7 @@ func New(cfg *Config) (profession.Usecase, error) {
 }
 
 func (ucase *usecase) Store(ctx context.Context, input *models.ProfessionInput) (*models.Profession, error) {
-	if err := ucase.validateInput(input.Sanitize(), validateOptions{false}); err != nil {
+	if err := validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.professionRepository.Store(ctx, input)
@@ -37,7 +37,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.P
 	if id <= 0 {
 		return nil, fmt.Errorf(messageInvalidID)
 	}
-	if err := ucase.validateInput(input.Sanitize(), validateOptions{true}); err != nil {
+	if err := validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
 	}
 	items, err := ucase.professionRepository.UpdateMany(ctx,
@@ -104,10 +104,10 @@ func (ucase *usecase) GetBySlug(ctx context.Context, slug string) (*models.Profe
 }
 
 type validateOptions struct {
-	nameCanBeNil bool
+	allowNilValues bool
 }
 
-func (ucase *usecase) validateInput(input *models.ProfessionInput, opts validateOptions) error {
+func validateInput(input *models.ProfessionInput, opts validateOptions) error {
 	if input.IsEmpty() {
 		return fmt.Errorf(messageEmptyPayload)
 	}
@@ -118,7 +118,7 @@ func (ucase *usecase) validateInput(input *models.ProfessionInput, opts validate
 		} else if len(*input.Name) > profession.MaxNameLength {
 			return fmt.Errorf(messageNameIsTooLong, profession.MaxNameLength)
 		}
-	} else if !opts.nameCanBeNil {
+	} else if !opts.allowNilValues {
 		return fmt.Errorf(messageNameIsRequired)
 	}
 

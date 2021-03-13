@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	imageAcceptedMIMETypes = map[string]bool{
+	imageValidMIMETypes = map[string]bool{
 		"image/jpeg": true,
 		"image/jpg":  true,
 		"image/png":  true,
@@ -35,7 +35,7 @@ func New(cfg *Config) (question.Usecase, error) {
 }
 
 func (ucase *usecase) Store(ctx context.Context, input *models.QuestionInput) (*models.Question, error) {
-	if err := ucase.validateInput(input.Sanitize(), validateOptions{false}); err != nil {
+	if err := validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.questionRepository.Store(ctx, input)
@@ -45,7 +45,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.Q
 	if id <= 0 {
 		return nil, fmt.Errorf(messageInvalidID)
 	}
-	if err := ucase.validateInput(input.Sanitize(), validateOptions{true}); err != nil {
+	if err := validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
 	}
 	item, err := ucase.questionRepository.UpdateOneByID(ctx,
@@ -111,7 +111,7 @@ type validateOptions struct {
 	allowNilValues bool
 }
 
-func (ucase *usecase) validateInput(input *models.QuestionInput, opts validateOptions) error {
+func validateInput(input *models.QuestionInput, opts validateOptions) error {
 	if input.IsEmpty() {
 		return fmt.Errorf(messageEmptyPayload)
 	}
@@ -165,31 +165,31 @@ func (ucase *usecase) validateInput(input *models.QuestionInput, opts validateOp
 	}
 
 	if input.Image != nil {
-		if !imageAcceptedMIMETypes[input.Image.ContentType] {
+		if validateMimeType(input.Image.ContentType) {
 			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek pytanie")
 		}
 	}
 
 	if input.AnswerAImage != nil {
-		if !imageAcceptedMIMETypes[input.AnswerAImage.ContentType] {
+		if !validateMimeType(input.AnswerAImage.ContentType) {
 			return fmt.Errorf(messageAnswerIsInvalid, "Obrazek odpowiedź A")
 		}
 	}
 
 	if input.AnswerBImage != nil {
-		if !imageAcceptedMIMETypes[input.AnswerBImage.ContentType] {
+		if !validateMimeType(input.AnswerBImage.ContentType) {
 			return fmt.Errorf(messageAnswerIsInvalid, "Obrazek odpowiedź B")
 		}
 	}
 
 	if input.AnswerCImage != nil {
-		if !imageAcceptedMIMETypes[input.AnswerCImage.ContentType] {
+		if !validateMimeType(input.AnswerCImage.ContentType) {
 			return fmt.Errorf(messageAnswerIsInvalid, "Obrazek odpowiedź C")
 		}
 	}
 
 	if input.AnswerDImage != nil {
-		if !imageAcceptedMIMETypes[input.AnswerDImage.ContentType] {
+		if !validateMimeType(input.AnswerDImage.ContentType) {
 			return fmt.Errorf(messageAnswerIsInvalid, "Obrazek odpowiedź D")
 		}
 	}
@@ -230,4 +230,8 @@ func (ucase *usecase) validateInput(input *models.QuestionInput, opts validateOp
 	}
 
 	return nil
+}
+
+func validateMimeType(contentType string) bool {
+	return imageValidMIMETypes[contentType]
 }
