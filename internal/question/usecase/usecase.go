@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
@@ -165,31 +164,31 @@ func validateInput(input *models.QuestionInput, opts validateOptions) error {
 	}
 
 	if input.Image != nil {
-		if validateMimeType(input.Image.ContentType) {
+		if !isValidMIMEType(input.Image.ContentType) {
 			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek pytanie")
 		}
 	}
 
 	if input.AnswerAImage != nil {
-		if !validateMimeType(input.AnswerAImage.ContentType) {
+		if !isValidMIMEType(input.AnswerAImage.ContentType) {
 			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź A")
 		}
 	}
 
 	if input.AnswerBImage != nil {
-		if !validateMimeType(input.AnswerBImage.ContentType) {
+		if !isValidMIMEType(input.AnswerBImage.ContentType) {
 			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź B")
 		}
 	}
 
 	if input.AnswerCImage != nil {
-		if !validateMimeType(input.AnswerCImage.ContentType) {
+		if !isValidMIMEType(input.AnswerCImage.ContentType) {
 			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź C")
 		}
 	}
 
 	if input.AnswerDImage != nil {
-		if !validateMimeType(input.AnswerDImage.ContentType) {
+		if !isValidMIMEType(input.AnswerDImage.ContentType) {
 			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź D")
 		}
 	}
@@ -232,6 +231,6 @@ func validateInput(input *models.QuestionInput, opts validateOptions) error {
 	return nil
 }
 
-func validateMimeType(contentType string) bool {
+func isValidMIMEType(contentType string) bool {
 	return imageValidMIMETypes[contentType]
 }
