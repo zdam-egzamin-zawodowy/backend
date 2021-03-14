@@ -40,10 +40,12 @@ func NewPGRepository(cfg *PGRepositoryConfig) (question.Repository, error) {
 
 func (repo *pgRepository) Store(ctx context.Context, input *models.QuestionInput) (*models.Question, error) {
 	item := input.ToQuestion()
-	if _, err := repo.
+	baseQuery := repo.
 		Model(item).
 		Context(ctx).
-		Returning("*").
+		Returning("*")
+	if _, err := baseQuery.
+		Clone().
 		Insert(); err != nil {
 		if strings.Contains(err.Error(), "questions_from_content_correct_answer_qualification_id_key") {
 			return nil, errorutils.Wrap(err, messageSimilarRecordExists)
@@ -52,6 +54,17 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.QuestionInput
 	}
 
 	repo.saveImages(item, input)
+	if _, err := baseQuery.
+		Clone().
+		WherePK().
+		Set("image = ?", item.Image).
+		Set("answer_a_image = ?", item.AnswerAImage).
+		Set("answer_b_image = ?", item.AnswerBImage).
+		Set("answer_c_image = ?", item.AnswerCImage).
+		Set("answer_d_image = ?", item.AnswerDImage).
+		Update(); err != nil && err != pg.ErrNoRows {
+		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+	}
 
 	return item, nil
 }
