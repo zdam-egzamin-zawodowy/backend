@@ -71,7 +71,7 @@ func (r *queryResolver) Users(
 		&user.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  utils.SafeIntPointer(limit, user.DefaultLimit),
+			Limit:  utils.SafeIntPointer(limit, user.FetchMaxLimit),
 			Offset: utils.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},

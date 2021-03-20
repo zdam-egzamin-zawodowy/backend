@@ -1,7 +1,7 @@
 package user
 
 const (
-	DefaultLimit         = 100
+	FetchMaxLimit        = 100
 	MinDisplayNameLength = 2
 	MaxDisplayNameLength = 32
 	MinPasswordLength    = 6

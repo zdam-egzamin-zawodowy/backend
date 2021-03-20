@@ -12,8 +12,7 @@ var (
 )
 
 func SanitizeSort(sort string) string {
-	trimmed := strings.TrimSpace(sort)
-	splitted := strings.Split(trimmed, " ")
+	splitted := strings.Split(strings.TrimSpace(sort), " ")
 	length := len(splitted)
 
 	if length != 2 || !sortRegex.Match([]byte(splitted[0])) {
