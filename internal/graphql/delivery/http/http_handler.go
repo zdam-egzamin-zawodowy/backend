@@ -55,7 +55,7 @@ func graphqlHandler(cfg generated.Config) gin.HandlerFunc {
 	srv.Use(extension.AutomaticPersistedQuery{
 		Cache: lru.New(100),
 	})
-	srv.SetQueryCache(lru.New(100))
+	srv.SetQueryCache(lru.New(1000))
 	srv.Use(extension.FixedComplexityLimit(complexityLimit))
 	if mode.Get() == mode.DevelopmentMode {
 		srv.Use(extension.Introspection{})
@@ -78,10 +78,12 @@ func playgroundHandler() gin.HandlerFunc {
 }
 
 func prepareConfig(r *resolvers.Resolver, d *directive.Directive) generated.Config {
-	cfg := generated.Config{Resolvers: r}
+	cfg := generated.Config{
+		Resolvers:  r,
+		Complexity: getComplexityRoot(),
+	}
 	cfg.Directives.Authenticated = d.Authenticated
 	cfg.Directives.HasRole = d.HasRole
-	cfg.Complexity = getComplexityRoot()
 	return cfg
 }
 
@@ -124,6 +126,72 @@ func getComplexityRoot() generated.ComplexityRoot {
 		offset *int,
 		sort []string,
 	) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.CreateProfession = func(childComplexity int, input models.ProfessionInput) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.CreateQualification = func(
+		childComplexity int,
+		input models.QualificationInput,
+	) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.CreateQuestion = func(childComplexity int, input models.QuestionInput) int {
+		return 400 + childComplexity
+	}
+	complexityRoot.Mutation.CreateUser = func(childComplexity int, input models.UserInput) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.SignIn = func(
+		childComplexity int,
+		email string,
+		password string,
+		staySignedIn *bool,
+	) int {
+		return 400 + childComplexity
+	}
+	complexityRoot.Mutation.DeleteProfessions = func(childComplexity int, ids []int) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.DeleteQualifications = func(childComplexity int, ids []int) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.DeleteQuestions = func(childComplexity int, ids []int) int {
+		return 400 + childComplexity
+	}
+	complexityRoot.Mutation.DeleteUsers = func(childComplexity int, ids []int) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.UpdateManyUsers = func(
+		childComplexity int,
+		ids []int,
+		input models.UserInput,
+	) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.UpdateProfession = func(
+		childComplexity int,
+		id int,
+		input models.ProfessionInput,
+	) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.UpdateQualification = func(
+		childComplexity int,
+		id int,
+		input models.QualificationInput,
+	) int {
+		return 200 + childComplexity
+	}
+	complexityRoot.Mutation.UpdateQuestion = func(
+		childComplexity int,
+		id int,
+		input models.QuestionInput,
+	) int {
+		return 400 + childComplexity
+	}
+	complexityRoot.Mutation.UpdateUser = func(childComplexity int, id int, input models.UserInput) int {
 		return 200 + childComplexity
 	}
 	return complexityRoot
