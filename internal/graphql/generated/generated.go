@@ -38,6 +38,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
+	Profession() ProfessionResolver
 	Query() QueryResolver
 	Question() QuestionResolver
 }
@@ -66,11 +67,12 @@ type ComplexityRoot struct {
 	}
 
 	Profession struct {
-		CreatedAt   func(childComplexity int) int
-		Description func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Slug        func(childComplexity int) int
+		CreatedAt      func(childComplexity int) int
+		Description    func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Name           func(childComplexity int) int
+		Qualifications func(childComplexity int) int
+		Slug           func(childComplexity int) int
 	}
 
 	ProfessionList struct {
@@ -165,6 +167,9 @@ type MutationResolver interface {
 	UpdateManyUsers(ctx context.Context, ids []int, input models.UserInput) ([]*models.User, error)
 	DeleteUsers(ctx context.Context, ids []int) ([]*models.User, error)
 	SignIn(ctx context.Context, email string, password string, staySignedIn *bool) (*UserWithToken, error)
+}
+type ProfessionResolver interface {
+	Qualifications(ctx context.Context, obj *models.Profession) ([]*models.Qualification, error)
 }
 type QueryResolver interface {
 	Professions(ctx context.Context, filter *models.ProfessionFilter, limit *int, offset *int, sort []string) (*ProfessionList, error)
@@ -391,6 +396,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Profession.Name(childComplexity), true
+
+	case "Profession.qualifications":
+		if e.complexity.Profession.Qualifications == nil {
+			break
+		}
+
+		return e.complexity.Profession.Qualifications(childComplexity), true
 
 	case "Profession.slug":
 		if e.complexity.Profession.Slug == nil {
@@ -860,6 +872,7 @@ directive @hasRole(role: Role!) on FIELD_DEFINITION
   name: String!
   description: String
   createdAt: Time!
+  qualifications: [Qualification!]! @goField(forceResolver: true)
 }
 
 type ProfessionList {
@@ -3009,6 +3022,41 @@ func (ec *executionContext) _Profession_createdAt(ctx context.Context, field gra
 	res := resTmp.(time.Time)
 	fc.Result = res
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Profession_qualifications(ctx context.Context, field graphql.CollectedField, obj *models.Profession) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Profession",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Profession().Qualifications(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Qualification)
+	fc.Result = res
+	return ec.marshalNQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐQualificationᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ProfessionList_total(ctx context.Context, field graphql.CollectedField, obj *ProfessionList) (ret graphql.Marshaler) {
@@ -7085,25 +7133,39 @@ func (ec *executionContext) _Profession(ctx context.Context, sel ast.SelectionSe
 		case "id":
 			out.Values[i] = ec._Profession_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "slug":
 			out.Values[i] = ec._Profession_slug(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Profession_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "description":
 			out.Values[i] = ec._Profession_description(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._Profession_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
+		case "qualifications":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Profession_qualifications(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7965,6 +8027,43 @@ func (ec *executionContext) marshalNProfessionList2ᚖgithubᚗcomᚋzdamᚑegza
 		return graphql.Null
 	}
 	return ec._ProfessionList(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐQualificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Qualification) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐQualification(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalNQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelsᚐQualification(ctx context.Context, sel ast.SelectionSet, v *models.Qualification) graphql.Marshaler {

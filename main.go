@@ -123,6 +123,7 @@ func main() {
 	graphql.Use(
 		middleware.GinContextToContext(),
 		middleware.DataLoaderToContext(dataloader.Config{
+			ProfessionRepo:    professionRepository,
 			QualificationRepo: qualificationRepository,
 		}),
 		middleware.Authenticate(authUsecase),

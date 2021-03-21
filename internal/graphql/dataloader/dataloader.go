@@ -2,24 +2,31 @@ package dataloader
 
 import (
 	"context"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
 	"time"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
 )
 
+const (
+	wait = 2 * time.Millisecond
+)
+
 type Config struct {
+	ProfessionRepo    profession.Repository
 	QualificationRepo qualification.Repository
 }
 
 type DataLoader struct {
-	QualificationByID *QualificationLoader
+	QualificationByID            *QualificationLoader
+	QualificationsByProfessionID *QualificationSliceByProfessionIDLoader
 }
 
 func New(cfg Config) *DataLoader {
 	return &DataLoader{
 		QualificationByID: NewQualificationLoader(QualificationLoaderConfig{
-			Wait: 2 * time.Millisecond,
+			Wait: wait,
 			Fetch: func(ids []int) ([]*models.Qualification, []error) {
 				qualificationsNotInOrder, _, err := cfg.QualificationRepo.Fetch(context.Background(), &qualification.FetchConfig{
 					Filter: &models.QualificationFilter{
@@ -38,6 +45,23 @@ func New(cfg Config) *DataLoader {
 				for i, id := range ids {
 					qualifications[i] = qualificationByID[id]
 				}
+				return qualifications, nil
+			},
+		}),
+		QualificationsByProfessionID: NewQualificationSliceByProfessionIDLoader(QualificationSliceByProfessionIDLoaderConfig{
+			Wait: wait,
+			Fetch: func(ids []int) ([][]*models.Qualification, []error) {
+				m, err := cfg.ProfessionRepo.GetAssociatedQualifications(context.Background(), ids...)
+				if err != nil {
+					return nil, []error{err}
+				}
+
+				qualifications := make([][]*models.Qualification, len(ids))
+
+				for i, id := range ids {
+					qualifications[i] = m[id]
+				}
+
 				return qualifications, nil
 			},
 		}),

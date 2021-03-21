@@ -194,5 +194,8 @@ func getComplexityRoot() generated.ComplexityRoot {
 	complexityRoot.Mutation.UpdateUser = func(childComplexity int, id int, input models.UserInput) int {
 		return 200 + childComplexity
 	}
+	complexityRoot.Profession.Qualifications = func(childComplexity int) int {
+		return 50 + childComplexity
+	}
 	return complexityRoot
 }

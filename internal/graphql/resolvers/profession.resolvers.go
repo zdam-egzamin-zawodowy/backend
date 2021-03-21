@@ -5,6 +5,7 @@ package resolvers
 
 import (
 	"context"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
@@ -56,4 +57,16 @@ func (r *queryResolver) Profession(ctx context.Context, id *int, slug *string) (
 	}
 
 	return nil, nil
+}
+
+func (r *professionResolver) Qualifications(
+	ctx context.Context,
+	obj *models.Profession,
+) ([]*models.Qualification, error) {
+	if obj != nil {
+		if dataloader, err := middleware.DataLoaderFromContext(ctx); err == nil && dataloader != nil {
+			return dataloader.QualificationsByProfessionID.Load(obj.ID)
+		}
+	}
+	return []*models.Qualification{}, nil
 }

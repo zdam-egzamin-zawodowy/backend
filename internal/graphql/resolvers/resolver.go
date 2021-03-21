@@ -23,8 +23,10 @@ type Resolver struct {
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type professionResolver struct{ *Resolver }
 type questionResolver struct{ *Resolver }
 
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-func (r *Resolver) Query() generated.QueryResolver       { return &queryResolver{r} }
-func (r *Resolver) Question() generated.QuestionResolver { return &questionResolver{r} }
+func (r *Resolver) Mutation() generated.MutationResolver     { return &mutationResolver{r} }
+func (r *Resolver) Query() generated.QueryResolver           { return &queryResolver{r} }
+func (r *Resolver) Profession() generated.ProfessionResolver { return &professionResolver{r} }
+func (r *Resolver) Question() generated.QuestionResolver     { return &questionResolver{r} }

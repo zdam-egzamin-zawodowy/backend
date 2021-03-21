@@ -19,4 +19,5 @@ type Repository interface {
 	UpdateMany(ctx context.Context, f *models.ProfessionFilter, input *models.ProfessionInput) ([]*models.Profession, error)
 	Delete(ctx context.Context, f *models.ProfessionFilter) ([]*models.Profession, error)
 	Fetch(ctx context.Context, cfg *FetchConfig) ([]*models.Profession, int, error)
+	GetAssociatedQualifications(ctx context.Context, ids ...int) (map[int][]*models.Qualification, error)
 }

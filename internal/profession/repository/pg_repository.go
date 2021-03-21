@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 	"strings"
 
 	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
@@ -100,4 +101,27 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig
 		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
+}
+
+func (repo *pgRepository) GetAssociatedQualifications(
+	ctx context.Context,
+	ids ...int,
+) (map[int][]*models.Qualification, error) {
+	m := make(map[int][]*models.Qualification)
+	for _, id := range ids {
+		m[id] = []*models.Qualification{}
+	}
+	qualificationToProfession := []*models.QualificationToProfession{}
+	if err := repo.
+		Model(&qualificationToProfession).
+		Context(ctx).
+		Where(sqlutils.BuildConditionArray("profession_id"), pg.Array(ids)).
+		Relation("Qualification").
+		Select(); err != nil {
+		return nil, errorutils.Wrap(err, messageFailedToFetchAssociatedQualifications)
+	}
+	for _, record := range qualificationToProfession {
+		m[record.ProfessionID] = append(m[record.ProfessionID], record.Qualification)
+	}
+	return m, nil
 }

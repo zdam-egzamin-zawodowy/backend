@@ -4,6 +4,7 @@ type Profession {
   name: String!
   description: String
   createdAt: Time!
+  qualifications: [Qualification!]! @goField(forceResolver: true)
 }
 
 type ProfessionList {
