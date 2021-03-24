@@ -40,7 +40,7 @@ func (r *queryResolver) Qualifications(
 		&qualification.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  utils.SafeIntPointer(limit, qualification.DefaultLimit),
+			Limit:  utils.SafeIntPointer(limit, qualification.FetchDefaultLimit),
 			Offset: utils.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},

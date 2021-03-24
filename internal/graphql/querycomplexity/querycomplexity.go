@@ -1,19 +1,32 @@
 package querycomplexity
 
 import (
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/utils"
 )
 
 const (
+	complexityLimit = 10000
 	countComplexity = 1000
 )
 
+func GetComplexityLimitExtension() *extension.ComplexityLimit {
+	return extension.FixedComplexityLimit(complexityLimit)
+}
+
 func GetComplexityRoot() generated.ComplexityRoot {
 	complexityRoot := generated.ComplexityRoot{}
-	complexityRoot.Query.GenerateTest = func(childComplexity int, qualificationIDs []int, limit *int) int {
-		return 300 + childComplexity
+
+	complexityRoot.Profession.Qualifications = func(childComplexity int) int {
+		return 10 + childComplexity
 	}
+	complexityRoot.ProfessionList.Total = getCountComplexity
 	complexityRoot.Query.Professions = func(
 		childComplexity int,
 		filter *models.ProfessionFilter,
@@ -21,8 +34,15 @@ func GetComplexityRoot() generated.ComplexityRoot {
 		offset *int,
 		sort []string,
 	) int {
-		return 200 + childComplexity
+		return computeComplexity(
+			childComplexity,
+			utils.SafeIntPointer(limit, profession.FetchDefaultLimit),
+			100,
+			1,
+		)
 	}
+
+	complexityRoot.QualificationList.Total = getCountComplexity
 	complexityRoot.Query.Qualifications = func(
 		childComplexity int,
 		filter *models.QualificationFilter,
@@ -30,8 +50,15 @@ func GetComplexityRoot() generated.ComplexityRoot {
 		offset *int,
 		sort []string,
 	) int {
-		return 200 + childComplexity
+		return computeComplexity(
+			childComplexity,
+			utils.SafeIntPointer(limit, qualification.FetchDefaultLimit),
+			100,
+			1,
+		)
 	}
+
+	complexityRoot.QuestionList.Total = getCountComplexity
 	complexityRoot.Query.Questions = func(
 		childComplexity int,
 		filter *models.QuestionFilter,
@@ -39,8 +66,23 @@ func GetComplexityRoot() generated.ComplexityRoot {
 		offset *int,
 		sort []string,
 	) int {
-		return 200 + childComplexity
+		return computeComplexity(
+			childComplexity,
+			utils.SafeIntPointer(limit, question.FetchDefaultLimit),
+			300,
+			1,
+		)
 	}
+	complexityRoot.Query.GenerateTest = func(childComplexity int, qualificationIDs []int, limit *int) int {
+		return computeComplexity(
+			childComplexity,
+			utils.SafeIntPointer(limit, question.TestMaxLimit),
+			0,
+			3,
+		)
+	}
+
+	complexityRoot.UserList.Total = getCountComplexity
 	complexityRoot.Query.Users = func(
 		childComplexity int,
 		filter *models.UserFilter,
@@ -48,77 +90,94 @@ func GetComplexityRoot() generated.ComplexityRoot {
 		offset *int,
 		sort []string,
 	) int {
-		return 200 + childComplexity
+		return computeComplexity(
+			childComplexity,
+			utils.SafeIntPointer(limit, user.FetchMaxLimit),
+			50,
+			1,
+		)
 	}
+
 	complexityRoot.Mutation.CreateProfession = func(childComplexity int, input models.ProfessionInput) int {
-		return 200 + childComplexity
+		return (complexityLimit / 5) + childComplexity
 	}
+
 	complexityRoot.Mutation.CreateQualification = func(
 		childComplexity int,
 		input models.QualificationInput,
 	) int {
-		return 200 + childComplexity
+		return (complexityLimit / 5) + childComplexity
 	}
+
 	complexityRoot.Mutation.CreateQuestion = func(childComplexity int, input models.QuestionInput) int {
-		return 400 + childComplexity
+		return (complexityLimit / 4) + childComplexity
 	}
+
 	complexityRoot.Mutation.CreateUser = func(childComplexity int, input models.UserInput) int {
-		return 200 + childComplexity
+		return (complexityLimit / 5) + childComplexity
 	}
+
 	complexityRoot.Mutation.SignIn = func(
 		childComplexity int,
 		email string,
 		password string,
 		staySignedIn *bool,
 	) int {
-		return 400 + childComplexity
+		return (complexityLimit / 2) + childComplexity
 	}
-	complexityRoot.Mutation.DeleteProfessions = func(childComplexity int, ids []int) int {
-		return 200 + childComplexity
-	}
-	complexityRoot.Mutation.DeleteQualifications = func(childComplexity int, ids []int) int {
-		return 200 + childComplexity
-	}
-	complexityRoot.Mutation.DeleteQuestions = func(childComplexity int, ids []int) int {
-		return 400 + childComplexity
-	}
-	complexityRoot.Mutation.DeleteUsers = func(childComplexity int, ids []int) int {
-		return 200 + childComplexity
-	}
+
 	complexityRoot.Mutation.UpdateManyUsers = func(
 		childComplexity int,
 		ids []int,
 		input models.UserInput,
 	) int {
-		return 200 + childComplexity
+		return (complexityLimit / 5) + childComplexity
 	}
+
 	complexityRoot.Mutation.UpdateProfession = func(
 		childComplexity int,
 		id int,
 		input models.ProfessionInput,
 	) int {
-		return 200 + childComplexity
+		return (complexityLimit / 5) + childComplexity
 	}
+
 	complexityRoot.Mutation.UpdateQualification = func(
 		childComplexity int,
 		id int,
 		input models.QualificationInput,
 	) int {
-		return 200 + childComplexity
+		return (complexityLimit / 5) + childComplexity
 	}
+
 	complexityRoot.Mutation.UpdateQuestion = func(
 		childComplexity int,
 		id int,
 		input models.QuestionInput,
 	) int {
-		return 400 + childComplexity
+		return (complexityLimit / 4) + childComplexity
 	}
+
 	complexityRoot.Mutation.UpdateUser = func(childComplexity int, id int, input models.UserInput) int {
-		return 200 + childComplexity
+		return (complexityLimit / 5) + childComplexity
 	}
-	complexityRoot.Profession.Qualifications = func(childComplexity int) int {
-		return 50 + childComplexity
+
+	complexityRoot.Mutation.DeleteProfessions = func(childComplexity int, ids []int) int {
+		return (complexityLimit / 5) + childComplexity
 	}
+
+	complexityRoot.Mutation.DeleteQualifications = func(childComplexity int, ids []int) int {
+		return (complexityLimit / 5) + childComplexity
+	}
+
+	complexityRoot.Mutation.DeleteQuestions = func(childComplexity int, ids []int) int {
+		return (complexityLimit / 4) + childComplexity
+	}
+
+	complexityRoot.Mutation.DeleteUsers = func(childComplexity int, ids []int) int {
+		return (complexityLimit / 5) + childComplexity
+	}
+
 	return complexityRoot
 }
 

@@ -21,7 +21,6 @@ const (
 	playgroundTTL      = time.Hour / time.Second
 	graphqlEndpoint    = "/graphql"
 	playgroundEndpoint = "/"
-	complexityLimit    = 1000
 )
 
 type Config struct {
@@ -56,7 +55,7 @@ func graphqlHandler(cfg generated.Config) gin.HandlerFunc {
 		Cache: lru.New(100),
 	})
 	srv.SetQueryCache(lru.New(100))
-	srv.Use(extension.FixedComplexityLimit(complexityLimit))
+	srv.Use(querycomplexity.GetComplexityLimitExtension())
 	if mode.Get() == mode.DevelopmentMode {
 		srv.Use(extension.Introspection{})
 	}

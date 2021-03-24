@@ -61,7 +61,7 @@ func (ucase *usecase) Delete(ctx context.Context, f *models.QualificationFilter)
 func (ucase *usecase) Fetch(ctx context.Context, cfg *qualification.FetchConfig) ([]*models.Qualification, int, error) {
 	if cfg == nil {
 		cfg = &qualification.FetchConfig{
-			Limit: qualification.DefaultLimit,
+			Limit: qualification.FetchDefaultLimit,
 			Count: true,
 		}
 	}

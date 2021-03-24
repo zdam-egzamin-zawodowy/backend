@@ -1,6 +1,6 @@
 package qualification
 
 const (
-	DefaultLimit  = 100
-	MaxNameLength = 100
+	FetchDefaultLimit = 100
+	MaxNameLength     = 100
 )

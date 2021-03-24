@@ -61,7 +61,7 @@ func (ucase *usecase) Delete(ctx context.Context, f *models.ProfessionFilter) ([
 func (ucase *usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*models.Profession, int, error) {
 	if cfg == nil {
 		cfg = &profession.FetchConfig{
-			Limit: profession.DefaultLimit,
+			Limit: profession.FetchDefaultLimit,
 			Count: true,
 		}
 	}
