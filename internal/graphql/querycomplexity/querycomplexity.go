@@ -12,8 +12,12 @@ import (
 )
 
 const (
-	complexityLimit = 10000
-	countComplexity = 1000
+	complexityLimit                    = 10000
+	countComplexity                    = 1000
+	professionsTotalFieldComplexity    = 100
+	qualificationsTotalFieldComplexity = 100
+	questionsTotalFieldComplexity      = 300
+	usersTotalFieldComplexity          = 50
 )
 
 func GetComplexityLimitExtension() *extension.ComplexityLimit {
@@ -37,7 +41,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 		return computeComplexity(
 			childComplexity,
 			utils.SafeIntPointer(limit, profession.FetchDefaultLimit),
-			100,
+			professionsTotalFieldComplexity,
 			1,
 		)
 	}
@@ -53,7 +57,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 		return computeComplexity(
 			childComplexity,
 			utils.SafeIntPointer(limit, qualification.FetchDefaultLimit),
-			100,
+			qualificationsTotalFieldComplexity,
 			1,
 		)
 	}
@@ -69,7 +73,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 		return computeComplexity(
 			childComplexity,
 			utils.SafeIntPointer(limit, question.FetchDefaultLimit),
-			300,
+			questionsTotalFieldComplexity,
 			1,
 		)
 	}
@@ -93,7 +97,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 		return computeComplexity(
 			childComplexity,
 			utils.SafeIntPointer(limit, user.FetchMaxLimit),
-			50,
+			usersTotalFieldComplexity,
 			1,
 		)
 	}
