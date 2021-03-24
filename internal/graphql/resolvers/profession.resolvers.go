@@ -41,7 +41,7 @@ func (r *queryResolver) Professions(
 		&profession.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  utils.SafeIntPointer(limit, profession.DefaultLimit),
+			Limit:  utils.SafeIntPointer(limit, profession.FetchDefaultLimit),
 			Offset: utils.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},
