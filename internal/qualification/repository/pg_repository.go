@@ -39,21 +39,13 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.Qualification
 			Context(ctx).
 			Returning("*").
 			Insert(); err != nil {
-			if strings.Contains(err.Error(), "name") {
-				return errorutils.Wrap(err, messageNameIsAlreadyTaken)
-			} else if strings.Contains(err.Error(), "code") || strings.Contains(err.Error(), "slug") {
-				return errorutils.Wrap(err, messageCodeIsAlreadyTaken)
-			}
-			return errorutils.Wrap(err, messageFailedToSaveModel)
+			return handleInsertAndUpdateError(err)
 		}
 
-		for _, professionID := range input.AssociateProfession {
-			tx.
-				Model(&models.QualificationToProfession{
-					QualificationID: item.ID,
-					ProfessionID:    professionID,
-				}).
-				Insert()
+		if len(input.AssociateProfession) > 0 {
+			if err := repo.associateQualificationWithProfession(tx, []int{item.ID}, input.AssociateProfession); err != nil {
+				return handleInsertAndUpdateError(err)
+			}
 		}
 
 		return nil
@@ -75,12 +67,7 @@ func (repo *pgRepository) UpdateMany(
 				Apply(input.ApplyUpdate).
 				Apply(f.Where).
 				Update(); err != nil && err != pg.ErrNoRows {
-				if strings.Contains(err.Error(), "name") {
-					return errorutils.Wrap(err, messageNameIsAlreadyTaken)
-				} else if strings.Contains(err.Error(), "code") || strings.Contains(err.Error(), "slug") {
-					return errorutils.Wrap(err, messageCodeIsAlreadyTaken)
-				}
-				return errorutils.Wrap(err, messageFailedToSaveModel)
+				return handleInsertAndUpdateError(err)
 			}
 		}
 
@@ -89,7 +76,7 @@ func (repo *pgRepository) UpdateMany(
 			Context(ctx).
 			Apply(f.Where).
 			Select(); err != nil && err != pg.ErrNoRows {
-			return errorutils.Wrap(err, messageFailedToFetchModel)
+			return handleInsertAndUpdateError(err)
 		}
 
 		qualificationIDs := make([]int, len(items))
@@ -99,24 +86,20 @@ func (repo *pgRepository) UpdateMany(
 
 		if len(qualificationIDs) > 0 {
 			if len(input.DissociateProfession) > 0 {
-				tx.
+				_, err := tx.
 					Model(&models.QualificationToProfession{}).
 					Where(sqlutils.BuildConditionArray("profession_id"), pg.Array(input.DissociateProfession)).
 					Where(sqlutils.BuildConditionArray("qualification_id"), pg.Array(qualificationIDs)).
 					Delete()
+				if err != nil {
+					return handleInsertAndUpdateError(err)
+				}
 			}
 
 			if len(input.AssociateProfession) > 0 {
-				toInsert := []*models.QualificationToProfession{}
-				for _, professionID := range input.AssociateProfession {
-					for _, qualificationID := range qualificationIDs {
-						toInsert = append(toInsert, &models.QualificationToProfession{
-							ProfessionID:    professionID,
-							QualificationID: qualificationID,
-						})
-					}
+				if err := repo.associateQualificationWithProfession(tx, qualificationIDs, input.AssociateProfession); err != nil {
+					return handleInsertAndUpdateError(err)
 				}
-				tx.Model(&toInsert).Insert()
 			}
 		}
 
@@ -159,4 +142,58 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *qualification.FetchCon
 		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
+}
+
+func (repo *pgRepository) GetSimilar(ctx context.Context, cfg *qualification.GetSimilarConfig) ([]*models.Qualification, int, error) {
+	var err error
+	subquery := repo.
+		Model(&models.QualificationToProfession{}).
+		Context(ctx).
+		Where(sqlutils.BuildConditionEquals("qualification_id"), cfg.QualificationID).
+		Column("profession_id")
+	qualificationIDs := []int{}
+	err = repo.
+		Model(&models.QualificationToProfession{}).
+		Context(ctx).
+		Column("qualification_id").
+		With("prof", subquery).
+		Where(sqlutils.BuildConditionIn("profession_id"), pg.Safe("SELECT profession_id FROM prof")).
+		Where(sqlutils.BuildConditionNEQ("qualification_id"), cfg.QualificationID).
+		Select(&qualificationIDs)
+	if err != nil {
+		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
+	}
+
+	return repo.Fetch(ctx, &qualification.FetchConfig{
+		Sort:   cfg.Sort,
+		Limit:  cfg.Limit,
+		Offset: cfg.Offset,
+		Filter: &models.QualificationFilter{
+			ID: qualificationIDs,
+		},
+		Count: cfg.Count,
+	})
+}
+
+func (repo *pgRepository) associateQualificationWithProfession(tx *pg.Tx, qualificationIDs, professionIDs []int) error {
+	toInsert := []*models.QualificationToProfession{}
+	for _, professionID := range professionIDs {
+		for _, qualificationID := range qualificationIDs {
+			toInsert = append(toInsert, &models.QualificationToProfession{
+				ProfessionID:    professionID,
+				QualificationID: qualificationID,
+			})
+		}
+	}
+	_, err := tx.Model(&toInsert).Insert()
+	return err
+}
+
+func handleInsertAndUpdateError(err error) error {
+	if strings.Contains(err.Error(), "name") {
+		return errorutils.Wrap(err, messageNameIsAlreadyTaken)
+	} else if strings.Contains(err.Error(), "code") || strings.Contains(err.Error(), "slug") {
+		return errorutils.Wrap(err, messageCodeIsAlreadyTaken)
+	}
+	return errorutils.Wrap(err, messageFailedToSaveModel)
 }

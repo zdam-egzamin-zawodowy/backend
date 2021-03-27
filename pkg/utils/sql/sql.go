@@ -22,6 +22,10 @@ func BuildConditionEquals(column string) string {
 	return column + " = ?"
 }
 
+func BuildConditionNEQ(column string) string {
+	return column + " != ?"
+}
+
 func BuildConditionLT(column string) string {
 	return column + " < ?"
 }

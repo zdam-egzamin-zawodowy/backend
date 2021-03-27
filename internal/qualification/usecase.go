@@ -13,4 +13,5 @@ type Usecase interface {
 	Fetch(ctx context.Context, cfg *FetchConfig) ([]*models.Qualification, int, error)
 	GetByID(ctx context.Context, id int) (*models.Qualification, error)
 	GetBySlug(ctx context.Context, slug string) (*models.Qualification, error)
+	GetSimilar(ctx context.Context, cfg *GetSimilarConfig) ([]*models.Qualification, int, error)
 }

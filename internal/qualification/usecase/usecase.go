@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
@@ -19,7 +19,7 @@ type Config struct {
 
 func New(cfg *Config) (qualification.Usecase, error) {
 	if cfg == nil || cfg.QualificationRepository == nil {
-		return nil, fmt.Errorf("qualification/usecase: QualificationRepository is required")
+		return nil, errors.New("qualification/usecase: QualificationRepository is required")
 	}
 	return &usecase{
 		cfg.QualificationRepository,
@@ -35,7 +35,7 @@ func (ucase *usecase) Store(ctx context.Context, input *models.QualificationInpu
 
 func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.QualificationInput) (*models.Qualification, error) {
 	if id <= 0 {
-		return nil, fmt.Errorf(messageInvalidID)
+		return nil, errors.New(messageInvalidID)
 	}
 	if err := validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.Q
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
 }
@@ -81,7 +81,7 @@ func (ucase *usecase) GetByID(ctx context.Context, id int) (*models.Qualificatio
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
 }
@@ -98,9 +98,17 @@ func (ucase *usecase) GetBySlug(ctx context.Context, slug string) (*models.Quali
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
+}
+
+func (ucase *usecase) GetSimilar(ctx context.Context, cfg *qualification.GetSimilarConfig) ([]*models.Qualification, int, error) {
+	if cfg == nil || cfg.QualificationID <= 0 {
+		return nil, 0, errors.New(messageQualificationIDIsRequired)
+	}
+	cfg.Sort = sqlutils.SanitizeSorts(cfg.Sort)
+	return ucase.qualificationRepository.GetSimilar(ctx, cfg)
 }
 
 type validateOptions struct {
@@ -109,25 +117,25 @@ type validateOptions struct {
 
 func validateInput(input *models.QualificationInput, opts validateOptions) error {
 	if input.IsEmpty() {
-		return fmt.Errorf(messageEmptyPayload)
+		return errors.New(messageEmptyPayload)
 	}
 
 	if input.Name != nil {
 		if *input.Name == "" {
-			return fmt.Errorf(messageNameIsRequired)
+			return errors.New(messageNameIsRequired)
 		} else if len(*input.Name) > qualification.MaxNameLength {
-			return fmt.Errorf(messageNameIsTooLong, qualification.MaxNameLength)
+			return errors.Errorf(messageNameIsTooLong, qualification.MaxNameLength)
 		}
 	} else if !opts.allowNilValues {
-		return fmt.Errorf(messageNameIsRequired)
+		return errors.New(messageNameIsRequired)
 	}
 
 	if input.Code != nil {
 		if *input.Code == "" {
-			return fmt.Errorf(messageCodeIsRequired)
+			return errors.New(messageCodeIsRequired)
 		}
 	} else if !opts.allowNilValues {
-		return fmt.Errorf(messageCodeIsRequired)
+		return errors.New(messageCodeIsRequired)
 	}
 
 	return nil
