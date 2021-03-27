@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 	"strings"
 
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
@@ -24,7 +24,7 @@ type PGRepositoryConfig struct {
 
 func NewPGRepository(cfg *PGRepositoryConfig) (qualification.Repository, error) {
 	if cfg == nil || cfg.DB == nil {
-		return nil, fmt.Errorf("qualification/pg_repository: *pg.DB is required")
+		return nil, errors.New("qualification/pg_repository: *pg.DB is required")
 	}
 	return &pgRepository{
 		cfg.DB,

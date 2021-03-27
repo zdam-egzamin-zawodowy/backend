@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 	"strings"
 	"time"
 
@@ -28,7 +28,7 @@ type PGRepositoryConfig struct {
 
 func NewPGRepository(cfg *PGRepositoryConfig) (question.Repository, error) {
 	if cfg == nil || cfg.DB == nil || cfg.FileStorage == nil {
-		return nil, fmt.Errorf("question/pg_repository: *pg.DB and filestorage.FileStorage are required")
+		return nil, errors.New("question/pg_repository: *pg.DB and filestorage.FileStorage are required")
 	}
 	return &pgRepository{
 		cfg.DB,
@@ -47,10 +47,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.QuestionInput
 	if _, err := baseQuery.
 		Clone().
 		Insert(); err != nil {
-		if strings.Contains(err.Error(), "questions_from_content_correct_answer_qualification_id_key") {
-			return nil, errorutils.Wrap(err, messageSimilarRecordExists)
-		}
-		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+		return nil, handleInsertAndUpdateError(err)
 	}
 
 	repo.saveImages(item, input)
@@ -82,10 +79,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 		Clone().
 		Apply(input.ApplyUpdate).
 		Update(); err != nil && err != pg.ErrNoRows {
-		if strings.Contains(err.Error(), "questions_from_content_correct_answer_qualification_id_key") {
-			return nil, errorutils.Wrap(err, messageSimilarRecordExists)
-		}
-		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+		return nil, handleInsertAndUpdateError(err)
 	}
 
 	repo.saveImages(item, input)
@@ -99,7 +93,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 		Set("answer_c_image = ?", item.AnswerCImage).
 		Set("answer_d_image = ?", item.AnswerDImage).
 		Update(); err != nil && err != pg.ErrNoRows {
-		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+		return nil, handleInsertAndUpdateError(err)
 	}
 
 	return item, nil
@@ -165,4 +159,11 @@ func (repo *pgRepository) GenerateTest(ctx context.Context, cfg *question.Genera
 		return nil, errorutils.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, nil
+}
+
+func handleInsertAndUpdateError(err error) error {
+	if strings.Contains(err.Error(), "questions_from_content_correct_answer_qualification_id_key") {
+		return errorutils.Wrap(err, messageSimilarRecordExists)
+	}
+	return errorutils.Wrap(err, messageFailedToSaveModel)
 }

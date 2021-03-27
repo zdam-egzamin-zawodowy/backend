@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 	"strings"
 
@@ -23,7 +23,7 @@ type PGRepositoryConfig struct {
 
 func NewPGRepository(cfg *PGRepositoryConfig) (profession.Repository, error) {
 	if cfg == nil || cfg.DB == nil {
-		return nil, fmt.Errorf("profession/pg_repository: *pg.DB is required")
+		return nil, errors.New("profession/pg_repository: *pg.DB is required")
 	}
 	return &pgRepository{
 		cfg.DB,
@@ -37,10 +37,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.ProfessionInp
 		Context(ctx).
 		Returning("*").
 		Insert(); err != nil {
-		if strings.Contains(err.Error(), "name") || strings.Contains(err.Error(), "slug") {
-			return nil, errorutils.Wrap(err, messageNameIsAlreadyTaken)
-		}
-		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+		return nil, handleInsertAndUpdateError(err)
 	}
 	return item, nil
 }
@@ -52,10 +49,7 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.ProfessionFi
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
 		Update(); err != nil && err != pg.ErrNoRows {
-		if strings.Contains(err.Error(), "name") || strings.Contains(err.Error(), "slug") {
-			return nil, errorutils.Wrap(err, messageNameIsAlreadyTaken)
-		}
-		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+		return nil, handleInsertAndUpdateError(err)
 	}
 	items, _, err := repo.Fetch(ctx, &profession.FetchConfig{
 		Count:  false,
@@ -124,4 +118,11 @@ func (repo *pgRepository) GetAssociatedQualifications(
 		m[record.ProfessionID] = append(m[record.ProfessionID], record.Qualification)
 	}
 	return m, nil
+}
+
+func handleInsertAndUpdateError(err error) error {
+	if strings.Contains(err.Error(), "name") || strings.Contains(err.Error(), "slug") {
+		return errorutils.Wrap(err, messageNameIsAlreadyTaken)
+	}
+	return errorutils.Wrap(err, messageFailedToSaveModel)
 }

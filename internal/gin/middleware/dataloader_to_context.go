@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/dataloader"
@@ -23,13 +23,13 @@ func DataLoaderToContext(cfg dataloader.Config) gin.HandlerFunc {
 func DataLoaderFromContext(ctx context.Context) (*dataloader.DataLoader, error) {
 	dataLoader := ctx.Value(dataLoaderToContext)
 	if dataLoader == nil {
-		err := fmt.Errorf("could not retrieve dataloader.DataLoader")
+		err := errors.New("could not retrieve dataloader.DataLoader")
 		return nil, err
 	}
 
 	dl, ok := dataLoader.(*dataloader.DataLoader)
 	if !ok {
-		err := fmt.Errorf("dataloader.DataLoader has wrong type")
+		err := errors.New("dataloader.DataLoader has wrong type")
 		return nil, err
 	}
 	return dl, nil

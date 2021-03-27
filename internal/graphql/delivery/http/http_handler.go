@@ -2,6 +2,7 @@ package httpdelivery
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/querycomplexity"
 	"time"
 
@@ -30,7 +31,7 @@ type Config struct {
 
 func Attach(group *gin.RouterGroup, cfg Config) error {
 	if cfg.Resolver == nil {
-		return fmt.Errorf("Graphql resolver cannot be nil")
+		return errors.New("Graphql resolver cannot be nil")
 	}
 	gqlHandler := graphqlHandler(prepareConfig(cfg.Resolver, cfg.Directive))
 	group.GET(graphqlEndpoint, gqlHandler)

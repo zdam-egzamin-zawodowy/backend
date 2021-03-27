@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
@@ -22,7 +22,7 @@ type Config struct {
 
 func New(cfg *Config) (auth.Usecase, error) {
 	if cfg == nil || cfg.UserRepository == nil {
-		return nil, fmt.Errorf("user/usecase: UserRepository is required")
+		return nil, errors.New("user/usecase: UserRepository is required")
 	}
 	return &usecase{
 		cfg.UserRepository,
@@ -31,7 +31,7 @@ func New(cfg *Config) (auth.Usecase, error) {
 }
 
 func (ucase *usecase) SignIn(ctx context.Context, email, password string, staySignedIn bool) (*models.User, string, error) {
-	user, err := ucase.GetUserByCredentials(ctx, email, password)
+	u, err := ucase.GetUserByCredentials(ctx, email, password)
 	if err != nil {
 		return nil, "", err
 	}
@@ -39,15 +39,15 @@ func (ucase *usecase) SignIn(ctx context.Context, email, password string, staySi
 	token, err := ucase.tokenGenerator.Generate(jwt.Metadata{
 		StaySignedIn: staySignedIn,
 		Credentials: jwt.Credentials{
-			Email:    user.Email,
-			Password: user.Password,
+			Email:    u.Email,
+			Password: u.Password,
 		},
 	})
 	if err != nil {
 		return nil, "", errorutils.Wrap(err, messageInvalidCredentials)
 	}
 
-	return user, token, nil
+	return u, token, nil
 }
 
 func (ucase *usecase) ExtractAccessTokenMetadata(ctx context.Context, accessToken string) (*models.User, error) {
@@ -71,13 +71,13 @@ func (ucase *usecase) GetUserByCredentials(ctx context.Context, email, password 
 		return nil, err
 	}
 	if len(users) <= 0 {
-		return nil, fmt.Errorf(messageInvalidCredentials)
+		return nil, errors.New(messageInvalidCredentials)
 	}
 
-	user := users[0]
-	if err := user.CompareHashAndPassword(password); err != nil {
+	u := users[0]
+	if err := u.CompareHashAndPassword(password); err != nil {
 		return nil, errorutils.Wrap(err, messageInvalidCredentials)
 	}
 
-	return user, nil
+	return u, nil
 }

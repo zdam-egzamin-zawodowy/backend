@@ -6,7 +6,7 @@ import (
 )
 
 func Wrap(details error, message string) error {
-	return Wrapf(details, message)
+	return errors.Wrap(details, message)
 }
 
 func Wrapf(details error, message string, args ...interface{}) error {

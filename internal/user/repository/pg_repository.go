@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 	"strings"
 
 	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
@@ -22,7 +22,7 @@ type PGRepositoryConfig struct {
 
 func NewPGRepository(cfg *PGRepositoryConfig) (user.Repository, error) {
 	if cfg == nil || cfg.DB == nil {
-		return nil, fmt.Errorf("user/pg_repository: *pg.DB is required")
+		return nil, errors.New("user/pg_repository: *pg.DB is required")
 	}
 	return &pgRepository{
 		cfg.DB,
@@ -36,10 +36,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.UserInput) (*
 		Context(ctx).
 		Returning("*").
 		Insert(); err != nil {
-		if strings.Contains(err.Error(), "email") {
-			return nil, errorutils.Wrap(err, messageEmailIsAlreadyTaken)
-		}
-		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+		return nil, handleInsertAndUpdateError(err)
 	}
 	return item, nil
 }
@@ -51,10 +48,7 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.UserFilter, 
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
 		Update(); err != nil && err != pg.ErrNoRows {
-		if strings.Contains(err.Error(), "email") {
-			return nil, errorutils.Wrap(err, messageEmailIsAlreadyTaken)
-		}
-		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+		return nil, handleInsertAndUpdateError(err)
 	}
 	items, _, err := repo.Fetch(ctx, &user.FetchConfig{
 		Count:  false,
@@ -100,4 +94,11 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*
 		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
+}
+
+func handleInsertAndUpdateError(err error) error {
+	if strings.Contains(err.Error(), "email") {
+		return errorutils.Wrap(err, messageEmailIsAlreadyTaken)
+	}
+	return errorutils.Wrap(err, messageFailedToSaveModel)
 }

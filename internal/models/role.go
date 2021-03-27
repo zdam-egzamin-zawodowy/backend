@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
 	"strconv"
 	"strings"
@@ -30,12 +31,12 @@ func (role Role) String() string {
 func (role *Role) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
-		return fmt.Errorf("enums must be strings")
+		return errors.New("enums must be strings")
 	}
 
 	*role = Role(strings.ToLower(str))
 	if !role.IsValid() {
-		return fmt.Errorf("%s is not a valid Role", str)
+		return errors.Errorf("%s is not a valid Role", str)
 	}
 	return nil
 }

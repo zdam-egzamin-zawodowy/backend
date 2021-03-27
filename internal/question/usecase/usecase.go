@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
@@ -26,7 +26,7 @@ type Config struct {
 
 func New(cfg *Config) (question.Usecase, error) {
 	if cfg == nil || cfg.QuestionRepository == nil {
-		return nil, fmt.Errorf("question/usecase: cfg.QuestionRepository is required")
+		return nil, errors.New("question/usecase: cfg.QuestionRepository is required")
 	}
 	return &usecase{
 		cfg.QuestionRepository,
@@ -42,7 +42,7 @@ func (ucase *usecase) Store(ctx context.Context, input *models.QuestionInput) (*
 
 func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.QuestionInput) (*models.Question, error) {
 	if id <= 0 {
-		return nil, fmt.Errorf(messageInvalidID)
+		return nil, errors.New(messageInvalidID)
 	}
 	if err := validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.Q
 		return nil, err
 	}
 	if item == nil {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return item, nil
 }
@@ -89,7 +89,7 @@ func (ucase *usecase) GetByID(ctx context.Context, id int) (*models.Question, er
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
 }
@@ -112,119 +112,119 @@ type validateOptions struct {
 
 func validateInput(input *models.QuestionInput, opts validateOptions) error {
 	if input.IsEmpty() {
-		return fmt.Errorf(messageEmptyPayload)
+		return errors.New(messageEmptyPayload)
 	}
 
 	if input.Content != nil {
 		if *input.Content == "" {
-			return fmt.Errorf(messageContentIsRequired)
+			return errors.New(messageContentIsRequired)
 		}
 	} else if !opts.allowNilValues {
-		return fmt.Errorf(messageContentIsRequired)
+		return errors.New(messageContentIsRequired)
 	}
 
 	if input.CorrectAnswer != nil {
 		if !input.CorrectAnswer.IsValid() {
-			return fmt.Errorf(messageCorrectAnswerIsInvalid)
+			return errors.New(messageCorrectAnswerIsInvalid)
 		}
 	} else if !opts.allowNilValues {
-		return fmt.Errorf(messageCorrectAnswerIsInvalid)
+		return errors.New(messageCorrectAnswerIsInvalid)
 	}
 
 	if input.QualificationID != nil {
 		if *input.QualificationID <= 0 {
-			return fmt.Errorf(messageQualificationIDIsRequired)
+			return errors.New(messageQualificationIDIsRequired)
 		}
 	} else if !opts.allowNilValues {
-		return fmt.Errorf(messageQualificationIDIsRequired)
+		return errors.New(messageQualificationIDIsRequired)
 	}
 
 	if input.AnswerA != nil {
 		if *input.AnswerA == "" {
-			return fmt.Errorf(messageAnswerIsRequired, "A")
+			return errors.Errorf(messageAnswerIsRequired, "A")
 		}
 	}
 
 	if input.AnswerB != nil {
 		if *input.AnswerA == "" {
-			return fmt.Errorf(messageAnswerIsRequired, "B")
+			return errors.Errorf(messageAnswerIsRequired, "B")
 		}
 	}
 
 	if input.AnswerC != nil {
 		if *input.AnswerC == "" {
-			return fmt.Errorf(messageAnswerIsRequired, "C")
+			return errors.Errorf(messageAnswerIsRequired, "C")
 		}
 	}
 
 	if input.AnswerD != nil {
 		if *input.AnswerD == "" {
-			return fmt.Errorf(messageAnswerIsRequired, "D")
+			return errors.Errorf(messageAnswerIsRequired, "D")
 		}
 	}
 
 	if input.Image != nil {
 		if !isValidMIMEType(input.Image.ContentType) {
-			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek pytanie")
+			return errors.Errorf(messageImageNotAcceptableMIMEType, "Obrazek pytanie")
 		}
 	}
 
 	if input.AnswerAImage != nil {
 		if !isValidMIMEType(input.AnswerAImage.ContentType) {
-			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź A")
+			return errors.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź A")
 		}
 	}
 
 	if input.AnswerBImage != nil {
 		if !isValidMIMEType(input.AnswerBImage.ContentType) {
-			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź B")
+			return errors.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź B")
 		}
 	}
 
 	if input.AnswerCImage != nil {
 		if !isValidMIMEType(input.AnswerCImage.ContentType) {
-			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź C")
+			return errors.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź C")
 		}
 	}
 
 	if input.AnswerDImage != nil {
 		if !isValidMIMEType(input.AnswerDImage.ContentType) {
-			return fmt.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź D")
+			return errors.Errorf(messageImageNotAcceptableMIMEType, "Obrazek odpowiedź D")
 		}
 	}
 
 	if input.DeleteAnswerAImage != nil && input.AnswerA == nil && input.AnswerAImage == nil {
-		return fmt.Errorf(messageCannotDeleteImageWithoutNewAnswer, "Obrazek odpowiedź A")
+		return errors.Errorf(messageCannotDeleteImageWithoutNewAnswer, "Obrazek odpowiedź A")
 	}
 
 	if input.DeleteAnswerBImage != nil && input.AnswerB == nil && input.AnswerBImage == nil {
-		return fmt.Errorf(messageCannotDeleteImageWithoutNewAnswer, "Obrazek odpowiedź B")
+		return errors.Errorf(messageCannotDeleteImageWithoutNewAnswer, "Obrazek odpowiedź B")
 	}
 
 	if input.DeleteAnswerCImage != nil && input.AnswerC == nil && input.AnswerCImage == nil {
-		return fmt.Errorf(messageCannotDeleteImageWithoutNewAnswer, "Obrazek odpowiedź C")
+		return errors.Errorf(messageCannotDeleteImageWithoutNewAnswer, "Obrazek odpowiedź C")
 	}
 
 	if input.DeleteAnswerDImage != nil && input.AnswerD == nil && input.AnswerDImage == nil {
-		return fmt.Errorf(messageCannotDeleteImageWithoutNewAnswer, "Obrazek odpowiedź D")
+		return errors.Errorf(messageCannotDeleteImageWithoutNewAnswer, "Obrazek odpowiedź D")
 
 	}
 
 	if !opts.allowNilValues {
 		if input.AnswerA == nil && input.AnswerAImage == nil {
-			return fmt.Errorf(messageAnswerIsRequired, "A")
+			return errors.Errorf(messageAnswerIsRequired, "A")
 		}
 
 		if input.AnswerB == nil && input.AnswerBImage == nil {
-			return fmt.Errorf(messageAnswerIsRequired, "B")
+			return errors.Errorf(messageAnswerIsRequired, "B")
 		}
 
 		if input.AnswerC == nil && input.AnswerCImage == nil {
-			return fmt.Errorf(messageAnswerIsRequired, "C")
+			return errors.Errorf(messageAnswerIsRequired, "C")
 		}
 
 		if input.AnswerD == nil && input.AnswerDImage == nil {
-			return fmt.Errorf(messageAnswerIsRequired, "D")
+			return errors.Errorf(messageAnswerIsRequired, "D")
 		}
 	}
 

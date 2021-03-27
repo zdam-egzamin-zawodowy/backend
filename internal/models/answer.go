@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
 	"strconv"
 	"strings"
@@ -34,12 +35,12 @@ func (answer Answer) String() string {
 func (answer *Answer) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
-		return fmt.Errorf("enums must be strings")
+		return errors.New("enums must be strings")
 	}
 
 	*answer = Answer(strings.ToLower(str))
 	if !answer.IsValid() {
-		return fmt.Errorf("%s is not a valid Answer", str)
+		return errors.Errorf("%s is not a valid Answer", str)
 	}
 	return nil
 }

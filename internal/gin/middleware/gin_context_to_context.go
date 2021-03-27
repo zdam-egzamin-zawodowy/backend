@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,13 +22,13 @@ func GinContextToContext() gin.HandlerFunc {
 func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
 	ginContext := ctx.Value(ginContextToContextKey)
 	if ginContext == nil {
-		err := fmt.Errorf("could not retrieve gin.Context")
+		err := errors.New("could not retrieve gin.Context")
 		return nil, err
 	}
 
 	gc, ok := ginContext.(*gin.Context)
 	if !ok {
-		err := fmt.Errorf("gin.Context has wrong type")
+		err := errors.New("gin.Context has wrong type")
 		return nil, err
 	}
 	return gc, nil

@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
@@ -19,7 +19,7 @@ type Config struct {
 
 func New(cfg *Config) (profession.Usecase, error) {
 	if cfg == nil || cfg.ProfessionRepository == nil {
-		return nil, fmt.Errorf("profession/usecase: ProfessionRepository is required")
+		return nil, errors.New("profession/usecase: ProfessionRepository is required")
 	}
 	return &usecase{
 		cfg.ProfessionRepository,
@@ -35,7 +35,7 @@ func (ucase *usecase) Store(ctx context.Context, input *models.ProfessionInput) 
 
 func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.ProfessionInput) (*models.Profession, error) {
 	if id <= 0 {
-		return nil, fmt.Errorf(messageInvalidID)
+		return nil, errors.New(messageInvalidID)
 	}
 	if err := validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.P
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
 }
@@ -81,7 +81,7 @@ func (ucase *usecase) GetByID(ctx context.Context, id int) (*models.Profession, 
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
 }
@@ -98,7 +98,7 @@ func (ucase *usecase) GetBySlug(ctx context.Context, slug string) (*models.Profe
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
 }
@@ -109,17 +109,17 @@ type validateOptions struct {
 
 func validateInput(input *models.ProfessionInput, opts validateOptions) error {
 	if input.IsEmpty() {
-		return fmt.Errorf(messageEmptyPayload)
+		return errors.New(messageEmptyPayload)
 	}
 
 	if input.Name != nil {
 		if *input.Name == "" {
-			return fmt.Errorf(messageNameIsRequired)
+			return errors.New(messageNameIsRequired)
 		} else if len(*input.Name) > profession.MaxNameLength {
-			return fmt.Errorf(messageNameIsTooLong, profession.MaxNameLength)
+			return errors.Errorf(messageNameIsTooLong, profession.MaxNameLength)
 		}
 	} else if !opts.allowNilValues {
-		return fmt.Errorf(messageNameIsRequired)
+		return errors.New(messageNameIsRequired)
 	}
 
 	return nil

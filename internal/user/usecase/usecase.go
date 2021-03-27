@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
@@ -20,7 +20,7 @@ type Config struct {
 
 func New(cfg *Config) (user.Usecase, error) {
 	if cfg == nil || cfg.UserRepository == nil {
-		return nil, fmt.Errorf("user/usecase: UserRepository is required")
+		return nil, errors.New("user/usecase: UserRepository is required")
 	}
 	return &usecase{
 		cfg.UserRepository,
@@ -36,7 +36,7 @@ func (ucase *usecase) Store(ctx context.Context, input *models.UserInput) (*mode
 
 func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.UserInput) (*models.User, error) {
 	if id <= 0 {
-		return nil, fmt.Errorf(messageInvalidID)
+		return nil, errors.New(messageInvalidID)
 	}
 	items, err := ucase.UpdateMany(
 		ctx,
@@ -49,7 +49,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.U
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
 }
@@ -98,7 +98,7 @@ func (ucase *usecase) GetByID(ctx context.Context, id int) (*models.User, error)
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageItemNotFound)
+		return nil, errors.New(messageItemNotFound)
 	}
 	return items[0], nil
 }
@@ -115,10 +115,10 @@ func (ucase *usecase) GetByCredentials(ctx context.Context, email, password stri
 		return nil, err
 	}
 	if len(items) == 0 {
-		return nil, fmt.Errorf(messageInvalidCredentials)
+		return nil, errors.New(messageInvalidCredentials)
 	}
 	if err := items[0].CompareHashAndPassword(password); err != nil {
-		return nil, fmt.Errorf(messageInvalidCredentials)
+		return nil, errors.New(messageInvalidCredentials)
 	}
 	return items[0], nil
 }
@@ -129,43 +129,43 @@ type validateOptions struct {
 
 func validateInput(input *models.UserInput, opts validateOptions) error {
 	if input.IsEmpty() {
-		return fmt.Errorf(messageEmptyPayload)
+		return errors.New(messageEmptyPayload)
 	}
 
 	if input.DisplayName != nil {
 		displayNameLength := len(*input.DisplayName)
 		if displayNameLength < user.MinDisplayNameLength {
-			return fmt.Errorf(messageDisplayNameIsRequired)
+			return errors.New(messageDisplayNameIsRequired)
 		} else if displayNameLength > user.MaxDisplayNameLength {
-			return fmt.Errorf(messageDisplayNameIsTooLong, user.MaxDisplayNameLength)
+			return errors.Errorf(messageDisplayNameIsTooLong, user.MaxDisplayNameLength)
 		}
 	} else if !opts.acceptNilValues {
-		return fmt.Errorf(messageDisplayNameIsRequired)
+		return errors.New(messageDisplayNameIsRequired)
 	}
 
 	if input.Email != nil {
 		if !utils.IsEmailValid(*input.Email) {
-			return fmt.Errorf(messageEmailIsInvalid)
+			return errors.New(messageEmailIsInvalid)
 		}
 	} else if !opts.acceptNilValues {
-		return fmt.Errorf(messageEmailIsRequired)
+		return errors.New(messageEmailIsRequired)
 	}
 
 	if input.Password != nil {
 		passwordLength := len(*input.Password)
 		if passwordLength > user.MaxPasswordLength || passwordLength < user.MinPasswordLength {
-			return fmt.Errorf(messagePasswordInvalidLength, user.MinPasswordLength, user.MaxPasswordLength)
+			return errors.Errorf(messagePasswordInvalidLength, user.MinPasswordLength, user.MaxPasswordLength)
 		}
 	} else if !opts.acceptNilValues {
-		return fmt.Errorf(messagePasswordIsRequired)
+		return errors.New(messagePasswordIsRequired)
 	}
 
 	if input.Role != nil {
 		if !input.Role.IsValid() {
-			return fmt.Errorf(messageInvalidRole)
+			return errors.New(messageInvalidRole)
 		}
 	} else if !opts.acceptNilValues {
-		return fmt.Errorf(messageInvalidRole)
+		return errors.New(messageInvalidRole)
 	}
 
 	return nil
