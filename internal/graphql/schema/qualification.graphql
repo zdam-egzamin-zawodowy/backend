@@ -71,6 +71,12 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): QualificationList!
+  similarQualifications(
+    qualificationID: ID!
+    limit: Int
+    offset: Int
+    sort: [String!]
+  ): QualificationList!
   qualification(id: Int, slug: String): Qualification
 }
 

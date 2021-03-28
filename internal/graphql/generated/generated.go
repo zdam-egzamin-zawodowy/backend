@@ -96,15 +96,16 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GenerateTest   func(childComplexity int, qualificationIDs []int, limit *int) int
-		Me             func(childComplexity int) int
-		Profession     func(childComplexity int, id *int, slug *string) int
-		Professions    func(childComplexity int, filter *models.ProfessionFilter, limit *int, offset *int, sort []string) int
-		Qualification  func(childComplexity int, id *int, slug *string) int
-		Qualifications func(childComplexity int, filter *models.QualificationFilter, limit *int, offset *int, sort []string) int
-		Questions      func(childComplexity int, filter *models.QuestionFilter, limit *int, offset *int, sort []string) int
-		User           func(childComplexity int, id int) int
-		Users          func(childComplexity int, filter *models.UserFilter, limit *int, offset *int, sort []string) int
+		GenerateTest          func(childComplexity int, qualificationIDs []int, limit *int) int
+		Me                    func(childComplexity int) int
+		Profession            func(childComplexity int, id *int, slug *string) int
+		Professions           func(childComplexity int, filter *models.ProfessionFilter, limit *int, offset *int, sort []string) int
+		Qualification         func(childComplexity int, id *int, slug *string) int
+		Qualifications        func(childComplexity int, filter *models.QualificationFilter, limit *int, offset *int, sort []string) int
+		Questions             func(childComplexity int, filter *models.QuestionFilter, limit *int, offset *int, sort []string) int
+		SimilarQualifications func(childComplexity int, qualificationID int, limit *int, offset *int, sort []string) int
+		User                  func(childComplexity int, id int) int
+		Users                 func(childComplexity int, filter *models.UserFilter, limit *int, offset *int, sort []string) int
 	}
 
 	Question struct {
@@ -175,6 +176,7 @@ type QueryResolver interface {
 	Professions(ctx context.Context, filter *models.ProfessionFilter, limit *int, offset *int, sort []string) (*ProfessionList, error)
 	Profession(ctx context.Context, id *int, slug *string) (*models.Profession, error)
 	Qualifications(ctx context.Context, filter *models.QualificationFilter, limit *int, offset *int, sort []string) (*QualificationList, error)
+	SimilarQualifications(ctx context.Context, qualificationID int, limit *int, offset *int, sort []string) (*QualificationList, error)
 	Qualification(ctx context.Context, id *int, slug *string) (*models.Qualification, error)
 	Questions(ctx context.Context, filter *models.QuestionFilter, limit *int, offset *int, sort []string) (*QuestionList, error)
 	GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*models.Question, error)
@@ -566,6 +568,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Questions(childComplexity, args["filter"].(*models.QuestionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
+
+	case "Query.similarQualifications":
+		if e.complexity.Query.SimilarQualifications == nil {
+			break
+		}
+
+		args, err := ec.field_Query_similarQualifications_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SimilarQualifications(childComplexity, args["qualificationID"].(int), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
 
 	case "Query.user":
 		if e.complexity.Query.User == nil {
@@ -1000,6 +1014,12 @@ input QualificationFilter {
 extend type Query {
   qualifications(
     filter: QualificationFilter
+    limit: Int
+    offset: Int
+    sort: [String!]
+  ): QualificationList!
+  similarQualifications(
+    qualificationID: ID!
     limit: Int
     offset: Int
     sort: [String!]
@@ -1715,6 +1735,48 @@ func (ec *executionContext) field_Query_questions_args(ctx context.Context, rawA
 		}
 	}
 	args["filter"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg2
+	var arg3 []string
+	if tmp, ok := rawArgs["sort"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+		arg3, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["sort"] = arg3
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_similarQualifications_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["qualificationID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qualificationID"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["qualificationID"] = arg0
 	var arg1 *int
 	if tmp, ok := rawArgs["limit"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
@@ -3539,6 +3601,48 @@ func (ec *executionContext) _Query_qualifications(ctx context.Context, field gra
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().Qualifications(rctx, args["filter"].(*models.QualificationFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*QualificationList)
+	fc.Result = res
+	return ec.marshalNQualificationList2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋgraphqlᚋgeneratedᚐQualificationList(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_similarQualifications(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_similarQualifications_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().SimilarQualifications(rctx, args["qualificationID"].(int), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7335,6 +7439,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_qualifications(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "similarQualifications":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_similarQualifications(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

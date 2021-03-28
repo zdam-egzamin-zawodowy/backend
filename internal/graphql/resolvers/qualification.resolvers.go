@@ -48,6 +48,28 @@ func (r *queryResolver) Qualifications(
 	return list, err
 }
 
+func (r *queryResolver) SimilarQualifications(
+	ctx context.Context,
+	qualificationID int,
+	limit *int,
+	offset *int,
+	sort []string,
+) (*generated.QualificationList, error) {
+	var err error
+	list := &generated.QualificationList{}
+	list.Items, list.Total, err = r.QualificationUsecase.GetSimilar(
+		ctx,
+		&qualification.GetSimilarConfig{
+			Count:           shouldCount(ctx),
+			QualificationID: qualificationID,
+			Limit:           utils.SafeIntPointer(limit, qualification.FetchDefaultLimit),
+			Offset:          utils.SafeIntPointer(offset, 0),
+			Sort:            sort,
+		},
+	)
+	return list, err
+}
+
 func (r *queryResolver) Qualification(ctx context.Context, id *int, slug *string) (*models.Qualification, error) {
 	if id != nil {
 		return r.QualificationUsecase.GetByID(ctx, *id)
