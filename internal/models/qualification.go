@@ -39,6 +39,7 @@ func (q *Qualification) BeforeUpdate(ctx context.Context) (context.Context, erro
 }
 
 type QualificationToProfession struct {
+	ID              int            `json:"id" xml:"id" gqlgen:"id"`
 	QualificationID int            `pg:"on_delete:CASCADE,unique:group_1" json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
 	Qualification   *Qualification `pg:"rel:has-one" json:"qualification" xml:"qualification" gqlgen:"qualification"`
 	ProfessionID    int            `pg:"on_delete:CASCADE,unique:group_1" json:"professionID" xml:"professionID" gqlgen:"professionID"`
