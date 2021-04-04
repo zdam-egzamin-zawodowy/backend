@@ -185,7 +185,7 @@ func (repo *pgRepository) associateQualificationWithProfession(tx *pg.Tx, qualif
 			})
 		}
 	}
-	_, err := tx.Model(&toInsert).Insert()
+	_, err := tx.Model(&toInsert).OnConflict("DO NOTHING").Insert()
 	return err
 }
 
