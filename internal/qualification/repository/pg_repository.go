@@ -164,6 +164,10 @@ func (repo *pgRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
 	}
 
+	if len(qualificationIDs) == 0 {
+		return []*models.Qualification{}, 0, nil
+	}
+
 	return repo.Fetch(ctx, &qualification.FetchConfig{
 		Sort:   cfg.Sort,
 		Limit:  cfg.Limit,
