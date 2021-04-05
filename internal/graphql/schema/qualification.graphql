@@ -77,7 +77,7 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): QualificationList!
-  qualification(id: Int, slug: String): Qualification
+  qualification(id: ID, slug: String): Qualification
 }
 
 extend type Mutation {

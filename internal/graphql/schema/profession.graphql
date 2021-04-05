@@ -48,7 +48,7 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): ProfessionList!
-  profession(id: Int, slug: String): Profession
+  profession(id: ID, slug: String): Profession
 }
 
 extend type Mutation {

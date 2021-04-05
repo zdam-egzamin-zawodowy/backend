@@ -930,7 +930,7 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): ProfessionList!
-  profession(id: Int, slug: String): Profession
+  profession(id: ID, slug: String): Profession
 }
 
 extend type Mutation {
@@ -1024,7 +1024,7 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): QualificationList!
-  qualification(id: Int, slug: String): Qualification
+  qualification(id: ID, slug: String): Qualification
 }
 
 extend type Mutation {
@@ -1218,7 +1218,7 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): UserList! @authenticated(yes: true) @hasRole(role: Admin)
-  user(id: Int!): User @authenticated(yes: true) @hasRole(role: Admin)
+  user(id: ID!): User @authenticated(yes: true) @hasRole(role: Admin)
   me: User
 }
 
@@ -1597,7 +1597,7 @@ func (ec *executionContext) field_Query_profession_args(ctx context.Context, raw
 	var arg0 *int
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		arg0, err = ec.unmarshalOID2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1663,7 +1663,7 @@ func (ec *executionContext) field_Query_qualification_args(ctx context.Context, 
 	var arg0 *int
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		arg0, err = ec.unmarshalOID2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1813,7 +1813,7 @@ func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs m
 	var arg0 int
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -8619,6 +8619,21 @@ func (ec *executionContext) marshalOID2ᚕintᚄ(ctx context.Context, sel ast.Se
 	}
 
 	return ret
+}
+
+func (ec *executionContext) unmarshalOID2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*v)
 }
 
 func (ec *executionContext) unmarshalOInt2ᚕintᚄ(ctx context.Context, v interface{}) ([]int, error) {

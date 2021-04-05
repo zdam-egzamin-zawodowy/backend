@@ -78,7 +78,7 @@ extend type Query {
     offset: Int
     sort: [String!]
   ): UserList! @authenticated(yes: true) @hasRole(role: Admin)
-  user(id: Int!): User @authenticated(yes: true) @hasRole(role: Admin)
+  user(id: ID!): User @authenticated(yes: true) @hasRole(role: Admin)
   me: User
 }
 
