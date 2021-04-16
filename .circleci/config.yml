@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.16
+    working_directory: ~/zdamegzzawodowybackend
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: |
+          docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+      # build the application image
+      - run: docker build -t $DOCKER_LOGIN/zdam-egzamin-zawodowy-backend:latest .
+
+      # deploy the image
+      - run: docker push $DOCKER_LOGIN/zdam-egzamin-zawodowy-backend:latest
+workflows:
+  version: 2
+  deploy_prod:
+    jobs:
+      - build:
+          context: Zdam-Egzamin-Zawodowy
+          filters:
+            branches:
+              only:
+                - master
