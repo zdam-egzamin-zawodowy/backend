@@ -111,6 +111,7 @@ func (repo *pgRepository) GetAssociatedQualifications(
 		Context(ctx).
 		Where(sqlutils.BuildConditionArray("profession_id"), pg.Array(ids)).
 		Relation("Qualification").
+		Order("qualification.formula ASC", "qualification.code ASC").
 		Select(); err != nil {
 		return nil, errorutils.Wrap(err, messageFailedToFetchAssociatedQualifications)
 	}
