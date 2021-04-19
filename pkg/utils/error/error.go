@@ -6,12 +6,15 @@ import (
 )
 
 func Wrap(details error, message string) error {
+	if mode.Get() == mode.ProductionMode {
+		return errors.New(message)
+	}
 	return errors.Wrap(details, message)
 }
 
 func Wrapf(details error, message string, args ...interface{}) error {
-	if mode.Get() != mode.ProductionMode {
-		return errors.Wrapf(details, message, args...)
+	if mode.Get() == mode.ProductionMode {
+		return errors.Errorf(message, args...)
 	}
-	return errors.Errorf(message, args...)
+	return errors.Wrapf(details, message, args...)
 }
