@@ -168,10 +168,17 @@ func setupLogger() {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	customFormatter := new(logrus.TextFormatter)
-	customFormatter.TimestampFormat = "2006-01-02 15:04:05"
-	customFormatter.FullTimestamp = true
-	logrus.SetFormatter(customFormatter)
+	timestampFormat := "2006-01-02 15:04:05"
+	if mode.Get() == mode.ProductionMode {
+		customFormatter := new(logrus.JSONFormatter)
+		customFormatter.TimestampFormat = timestampFormat
+		logrus.SetFormatter(customFormatter)
+	} else {
+		customFormatter := new(logrus.TextFormatter)
+		customFormatter.TimestampFormat = timestampFormat
+		customFormatter.FullTimestamp = true
+		logrus.SetFormatter(customFormatter)
+	}
 }
 
 func setupRouter() *gin.Engine {
