@@ -13,6 +13,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var _ pg.BeforeInsertHook = (*User)(nil)
+
 type User struct {
 	tableName struct{} `pg:"alias:user"`
 

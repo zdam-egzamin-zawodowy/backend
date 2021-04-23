@@ -11,6 +11,9 @@ import (
 	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 )
 
+var _ pg.BeforeInsertHook = (*Qualification)(nil)
+var _ pg.BeforeUpdateHook = (*Qualification)(nil)
+
 type Qualification struct {
 	tableName struct{} `pg:"alias:qualification"`
 

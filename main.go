@@ -26,6 +26,7 @@ import (
 	userrepository "github.com/zdam-egzamin-zawodowy/backend/internal/user/repository"
 	userusecase "github.com/zdam-egzamin-zawodowy/backend/internal/user/usecase"
 
+	ginlogrus "github.com/Kichiyaki/gin-logrus"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -184,7 +185,7 @@ func setupLogger() {
 func setupRouter() *gin.Engine {
 	router := gin.New()
 
-	router.Use(middleware.Logger(logrus.WithField("hostname", "api")), gin.Recovery())
+	router.Use(ginlogrus.Logger(logrus.WithField("hostname", "api")), gin.Recovery())
 	if mode.Get() == mode.DevelopmentMode {
 		router.Use(cors.New(cors.Config{
 			AllowOriginFunc: func(string) bool {
