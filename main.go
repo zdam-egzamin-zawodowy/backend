@@ -52,7 +52,7 @@ func main() {
 	})
 
 	dbConn, err := db.New(&db.Config{
-		DebugHook: envutils.GetenvBool("LOG_DB_QUERIES"),
+		LogQueries: envutils.GetenvBool("LOG_DB_QUERIES"),
 	})
 	if err != nil {
 		logrus.Fatal(errors.Wrap(err, "Error establishing a database connection"))

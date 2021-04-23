@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	envutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/env"
 
+	gopglogrusquerylogger "github.com/Kichiyaki/go-pg-logrus-query-logger/v10"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
@@ -17,7 +18,7 @@ import (
 var log = logrus.WithField("package", "internal/db")
 
 type Config struct {
-	DebugHook bool
+	LogQueries bool
 }
 
 func init() {
@@ -28,8 +29,8 @@ func New(cfg *Config) (*pg.DB, error) {
 	db := pg.Connect(prepareOptions())
 
 	if cfg != nil {
-		if cfg.DebugHook {
-			db.AddQueryHook(DebugHook{
+		if cfg.LogQueries {
+			db.AddQueryHook(gopglogrusquerylogger.QueryLogger{
 				Entry: log,
 			})
 		}
