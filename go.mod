@@ -4,12 +4,12 @@ go 1.16
 
 require (
 	github.com/99designs/gqlgen v0.13.0
-	github.com/Kichiyaki/gin-logrus v0.0.0-20210423182628-b35a3fabd70a
+	github.com/Kichiyaki/gin-logrus v0.0.0-20210424132338-4ac67b4af979
 	github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210423175217-c83fa01c60d7
 	github.com/agnivade/levenshtein v1.1.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
-	github.com/gin-gonic/gin v1.7.1
+	github.com/gin-gonic/gin v1.6.3
 	github.com/go-pg/pg/v10 v10.9.1
 	github.com/go-playground/validator/v10 v10.5.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -29,7 +29,6 @@ require (
 	github.com/vektah/gqlparser/v2 v2.1.0
 	github.com/vmihailenco/msgpack/v5 v5.3.1 // indirect
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
-	golang.org/x/sys v0.0.0-20210423082822-04245dca01da // indirect
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
