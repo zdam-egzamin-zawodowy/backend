@@ -55,9 +55,9 @@ func main() {
 		LogQueries: envutils.GetenvBool("LOG_DB_QUERIES"),
 	})
 	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "Error establishing a database connection"))
+		logrus.Fatal(errors.Wrap(err, "Couldn't connect to the db"))
 	}
-	logrus.Info("Database connection established")
+	logrus.Info("Connection with the database has been established")
 
 	//repositories
 	userRepository, err := userrepository.NewPGRepository(&userrepository.PGRepositoryConfig{
