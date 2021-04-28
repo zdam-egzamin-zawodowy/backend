@@ -31,7 +31,8 @@ func New(cfg *Config) (*pg.DB, error) {
 	if cfg != nil {
 		if cfg.LogQueries {
 			db.AddQueryHook(gopglogrusquerylogger.QueryLogger{
-				Entry: log,
+				Log:            log,
+				MaxQueryLength: 5000,
 			})
 		}
 	}

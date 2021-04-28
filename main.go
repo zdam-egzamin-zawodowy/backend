@@ -57,7 +57,6 @@ func main() {
 	if err != nil {
 		logrus.Fatal(errors.Wrap(err, "Couldn't connect to the db"))
 	}
-	logrus.Info("Connection with the database has been established")
 
 	//repositories
 	userRepository, err := userrepository.NewPGRepository(&userrepository.PGRepositoryConfig{
