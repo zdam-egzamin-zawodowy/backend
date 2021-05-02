@@ -1,7 +1,7 @@
 package mode
 
 import (
-	"os"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/envutil"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 var mode = DevelopmentMode
 
 func init() {
-	Set(os.Getenv(EnvKey))
+	Set(envutil.GetenvString(EnvKey))
 }
 
 func Set(value string) {

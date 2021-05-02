@@ -31,7 +31,7 @@ type Config struct {
 
 func Attach(group *gin.RouterGroup, cfg Config) error {
 	if cfg.Resolver == nil {
-		return errors.New("Graphql resolver cannot be nil")
+		return errors.New("cfg.Resolver is required")
 	}
 	gqlHandler := graphqlHandler(prepareConfig(cfg.Resolver, cfg.Directive))
 	group.GET(graphqlEndpoint, gqlHandler)

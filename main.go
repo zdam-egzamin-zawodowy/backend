@@ -48,7 +48,7 @@ func init() {
 
 func main() {
 	fileStorage := fstorage.New(&fstorage.Config{
-		BasePath: os.Getenv("FILE_STORAGE_PATH"),
+		BasePath: envutil.GetenvString("FILE_STORAGE_PATH"),
 	})
 
 	dbConn, err := postgres.Connect(&postgres.Config{
@@ -88,7 +88,7 @@ func main() {
 	//usecases
 	authUsecase, err := authusecase.New(&authusecase.Config{
 		UserRepository: userRepository,
-		TokenGenerator: jwt.NewTokenGenerator(os.Getenv("ACCESS_SECRET")),
+		TokenGenerator: jwt.NewTokenGenerator(envutil.GetenvString("ACCESS_SECRET")),
 	})
 	if err != nil {
 		logrus.Fatal(err)
