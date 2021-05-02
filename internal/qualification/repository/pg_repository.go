@@ -3,11 +3,10 @@ package repository
 import (
 	"context"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 	"strings"
 
-	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
-
-	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
@@ -88,8 +87,8 @@ func (repo *pgRepository) UpdateMany(
 			if len(input.DissociateProfession) > 0 {
 				_, err := tx.
 					Model(&models.QualificationToProfession{}).
-					Where(sqlutils.BuildConditionArray("profession_id"), pg.Array(input.DissociateProfession)).
-					Where(sqlutils.BuildConditionArray("qualification_id"), pg.Array(qualificationIDs)).
+					Where(sql.BuildConditionArray("profession_id"), pg.Array(input.DissociateProfession)).
+					Where(sql.BuildConditionArray("qualification_id"), pg.Array(qualificationIDs)).
 					Delete()
 				if err != nil {
 					return handleInsertAndUpdateError(err)
@@ -116,7 +115,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.QualificationFil
 		Returning("*").
 		Apply(f.Where).
 		Delete(); err != nil && err != pg.ErrNoRows {
-		return nil, errorutils.Wrap(err, messageFailedToDeleteModel)
+		return nil, errorutil.Wrap(err, messageFailedToDeleteModel)
 	}
 	return items, nil
 }
@@ -139,7 +138,7 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *qualification.FetchCon
 		err = query.Select()
 	}
 	if err != nil && err != pg.ErrNoRows {
-		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
+		return nil, 0, errorutil.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
 }
@@ -149,7 +148,7 @@ func (repo *pgRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 	subquery := repo.
 		Model(&models.QualificationToProfession{}).
 		Context(ctx).
-		Where(sqlutils.BuildConditionEquals("qualification_id"), cfg.QualificationID).
+		Where(sql.BuildConditionEquals("qualification_id"), cfg.QualificationID).
 		Column("profession_id")
 	qualificationIDs := []int{}
 	err = repo.
@@ -157,11 +156,11 @@ func (repo *pgRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 		Context(ctx).
 		Column("qualification_id").
 		With("prof", subquery).
-		Where(sqlutils.BuildConditionIn("profession_id"), pg.Safe("SELECT profession_id FROM prof")).
-		Where(sqlutils.BuildConditionNEQ("qualification_id"), cfg.QualificationID).
+		Where(sql.BuildConditionIn("profession_id"), pg.Safe("SELECT profession_id FROM prof")).
+		Where(sql.BuildConditionNEQ("qualification_id"), cfg.QualificationID).
 		Select(&qualificationIDs)
 	if err != nil {
-		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
+		return nil, 0, errorutil.Wrap(err, messageFailedToFetchModel)
 	}
 
 	if len(qualificationIDs) == 0 {
@@ -195,9 +194,9 @@ func (repo *pgRepository) associateQualificationWithProfession(tx *pg.Tx, qualif
 
 func handleInsertAndUpdateError(err error) error {
 	if strings.Contains(err.Error(), "name") {
-		return errorutils.Wrap(err, messageNameIsAlreadyTaken)
+		return errorutil.Wrap(err, messageNameIsAlreadyTaken)
 	} else if strings.Contains(err.Error(), "code") || strings.Contains(err.Error(), "slug") {
-		return errorutils.Wrap(err, messageCodeIsAlreadyTaken)
+		return errorutil.Wrap(err, messageCodeIsAlreadyTaken)
 	}
-	return errorutils.Wrap(err, messageFailedToSaveModel)
+	return errorutil.Wrap(err, messageFailedToSaveModel)
 }

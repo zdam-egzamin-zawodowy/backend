@@ -6,11 +6,11 @@ package resolvers
 import (
 	"context"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safeptr"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/utils"
 )
 
 func (r *mutationResolver) CreateProfession(ctx context.Context, input models.ProfessionInput) (*models.Profession, error) {
@@ -41,8 +41,8 @@ func (r *queryResolver) Professions(
 		&profession.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  utils.SafeIntPointer(limit, profession.FetchDefaultLimit),
-			Offset: utils.SafeIntPointer(offset, 0),
+			Limit:  safeptr.SafeIntPointer(limit, profession.FetchDefaultLimit),
+			Offset: safeptr.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},
 	)

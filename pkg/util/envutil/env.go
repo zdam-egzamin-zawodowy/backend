@@ -1,4 +1,4 @@
-package envutils
+package envutil
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 )
 
 func GetenvInt(key string) int {
-	str := os.Getenv(key)
+	str := GetenvString(key)
 	if str == "" {
 		return 0
 	}
@@ -18,9 +18,13 @@ func GetenvInt(key string) int {
 }
 
 func GetenvBool(key string) bool {
-	str := os.Getenv(key)
+	str := GetenvString(key)
 	if str == "" {
 		return false
 	}
 	return str == "true" || str == "1"
+}
+
+func GetenvString(key string) string {
+	return os.Getenv(key)
 }

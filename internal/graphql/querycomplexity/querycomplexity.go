@@ -8,7 +8,7 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/utils"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safeptr"
 )
 
 const (
@@ -40,7 +40,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 	) int {
 		return computeComplexity(
 			childComplexity,
-			utils.SafeIntPointer(limit, profession.FetchDefaultLimit),
+			safeptr.SafeIntPointer(limit, profession.FetchDefaultLimit),
 			professionsTotalFieldComplexity,
 			1,
 		)
@@ -56,7 +56,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 	) int {
 		return computeComplexity(
 			childComplexity,
-			utils.SafeIntPointer(limit, qualification.FetchDefaultLimit),
+			safeptr.SafeIntPointer(limit, qualification.FetchDefaultLimit),
 			qualificationsTotalFieldComplexity,
 			1,
 		)
@@ -72,7 +72,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 	) int {
 		return computeComplexity(
 			childComplexity,
-			utils.SafeIntPointer(limit, question.FetchDefaultLimit),
+			safeptr.SafeIntPointer(limit, question.FetchDefaultLimit),
 			questionsTotalFieldComplexity,
 			1,
 		)
@@ -80,7 +80,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 	complexityRoot.Query.GenerateTest = func(childComplexity int, qualificationIDs []int, limit *int) int {
 		return computeComplexity(
 			childComplexity,
-			utils.SafeIntPointer(limit, question.TestMaxLimit),
+			safeptr.SafeIntPointer(limit, question.TestMaxLimit),
 			0,
 			3,
 		)
@@ -96,7 +96,7 @@ func GetComplexityRoot() generated.ComplexityRoot {
 	) int {
 		return computeComplexity(
 			childComplexity,
-			utils.SafeIntPointer(limit, user.FetchMaxLimit),
+			safeptr.SafeIntPointer(limit, user.FetchMaxLimit),
 			usersTotalFieldComplexity,
 			1,
 		)

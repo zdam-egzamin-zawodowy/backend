@@ -7,16 +7,16 @@ import (
 	"os/signal"
 	"time"
 
-	graphqlhttpdelivery "github.com/zdam-egzamin-zawodowy/backend/internal/graphql/delivery/http"
+	graphqlhttpdelivery "github.com/zdam-egzamin-zawodowy/backend/internal/graphql/delivery/httpdelivery"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/directive"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/resolvers"
 
 	"github.com/pkg/errors"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
 	authusecase "github.com/zdam-egzamin-zawodowy/backend/internal/auth/usecase"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/db"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/dataloader"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/postgres"
 	professionrepository "github.com/zdam-egzamin-zawodowy/backend/internal/profession/repository"
 	professionusecase "github.com/zdam-egzamin-zawodowy/backend/internal/profession/usecase"
 	qualificationrepository "github.com/zdam-egzamin-zawodowy/backend/internal/qualification/repository"
@@ -31,9 +31,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/mode"
-	envutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/env"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/envutil"
 )
 
 func init() {
@@ -47,12 +47,12 @@ func init() {
 }
 
 func main() {
-	fileStorage := filestorage.New(&filestorage.Config{
-		BasePath: os.Getenv("FILE_STORAGE_PATH"),
+	fileStorage := fstorage.New(&fstorage.Config{
+		BasePath: envutil.GetenvString("FILE_STORAGE_PATH"),
 	})
 
-	dbConn, err := db.Connect(&db.Config{
-		LogQueries: envutils.GetenvBool("LOG_DB_QUERIES"),
+	dbConn, err := postgres.Connect(&postgres.Config{
+		LogQueries: envutil.GetenvBool("LOG_DB_QUERIES"),
 	})
 	if err != nil {
 		logrus.Fatal(errors.Wrap(err, "Couldn't connect to the db"))
@@ -88,7 +88,7 @@ func main() {
 	//usecases
 	authUsecase, err := authusecase.New(&authusecase.Config{
 		UserRepository: userRepository,
-		TokenGenerator: jwt.NewTokenGenerator(os.Getenv("ACCESS_SECRET")),
+		TokenGenerator: jwt.NewTokenGenerator(envutil.GetenvString("ACCESS_SECRET")),
 	})
 	if err != nil {
 		logrus.Fatal(err)

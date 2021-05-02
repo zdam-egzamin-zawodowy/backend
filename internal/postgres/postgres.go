@@ -1,11 +1,9 @@
-package db
+package postgres
 
 import (
 	"context"
-	"os"
-
 	"github.com/sirupsen/logrus"
-	envutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/env"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/envutil"
 
 	"github.com/Kichiyaki/go-pg-logrus-query-logger/v10"
 	"github.com/go-pg/pg/v10"
@@ -46,11 +44,11 @@ func Connect(cfg *Config) (*pg.DB, error) {
 
 func prepareOptions() *pg.Options {
 	return &pg.Options{
-		User:     os.Getenv("DB_USER"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Database: os.Getenv("DB_NAME"),
-		Addr:     os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT"),
-		PoolSize: envutils.GetenvInt("DB_POOL_SIZE"),
+		User:     envutil.GetenvString("DB_USER"),
+		Password: envutil.GetenvString("DB_PASSWORD"),
+		Database: envutil.GetenvString("DB_NAME"),
+		Addr:     envutil.GetenvString("DB_HOST") + ":" + envutil.GetenvString("DB_PORT"),
+		PoolSize: envutil.GetenvInt("DB_POOL_SIZE"),
 	}
 }
 
