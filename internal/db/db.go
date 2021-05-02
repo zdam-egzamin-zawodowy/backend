@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
-	envutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/env"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/envutil"
 
 	"github.com/Kichiyaki/go-pg-logrus-query-logger/v10"
 	"github.com/go-pg/pg/v10"
@@ -50,7 +50,7 @@ func prepareOptions() *pg.Options {
 		Password: os.Getenv("DB_PASSWORD"),
 		Database: os.Getenv("DB_NAME"),
 		Addr:     os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT"),
-		PoolSize: envutils.GetenvInt("DB_POOL_SIZE"),
+		PoolSize: envutil.GetenvInt("DB_POOL_SIZE"),
 	}
 }
 

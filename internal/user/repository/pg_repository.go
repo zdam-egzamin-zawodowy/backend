@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"strings"
 
-	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
@@ -68,7 +68,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.UserFilter) ([]*
 		Returning("*").
 		Apply(f.Where).
 		Delete(); err != nil && err != pg.ErrNoRows {
-		return nil, errorutils.Wrap(err, messageFailedToDeleteModel)
+		return nil, errorutil.Wrap(err, messageFailedToDeleteModel)
 	}
 	return items, nil
 }
@@ -91,14 +91,14 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*
 		err = query.Select()
 	}
 	if err != nil && err != pg.ErrNoRows {
-		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
+		return nil, 0, errorutil.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
 }
 
 func handleInsertAndUpdateError(err error) error {
 	if strings.Contains(err.Error(), "email") {
-		return errorutils.Wrap(err, messageEmailIsAlreadyTaken)
+		return errorutil.Wrap(err, messageEmailIsAlreadyTaken)
 	}
-	return errorutils.Wrap(err, messageFailedToSaveModel)
+	return errorutil.Wrap(err, messageFailedToSaveModel)
 }

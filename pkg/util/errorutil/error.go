@@ -1,4 +1,4 @@
-package errorutils
+package errorutil
 
 import (
 	"github.com/pkg/errors"

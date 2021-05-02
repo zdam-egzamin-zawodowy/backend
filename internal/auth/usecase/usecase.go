@@ -7,7 +7,7 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
-	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 )
 
 type usecase struct {
@@ -44,7 +44,7 @@ func (ucase *usecase) SignIn(ctx context.Context, email, password string, staySi
 		},
 	})
 	if err != nil {
-		return nil, "", errorutils.Wrap(err, messageInvalidCredentials)
+		return nil, "", errorutil.Wrap(err, messageInvalidCredentials)
 	}
 
 	return u, token, nil
@@ -53,7 +53,7 @@ func (ucase *usecase) SignIn(ctx context.Context, email, password string, staySi
 func (ucase *usecase) ExtractAccessTokenMetadata(ctx context.Context, accessToken string) (*models.User, error) {
 	metadata, err := ucase.tokenGenerator.ExtractAccessTokenMetadata(accessToken)
 	if err != nil {
-		return nil, errorutils.Wrap(err, messageInvalidAccessToken)
+		return nil, errorutil.Wrap(err, messageInvalidAccessToken)
 	}
 
 	return ucase.GetUserByCredentials(ctx, metadata.Credentials.Email, metadata.Credentials.Password)
@@ -76,7 +76,7 @@ func (ucase *usecase) GetUserByCredentials(ctx context.Context, email, password 
 
 	u := users[0]
 	if err := u.CompareHashAndPassword(password); err != nil {
-		return nil, errorutils.Wrap(err, messageInvalidCredentials)
+		return nil, errorutil.Wrap(err, messageInvalidCredentials)
 	}
 
 	return u, nil

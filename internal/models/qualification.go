@@ -2,13 +2,13 @@ package models
 
 import (
 	"context"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 	"strings"
 	"time"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/gosimple/slug"
-	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 )
 
 var _ pg.BeforeInsertHook = (*Qualification)(nil)
@@ -113,16 +113,16 @@ func (input *QualificationInput) ToQualification() *Qualification {
 func (input *QualificationInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.Name != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("name"), *input.Name)
+			q = q.Set(sql.BuildConditionEquals("name"), *input.Name)
 		}
 		if input.Code != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("code"), *input.Code)
+			q = q.Set(sql.BuildConditionEquals("code"), *input.Code)
 		}
 		if input.Formula != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("formula"), *input.Formula)
+			q = q.Set(sql.BuildConditionEquals("formula"), *input.Formula)
 		}
 		if input.Description != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("description"), *input.Description)
+			q = q.Set(sql.BuildConditionEquals("description"), *input.Description)
 		}
 	}
 
@@ -144,17 +144,17 @@ func (f *QualificationFilterOr) WhereWithAlias(q *orm.Query, alias string) *orm.
 
 	q = q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
 		if !isZero(f.NameMATCH) {
-			q = q.WhereOr(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("name", alias)), f.NameMATCH)
+			q = q.WhereOr(sql.BuildConditionMatch(sql.AddAliasToColumnName("name", alias)), f.NameMATCH)
 		}
 		if !isZero(f.NameIEQ) {
-			q = q.WhereOr(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("name", alias)), f.NameIEQ)
+			q = q.WhereOr(sql.BuildConditionIEQ(sql.AddAliasToColumnName("name", alias)), f.NameIEQ)
 		}
 
 		if !isZero(f.CodeMATCH) {
-			q = q.WhereOr(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("code", alias)), f.CodeMATCH)
+			q = q.WhereOr(sql.BuildConditionMatch(sql.AddAliasToColumnName("code", alias)), f.CodeMATCH)
 		}
 		if !isZero(f.CodeIEQ) {
-			q = q.WhereOr(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("code", alias)), f.CodeIEQ)
+			q = q.WhereOr(sql.BuildConditionIEQ(sql.AddAliasToColumnName("code", alias)), f.CodeIEQ)
 		}
 
 		return q, nil
@@ -202,57 +202,57 @@ func (f *QualificationFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Q
 	}
 
 	if !isZero(f.ID) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
+		q = q.Where(sql.BuildConditionArray(sql.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
 	}
 	if !isZero(f.IDNEQ) {
-		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.IDNEQ))
+		q = q.Where(sql.BuildConditionNotInArray(sql.AddAliasToColumnName("id", alias)), pg.Array(f.IDNEQ))
 	}
 
 	if !isZero(f.Slug) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("slug", alias)), pg.Array(f.Slug))
+		q = q.Where(sql.BuildConditionArray(sql.AddAliasToColumnName("slug", alias)), pg.Array(f.Slug))
 	}
 	if !isZero(f.SlugNEQ) {
-		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("slug", alias)), pg.Array(f.SlugNEQ))
+		q = q.Where(sql.BuildConditionNotInArray(sql.AddAliasToColumnName("slug", alias)), pg.Array(f.SlugNEQ))
 	}
 
 	if !isZero(f.Name) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("name", alias)), pg.Array(f.Name))
+		q = q.Where(sql.BuildConditionArray(sql.AddAliasToColumnName("name", alias)), pg.Array(f.Name))
 	}
 	if !isZero(f.NameNEQ) {
-		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("name", alias)), pg.Array(f.NameNEQ))
+		q = q.Where(sql.BuildConditionNotInArray(sql.AddAliasToColumnName("name", alias)), pg.Array(f.NameNEQ))
 	}
 	if !isZero(f.NameMATCH) {
-		q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("name", alias)), f.NameMATCH)
+		q = q.Where(sql.BuildConditionMatch(sql.AddAliasToColumnName("name", alias)), f.NameMATCH)
 	}
 	if !isZero(f.NameIEQ) {
-		q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("name", alias)), f.NameIEQ)
+		q = q.Where(sql.BuildConditionIEQ(sql.AddAliasToColumnName("name", alias)), f.NameIEQ)
 	}
 
 	if !isZero(f.Code) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("code", alias)), pg.Array(f.Code))
+		q = q.Where(sql.BuildConditionArray(sql.AddAliasToColumnName("code", alias)), pg.Array(f.Code))
 	}
 	if !isZero(f.CodeNEQ) {
-		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("code", alias)), pg.Array(f.CodeNEQ))
+		q = q.Where(sql.BuildConditionNotInArray(sql.AddAliasToColumnName("code", alias)), pg.Array(f.CodeNEQ))
 	}
 	if !isZero(f.CodeMATCH) {
-		q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("code", alias)), f.CodeMATCH)
+		q = q.Where(sql.BuildConditionMatch(sql.AddAliasToColumnName("code", alias)), f.CodeMATCH)
 	}
 	if !isZero(f.CodeIEQ) {
-		q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("code", alias)), f.CodeIEQ)
+		q = q.Where(sql.BuildConditionIEQ(sql.AddAliasToColumnName("code", alias)), f.CodeIEQ)
 	}
 
 	if !isZero(f.Formula) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("formula", alias)), pg.Array(f.Formula))
+		q = q.Where(sql.BuildConditionArray(sql.AddAliasToColumnName("formula", alias)), pg.Array(f.Formula))
 	}
 	if !isZero(f.FormulaNEQ) {
-		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("formula", alias)), pg.Array(f.FormulaNEQ))
+		q = q.Where(sql.BuildConditionNotInArray(sql.AddAliasToColumnName("formula", alias)), pg.Array(f.FormulaNEQ))
 	}
 
 	if !isZero(f.DescriptionMATCH) {
-		q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("description", alias)), f.DescriptionMATCH)
+		q = q.Where(sql.BuildConditionMatch(sql.AddAliasToColumnName("description", alias)), f.DescriptionMATCH)
 	}
 	if !isZero(f.DescriptionIEQ) {
-		q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("description", alias)), f.DescriptionIEQ)
+		q = q.Where(sql.BuildConditionIEQ(sql.AddAliasToColumnName("description", alias)), f.DescriptionIEQ)
 	}
 
 	if !isZero(f.ProfessionID) {
@@ -260,30 +260,30 @@ func (f *QualificationFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Q
 		subquery := q.
 			New().
 			Model(&QualificationToProfession{}).
-			ColumnExpr(sqlutils.BuildCountColumnExpr("profession_id", "count")).
+			ColumnExpr(sql.BuildCountColumnExpr("profession_id", "count")).
 			Column("qualification_id").
-			Where(sqlutils.BuildConditionArray("profession_id"), pg.Array(f.ProfessionID)).
+			Where(sql.BuildConditionArray("profession_id"), pg.Array(f.ProfessionID)).
 			Group("qualification_id")
 
 		q = q.
 			Join(`INNER JOIN (?) AS qualification_to_professions ON qualification_to_professions.qualification_id = qualification.id`, subquery).
-			Where(sqlutils.BuildConditionGTE("count"), sliceLength)
+			Where(sql.BuildConditionGTE("count"), sliceLength)
 	}
 
 	if !isZero(f.CreatedAt) {
-		q = q.Where(sqlutils.BuildConditionEquals(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAt)
+		q = q.Where(sql.BuildConditionEquals(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAt)
 	}
 	if !isZero(f.CreatedAtGT) {
-		q = q.Where(sqlutils.BuildConditionGT(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtGT)
+		q = q.Where(sql.BuildConditionGT(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAtGT)
 	}
 	if !isZero(f.CreatedAtGTE) {
-		q = q.Where(sqlutils.BuildConditionGTE(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtGTE)
+		q = q.Where(sql.BuildConditionGTE(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAtGTE)
 	}
 	if !isZero(f.CreatedAtLT) {
-		q = q.Where(sqlutils.BuildConditionLT(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtLT)
+		q = q.Where(sql.BuildConditionLT(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAtLT)
 	}
 	if !isZero(f.CreatedAtLTE) {
-		q = q.Where(sqlutils.BuildConditionLTE(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtLTE)
+		q = q.Where(sql.BuildConditionLTE(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAtLTE)
 	}
 
 	if f.Or != nil {

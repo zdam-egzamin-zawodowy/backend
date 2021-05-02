@@ -5,12 +5,12 @@ package resolvers
 
 import (
 	"context"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safepointer"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/utils"
 )
 
 func (r *mutationResolver) CreateQuestion(ctx context.Context, input models.QuestionInput) (*models.Question, error) {
@@ -30,7 +30,7 @@ func (r *mutationResolver) DeleteQuestions(ctx context.Context, ids []int) ([]*m
 func (r *queryResolver) GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*models.Question, error) {
 	return r.QuestionUsecase.GenerateTest(ctx, &question.GenerateTestConfig{
 		Qualifications: qualificationIDs,
-		Limit:          utils.SafeIntPointer(limit, question.TestMaxLimit),
+		Limit:          safepointer.SafeIntPointer(limit, question.TestMaxLimit),
 	})
 }
 
@@ -48,8 +48,8 @@ func (r *queryResolver) Questions(
 		&question.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  utils.SafeIntPointer(limit, question.FetchDefaultLimit),
-			Offset: utils.SafeIntPointer(offset, 0),
+			Limit:  safepointer.SafeIntPointer(limit, question.FetchDefaultLimit),
+			Offset: safepointer.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},
 	)
@@ -61,7 +61,7 @@ func (r *questionResolver) Qualification(ctx context.Context, obj *models.Questi
 		return obj.Qualification, nil
 	}
 
-	if obj != nil || obj.QualificationID > 0 {
+	if obj != nil && obj.QualificationID > 0 {
 		if dataloader, err := middleware.DataLoaderFromContext(ctx); err == nil && dataloader != nil {
 			return dataloader.QualificationByID.Load(obj.QualificationID)
 		}

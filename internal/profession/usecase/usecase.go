@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
-	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 )
 
 type usecase struct {
@@ -65,7 +65,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([
 			Count: true,
 		}
 	}
-	cfg.Sort = sqlutils.SanitizeSorts(cfg.Sort)
+	cfg.Sort = sql.SanitizeOrders(cfg.Sort)
 	return ucase.professionRepository.Fetch(ctx, cfg)
 }
 

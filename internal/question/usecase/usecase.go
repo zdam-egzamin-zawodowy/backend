@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
-	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 )
 
 var (
@@ -73,7 +73,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*
 	if cfg.Limit > question.FetchMaxLimit {
 		cfg.Limit = question.FetchMaxLimit
 	}
-	cfg.Sort = sqlutils.SanitizeSorts(cfg.Sort)
+	cfg.Sort = sql.SanitizeOrders(cfg.Sort)
 	return ucase.questionRepository.Fetch(ctx, cfg)
 }
 

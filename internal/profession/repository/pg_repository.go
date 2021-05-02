@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 	"github.com/pkg/errors"
-	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 	"strings"
 
-	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
@@ -69,7 +69,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.ProfessionFilter
 		Returning("*").
 		Apply(f.Where).
 		Delete(); err != nil && err != pg.ErrNoRows {
-		return nil, errorutils.Wrap(err, messageFailedToDeleteModel)
+		return nil, errorutil.Wrap(err, messageFailedToDeleteModel)
 	}
 	return items, nil
 }
@@ -92,7 +92,7 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig
 		err = query.Select()
 	}
 	if err != nil && err != pg.ErrNoRows {
-		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
+		return nil, 0, errorutil.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
 }
@@ -109,11 +109,11 @@ func (repo *pgRepository) GetAssociatedQualifications(
 	if err := repo.
 		Model(&qualificationToProfession).
 		Context(ctx).
-		Where(sqlutils.BuildConditionArray("profession_id"), pg.Array(ids)).
+		Where(sql.BuildConditionArray("profession_id"), pg.Array(ids)).
 		Relation("Qualification").
 		Order("qualification.formula ASC", "qualification.code ASC").
 		Select(); err != nil {
-		return nil, errorutils.Wrap(err, messageFailedToFetchAssociatedQualifications)
+		return nil, errorutil.Wrap(err, messageFailedToFetchAssociatedQualifications)
 	}
 	for _, record := range qualificationToProfession {
 		m[record.ProfessionID] = append(m[record.ProfessionID], record.Qualification)
@@ -123,7 +123,7 @@ func (repo *pgRepository) GetAssociatedQualifications(
 
 func handleInsertAndUpdateError(err error) error {
 	if strings.Contains(err.Error(), "name") || strings.Contains(err.Error(), "slug") {
-		return errorutils.Wrap(err, messageNameIsAlreadyTaken)
+		return errorutil.Wrap(err, messageNameIsAlreadyTaken)
 	}
-	return errorutils.Wrap(err, messageFailedToSaveModel)
+	return errorutil.Wrap(err, messageFailedToSaveModel)
 }

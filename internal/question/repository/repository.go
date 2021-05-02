@@ -1,12 +1,12 @@
 package repository
 
 import (
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage/filestorageutil"
 	"path/filepath"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/utils"
 )
 
 type repository struct {
@@ -34,7 +34,7 @@ func (repo *repository) saveImages(destination *models.Question, input *models.Q
 			generated := false
 			if filenames[index] == "" {
 				generated = true
-				filenames[index] = utils.GenerateFilename(filepath.Ext(file.Filename))
+				filenames[index] = filestorageutil.GenerateFilename(filepath.Ext(file.Filename))
 			}
 			err := repo.fileStorage.Put(file.File, filenames[index])
 			if err != nil && generated {

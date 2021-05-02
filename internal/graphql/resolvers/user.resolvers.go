@@ -5,12 +5,12 @@ package resolvers
 
 import (
 	"context"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safepointer"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/utils"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input models.UserInput) (*models.User, error) {
@@ -49,7 +49,7 @@ func (r *mutationResolver) SignIn(
 		ctx,
 		email,
 		password,
-		utils.SafeBoolPointer(staySignedIn, false),
+		safepointer.SafeBoolPointer(staySignedIn, false),
 	)
 	if err != nil {
 		return nil, err
@@ -71,8 +71,8 @@ func (r *queryResolver) Users(
 		&user.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  utils.SafeIntPointer(limit, user.FetchMaxLimit),
-			Offset: utils.SafeIntPointer(offset, 0),
+			Limit:  safepointer.SafeIntPointer(limit, user.FetchMaxLimit),
+			Offset: safepointer.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},
 	)
@@ -84,6 +84,6 @@ func (r *queryResolver) User(ctx context.Context, id int) (*models.User, error) 
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*models.User, error) {
-	user, _ := middleware.UserFromContext(ctx)
-	return user, nil
+	u, _ := middleware.UserFromContext(ctx)
+	return u, nil
 }

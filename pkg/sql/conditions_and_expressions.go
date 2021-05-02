@@ -1,22 +1,8 @@
-package sqlutils
+package sql
 
 import (
 	"fmt"
-	"strings"
 )
-
-func AddAliasToColumnName(column, alias string) string {
-	if alias != "" && !strings.HasPrefix(column, alias+".") {
-		column = WrapStringInDoubleQuotes(alias) + "." + WrapStringInDoubleQuotes(column)
-	} else {
-		column = WrapStringInDoubleQuotes(column)
-	}
-	return column
-}
-
-func WrapStringInDoubleQuotes(str string) string {
-	return `"` + str + `"`
-}
 
 func BuildConditionEquals(column string) string {
 	return column + " = ?"

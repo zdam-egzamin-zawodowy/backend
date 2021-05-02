@@ -33,7 +33,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/mode"
-	envutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/env"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/envutil"
 )
 
 func init() {
@@ -52,7 +52,7 @@ func main() {
 	})
 
 	dbConn, err := db.Connect(&db.Config{
-		LogQueries: envutils.GetenvBool("LOG_DB_QUERIES"),
+		LogQueries: envutil.GetenvBool("LOG_DB_QUERIES"),
 	})
 	if err != nil {
 		logrus.Fatal(errors.Wrap(err, "Couldn't connect to the db"))

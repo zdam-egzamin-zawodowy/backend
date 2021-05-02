@@ -3,17 +3,16 @@ package repository
 import (
 	"context"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 	"strings"
 	"time"
-
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage"
-	errorutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/error"
-	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/db"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 )
 
 type pgRepository struct {
@@ -60,7 +59,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.QuestionInput
 		Set("answer_c_image = ?", item.AnswerCImage).
 		Set("answer_d_image = ?", item.AnswerDImage).
 		Update(); err != nil && err != pg.ErrNoRows {
-		return nil, errorutils.Wrap(err, messageFailedToSaveModel)
+		return nil, errorutil.Wrap(err, messageFailedToSaveModel)
 	}
 
 	return item, nil
@@ -72,7 +71,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 		Model(item).
 		Context(ctx).
 		Returning("*").
-		Where(sqlutils.BuildConditionEquals(sqlutils.AddAliasToColumnName("id", "question")), id).
+		Where(sql.BuildConditionEquals(sql.AddAliasToColumnName("id", "question")), id).
 		Set("updated_at = ?", time.Now())
 
 	if _, err := baseQuery.
@@ -107,7 +106,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.QuestionFilter) 
 		Returning("*").
 		Apply(f.Where).
 		Delete(); err != nil && err != pg.ErrNoRows {
-		return nil, errorutils.Wrap(err, messageFailedToDeleteModel)
+		return nil, errorutil.Wrap(err, messageFailedToDeleteModel)
 	}
 
 	go repo.getAllImagesAndDelete(items)
@@ -138,7 +137,7 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) 
 		err = query.Select()
 	}
 	if err != nil && err != pg.ErrNoRows {
-		return nil, 0, errorutils.Wrap(err, messageFailedToFetchModel)
+		return nil, 0, errorutil.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, total, nil
 }
@@ -147,23 +146,23 @@ func (repo *pgRepository) GenerateTest(ctx context.Context, cfg *question.Genera
 	subquery := repo.
 		Model(&models.Question{}).
 		Column("id").
-		Where(sqlutils.BuildConditionArray("qualification_id"), pg.Array(cfg.Qualifications)).
+		Where(sql.BuildConditionArray("qualification_id"), pg.Array(cfg.Qualifications)).
 		OrderExpr("random()").
 		Limit(cfg.Limit)
 	items := []*models.Question{}
 	if err := repo.
 		Model(&items).
 		Context(ctx).
-		Where(sqlutils.BuildConditionIn("id"), subquery).
+		Where(sql.BuildConditionIn("id"), subquery).
 		Select(); err != nil && err != pg.ErrNoRows {
-		return nil, errorutils.Wrap(err, messageFailedToFetchModel)
+		return nil, errorutil.Wrap(err, messageFailedToFetchModel)
 	}
 	return items, nil
 }
 
 func handleInsertAndUpdateError(err error) error {
 	if strings.Contains(err.Error(), "questions_from_content_correct_answer_qualification_id_key") {
-		return errorutils.Wrap(err, messageSimilarRecordExists)
+		return errorutil.Wrap(err, messageSimilarRecordExists)
 	}
-	return errorutils.Wrap(err, messageFailedToSaveModel)
+	return errorutil.Wrap(err, messageFailedToSaveModel)
 }

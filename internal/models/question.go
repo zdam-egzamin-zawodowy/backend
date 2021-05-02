@@ -2,13 +2,13 @@ package models
 
 import (
 	"context"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 	"strings"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
-	sqlutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/sql"
 )
 
 var _ pg.BeforeInsertHook = (*Question)(nil)
@@ -157,36 +157,36 @@ func (input *QuestionInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.Content != nil {
 			q = q.Set(
-				sqlutils.BuildConditionEquals(sqlutils.WrapStringInDoubleQuotes("content")),
+				sql.BuildConditionEquals(sql.AddAliasToColumnName("content", "question")),
 				*input.Content,
 			)
 		}
 		if input.From != nil {
 			q = q.Set(
-				sqlutils.BuildConditionEquals(sqlutils.WrapStringInDoubleQuotes("from")),
+				sql.BuildConditionEquals(sql.AddAliasToColumnName("from", "question")),
 				*input.From,
 			)
 		}
 		if input.Explanation != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("explanation"), *input.Explanation)
+			q = q.Set(sql.BuildConditionEquals("explanation"), *input.Explanation)
 		}
 		if input.CorrectAnswer != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("correct_answer"), *input.CorrectAnswer)
+			q = q.Set(sql.BuildConditionEquals("correct_answer"), *input.CorrectAnswer)
 		}
 		if input.AnswerA != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("answer_a"), *input.AnswerA)
+			q = q.Set(sql.BuildConditionEquals("answer_a"), *input.AnswerA)
 		}
 		if input.AnswerB != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("answer_b"), *input.AnswerB)
+			q = q.Set(sql.BuildConditionEquals("answer_b"), *input.AnswerB)
 		}
 		if input.AnswerC != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("answer_c"), *input.AnswerC)
+			q = q.Set(sql.BuildConditionEquals("answer_c"), *input.AnswerC)
 		}
 		if input.AnswerD != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("answer_d"), *input.AnswerD)
+			q = q.Set(sql.BuildConditionEquals("answer_d"), *input.AnswerD)
 		}
 		if input.QualificationID != nil {
-			q = q.Set(sqlutils.BuildConditionEquals("qualification_id"), *input.QualificationID)
+			q = q.Set(sql.BuildConditionEquals("qualification_id"), *input.QualificationID)
 		}
 	}
 
@@ -219,28 +219,28 @@ func (f *QuestionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query,
 	}
 
 	if !isZero(f.ID) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
+		q = q.Where(sql.BuildConditionArray(sql.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
 	}
 	if !isZero(f.IDNEQ) {
-		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("id", alias)), pg.Array(f.IDNEQ))
+		q = q.Where(sql.BuildConditionNotInArray(sql.AddAliasToColumnName("id", alias)), pg.Array(f.IDNEQ))
 	}
 
 	if !isZero(f.From) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("from", alias)), pg.Array(f.From))
+		q = q.Where(sql.BuildConditionArray(sql.AddAliasToColumnName("from", alias)), pg.Array(f.From))
 	}
 
 	if !isZero(f.ContentMATCH) {
-		q = q.Where(sqlutils.BuildConditionMatch(sqlutils.AddAliasToColumnName("content", alias)), f.ContentMATCH)
+		q = q.Where(sql.BuildConditionMatch(sql.AddAliasToColumnName("content", alias)), f.ContentMATCH)
 	}
 	if !isZero(f.ContentIEQ) {
-		q = q.Where(sqlutils.BuildConditionIEQ(sqlutils.AddAliasToColumnName("content", alias)), f.ContentIEQ)
+		q = q.Where(sql.BuildConditionIEQ(sql.AddAliasToColumnName("content", alias)), f.ContentIEQ)
 	}
 
 	if !isZero(f.QualificationID) {
-		q = q.Where(sqlutils.BuildConditionArray(sqlutils.AddAliasToColumnName("qualification_id", alias)), pg.Array(f.QualificationID))
+		q = q.Where(sql.BuildConditionArray(sql.AddAliasToColumnName("qualification_id", alias)), pg.Array(f.QualificationID))
 	}
 	if !isZero(f.QualificationIDNEQ) {
-		q = q.Where(sqlutils.BuildConditionNotInArray(sqlutils.AddAliasToColumnName("qualification_id", alias)), pg.Array(f.QualificationIDNEQ))
+		q = q.Where(sql.BuildConditionNotInArray(sql.AddAliasToColumnName("qualification_id", alias)), pg.Array(f.QualificationIDNEQ))
 	}
 
 	if f.QualificationFilter != nil {
@@ -249,19 +249,19 @@ func (f *QuestionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query,
 	}
 
 	if !isZero(f.CreatedAt) {
-		q = q.Where(sqlutils.BuildConditionEquals(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAt)
+		q = q.Where(sql.BuildConditionEquals(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAt)
 	}
 	if !isZero(f.CreatedAtGT) {
-		q = q.Where(sqlutils.BuildConditionGT(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtGT)
+		q = q.Where(sql.BuildConditionGT(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAtGT)
 	}
 	if !isZero(f.CreatedAtGTE) {
-		q = q.Where(sqlutils.BuildConditionGTE(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtGTE)
+		q = q.Where(sql.BuildConditionGTE(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAtGTE)
 	}
 	if !isZero(f.CreatedAtLT) {
-		q = q.Where(sqlutils.BuildConditionLT(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtLT)
+		q = q.Where(sql.BuildConditionLT(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAtLT)
 	}
 	if !isZero(f.CreatedAtLTE) {
-		q = q.Where(sqlutils.BuildConditionLTE(sqlutils.AddAliasToColumnName("created_at", alias)), f.CreatedAtLTE)
+		q = q.Where(sql.BuildConditionLTE(sql.AddAliasToColumnName("created_at", alias)), f.CreatedAtLTE)
 	}
 
 	return q, nil
