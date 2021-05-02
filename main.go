@@ -26,7 +26,7 @@ import (
 	userrepository "github.com/zdam-egzamin-zawodowy/backend/internal/user/repository"
 	userusecase "github.com/zdam-egzamin-zawodowy/backend/internal/user/usecase"
 
-	ginlogrus "github.com/Kichiyaki/gin-logrus"
+	"github.com/Kichiyaki/ginlogrus"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -51,7 +51,7 @@ func main() {
 		BasePath: os.Getenv("FILE_STORAGE_PATH"),
 	})
 
-	dbConn, err := db.New(&db.Config{
+	dbConn, err := db.Connect(&db.Config{
 		LogQueries: envutils.GetenvBool("LOG_DB_QUERIES"),
 	})
 	if err != nil {
@@ -184,7 +184,7 @@ func setupLogger() {
 func setupRouter() *gin.Engine {
 	router := gin.New()
 
-	router.Use(ginlogrus.Logger(logrus.WithField("hostname", "api")), gin.Recovery())
+	router.Use(ginlogrus.Logger(logrus.WithFields(map[string]interface{}{})), gin.Recovery())
 	if mode.Get() == mode.DevelopmentMode {
 		router.Use(cors.New(cors.Config{
 			AllowOriginFunc: func(string) bool {

@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	envutils "github.com/zdam-egzamin-zawodowy/backend/pkg/utils/env"
 
-	gopglogrusquerylogger "github.com/Kichiyaki/go-pg-logrus-query-logger/v10"
+	"github.com/Kichiyaki/go-pg-logrus-query-logger/v10"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
@@ -25,12 +25,12 @@ func init() {
 	orm.RegisterTable((*models.QualificationToProfession)(nil))
 }
 
-func New(cfg *Config) (*pg.DB, error) {
+func Connect(cfg *Config) (*pg.DB, error) {
 	db := pg.Connect(prepareOptions())
 
 	if cfg != nil {
 		if cfg.LogQueries {
-			db.AddQueryHook(gopglogrusquerylogger.QueryLogger{
+			db.AddQueryHook(querylogger.Logger{
 				Log:            log,
 				MaxQueryLength: 5000,
 			})
@@ -70,19 +70,19 @@ func createSchema(db *pg.DB) error {
 				FKConstraints: true,
 			})
 			if err != nil {
-				return errors.Wrap(err, "createSchema")
+				return errors.Wrap(err, "couldn't create the table")
 			}
 		}
 
 		total, err := tx.Model(modelsToCreate[0]).Where("role = ?", models.RoleAdmin).Count()
 		if err != nil {
-			return errors.Wrap(err, "createSchema")
+			return errors.Wrap(err, "couldn't count admins")
 		}
 		if total == 0 {
 			activated := true
-			pswd, err := password.Generate(15, 4, 2, true, false)
+			pswd, err := password.Generate(15, 6, 0, true, false)
 			if err != nil {
-				return errors.Wrap(err, "createSchema")
+				return errors.Wrap(err, "couldn't generate a password for the new admin account")
 			}
 			email := "admin@admin.com"
 			_, err = tx.
