@@ -142,13 +142,13 @@ func main() {
 		Addr:    ":8080",
 		Handler: router,
 	}
-
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logrus.Fatalf("listen: %s\n", err)
 		}
 	}()
+	logrus.Info("Server is listening on the port 8080")
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
