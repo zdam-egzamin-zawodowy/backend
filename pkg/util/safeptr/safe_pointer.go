@@ -1,4 +1,4 @@
-package safepointer
+package safeptr
 
 func SafeBoolPointer(v *bool, def bool) bool {
 	if v == nil {

@@ -5,7 +5,7 @@ package resolvers
 
 import (
 	"context"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safepointer"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safeptr"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
@@ -30,7 +30,7 @@ func (r *mutationResolver) DeleteQuestions(ctx context.Context, ids []int) ([]*m
 func (r *queryResolver) GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*models.Question, error) {
 	return r.QuestionUsecase.GenerateTest(ctx, &question.GenerateTestConfig{
 		Qualifications: qualificationIDs,
-		Limit:          safepointer.SafeIntPointer(limit, question.TestMaxLimit),
+		Limit:          safeptr.SafeIntPointer(limit, question.TestMaxLimit),
 	})
 }
 
@@ -48,8 +48,8 @@ func (r *queryResolver) Questions(
 		&question.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  safepointer.SafeIntPointer(limit, question.FetchDefaultLimit),
-			Offset: safepointer.SafeIntPointer(offset, 0),
+			Limit:  safeptr.SafeIntPointer(limit, question.FetchDefaultLimit),
+			Offset: safeptr.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},
 	)

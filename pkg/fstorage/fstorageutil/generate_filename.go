@@ -1,4 +1,4 @@
-package filestorageutil
+package fstorageutil
 
 import (
 	"strings"

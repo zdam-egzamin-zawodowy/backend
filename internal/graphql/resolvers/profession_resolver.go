@@ -6,7 +6,7 @@ package resolvers
 import (
 	"context"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safepointer"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safeptr"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
@@ -41,8 +41,8 @@ func (r *queryResolver) Professions(
 		&profession.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  safepointer.SafeIntPointer(limit, profession.FetchDefaultLimit),
-			Offset: safepointer.SafeIntPointer(offset, 0),
+			Limit:  safeptr.SafeIntPointer(limit, profession.FetchDefaultLimit),
+			Offset: safeptr.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},
 	)

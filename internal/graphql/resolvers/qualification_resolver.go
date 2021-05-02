@@ -5,7 +5,7 @@ package resolvers
 
 import (
 	"context"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safepointer"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safeptr"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
@@ -40,8 +40,8 @@ func (r *queryResolver) Qualifications(
 		&qualification.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  safepointer.SafeIntPointer(limit, qualification.FetchDefaultLimit),
-			Offset: safepointer.SafeIntPointer(offset, 0),
+			Limit:  safeptr.SafeIntPointer(limit, qualification.FetchDefaultLimit),
+			Offset: safeptr.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},
 	)
@@ -62,8 +62,8 @@ func (r *queryResolver) SimilarQualifications(
 		&qualification.GetSimilarConfig{
 			Count:           shouldCount(ctx),
 			QualificationID: qualificationID,
-			Limit:           safepointer.SafeIntPointer(limit, qualification.FetchDefaultLimit),
-			Offset:          safepointer.SafeIntPointer(offset, 0),
+			Limit:           safeptr.SafeIntPointer(limit, qualification.FetchDefaultLimit),
+			Offset:          safeptr.SafeIntPointer(offset, 0),
 			Sort:            sort,
 		},
 	)

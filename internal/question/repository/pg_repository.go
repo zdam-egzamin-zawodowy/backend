@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/go-pg/pg/v10"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/db"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/postgres"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/filestorage"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 )
 
@@ -22,7 +22,7 @@ type pgRepository struct {
 
 type PGRepositoryConfig struct {
 	DB          *pg.DB
-	FileStorage filestorage.FileStorage
+	FileStorage fstorage.FileStorage
 }
 
 func NewPGRepository(cfg *PGRepositoryConfig) (question.Repository, error) {
@@ -123,7 +123,7 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) 
 		Context(ctx).
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
-		Apply(db.Sort{
+		Apply(postgres.Sort{
 			Relationships: map[string]string{
 				"qualification": "qualification",
 			},

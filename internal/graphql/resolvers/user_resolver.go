@@ -5,7 +5,7 @@ package resolvers
 
 import (
 	"context"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safepointer"
+	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safeptr"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
@@ -49,7 +49,7 @@ func (r *mutationResolver) SignIn(
 		ctx,
 		email,
 		password,
-		safepointer.SafeBoolPointer(staySignedIn, false),
+		safeptr.SafeBoolPointer(staySignedIn, false),
 	)
 	if err != nil {
 		return nil, err
@@ -71,8 +71,8 @@ func (r *queryResolver) Users(
 		&user.FetchConfig{
 			Count:  shouldCount(ctx),
 			Filter: filter,
-			Limit:  safepointer.SafeIntPointer(limit, user.FetchMaxLimit),
-			Offset: safepointer.SafeIntPointer(offset, 0),
+			Limit:  safeptr.SafeIntPointer(limit, user.FetchMaxLimit),
+			Offset: safeptr.SafeIntPointer(offset, 0),
 			Sort:   sort,
 		},
 	)
