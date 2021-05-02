@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
@@ -87,8 +87,8 @@ func (repo *pgRepository) UpdateMany(
 			if len(input.DissociateProfession) > 0 {
 				_, err := tx.
 					Model(&models.QualificationToProfession{}).
-					Where(sql.BuildConditionArray("profession_id"), pg.Array(input.DissociateProfession)).
-					Where(sql.BuildConditionArray("qualification_id"), pg.Array(qualificationIDs)).
+					Where(gopgutil.BuildConditionArray("profession_id"), pg.Array(input.DissociateProfession)).
+					Where(gopgutil.BuildConditionArray("qualification_id"), pg.Array(qualificationIDs)).
 					Delete()
 				if err != nil {
 					return handleInsertAndUpdateError(err)
@@ -148,7 +148,7 @@ func (repo *pgRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 	subquery := repo.
 		Model(&models.QualificationToProfession{}).
 		Context(ctx).
-		Where(sql.BuildConditionEquals("qualification_id"), cfg.QualificationID).
+		Where(gopgutil.BuildConditionEquals("qualification_id"), cfg.QualificationID).
 		Column("profession_id")
 	qualificationIDs := []int{}
 	err = repo.
@@ -156,8 +156,8 @@ func (repo *pgRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 		Context(ctx).
 		Column("qualification_id").
 		With("prof", subquery).
-		Where(sql.BuildConditionIn("profession_id"), pg.Safe("SELECT profession_id FROM prof")).
-		Where(sql.BuildConditionNEQ("qualification_id"), cfg.QualificationID).
+		Where(gopgutil.BuildConditionIn("profession_id"), pg.Safe("SELECT profession_id FROM prof")).
+		Where(gopgutil.BuildConditionNEQ("qualification_id"), cfg.QualificationID).
 		Select(&qualificationIDs)
 	if err != nil {
 		return nil, 0, errorutil.Wrap(err, messageFailedToFetchModel)

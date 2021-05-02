@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
+	"github.com/Kichiyaki/goutil/strutil"
 	"github.com/pkg/errors"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/validator"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
@@ -82,7 +82,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*mode
 	if cfg.Limit > user.FetchMaxLimit || cfg.Limit <= 0 {
 		cfg.Limit = user.FetchMaxLimit
 	}
-	cfg.Sort = sql.SanitizeOrders(cfg.Sort)
+	cfg.Sort = gopgutil.SanitizeOrders(cfg.Sort)
 	return ucase.userRepository.Fetch(ctx, cfg)
 }
 
@@ -144,7 +144,7 @@ func validateInput(input *models.UserInput, opts validateOptions) error {
 	}
 
 	if input.Email != nil {
-		if !validator.IsEmailValid(*input.Email) {
+		if !strutil.IsEmail(*input.Email) {
 			return errors.New(messageEmailIsInvalid)
 		}
 	} else if !opts.acceptNilValues {

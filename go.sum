@@ -2,10 +2,16 @@ cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMT
 github.com/99designs/gqlgen v0.13.0 h1:haLTcUp3Vwp80xMVEg5KRNwzfUrgFdRmtBY8fuB8scA=
 github.com/99designs/gqlgen v0.13.0/go.mod h1:NV130r6f4tpRWuAI+zsrSdooO/eWUv+Gyyoi3rEfXIk=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/Kichiyaki/appmode v0.0.0-20210502105643-0a26207c548d h1:ApX13STtfJc2YPH5D2JnBa6+4AM2vt7a81so/MPr/bA=
+github.com/Kichiyaki/appmode v0.0.0-20210502105643-0a26207c548d/go.mod h1:41p1KTy/fiVocPnJR2h/iXh2NvWWVBdNoZrN8TWVXUI=
 github.com/Kichiyaki/ginlogrus v0.0.0-20210502060406-bb0049cc40c4 h1:1fPLsfbM6DGZcpdV+IeD/52BP7tL33MoVh7FdUGj14g=
 github.com/Kichiyaki/ginlogrus v0.0.0-20210502060406-bb0049cc40c4/go.mod h1:PTGPHApaVoNA6eEC72vqvzKRhhSUQnHfh9uSho3rsXk=
 github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858 h1:O7EPPY5lWaKbYB/5yJzE8WMesismUYuje7gOemo1UNo=
 github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858/go.mod h1:ADHVWnGlWcRn1aGthuh7I1Lrn6zzsjkVJju151dXyDw=
+github.com/Kichiyaki/gopgutil/v10 v10.0.0-20210502103432-20b73c1e09b3 h1:kF01z5HAcpmn8PeGysegVKWblqV/t+boiZFi+6TIFVM=
+github.com/Kichiyaki/gopgutil/v10 v10.0.0-20210502103432-20b73c1e09b3/go.mod h1:Ol4iqPU50Ena5DFDOJvGnr17/gVbnhqSW/TuI0mWyo4=
+github.com/Kichiyaki/goutil v0.0.0-20210502095630-318d17091eab h1:XFHuFbQQPKkSYw/Z+nQ0ZeOz/Bx3PFWRk0lWtJc7yx8=
+github.com/Kichiyaki/goutil v0.0.0-20210502095630-318d17091eab/go.mod h1:+HhI932Xb0xrCodNcCv5GPiCjLYhDxWhCtlEqMIJhB4=
 github.com/agnivade/levenshtein v1.0.1/go.mod h1:CURSv5d9Uaml+FovSIICkLbAUZ9S4RqaHDIsdSBg7lM=
 github.com/agnivade/levenshtein v1.0.3/go.mod h1:4SFRZbbXWLF4MU1T9Qg0pGgH3Pjs+t6ie5efyrwRJXs=
 github.com/agnivade/levenshtein v1.1.0 h1:n6qGwyHG61v3ABce1rPVZklEYRT8NFpCMrpZdBUbYGM=

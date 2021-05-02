@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
@@ -65,7 +65,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *qualification.FetchConfig)
 			Count: true,
 		}
 	}
-	cfg.Sort = sql.SanitizeOrders(cfg.Sort)
+	cfg.Sort = gopgutil.SanitizeOrders(cfg.Sort)
 	return ucase.qualificationRepository.Fetch(ctx, cfg)
 }
 
@@ -107,7 +107,7 @@ func (ucase *usecase) GetSimilar(ctx context.Context, cfg *qualification.GetSimi
 	if cfg == nil || cfg.QualificationID <= 0 {
 		return nil, 0, errors.New(messageQualificationIDIsRequired)
 	}
-	cfg.Sort = sql.SanitizeOrders(cfg.Sort)
+	cfg.Sort = gopgutil.SanitizeOrders(cfg.Sort)
 	return ucase.qualificationRepository.GetSimilar(ctx, cfg)
 }
 

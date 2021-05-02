@@ -2,6 +2,7 @@ package httpdelivery
 
 import (
 	"fmt"
+	"github.com/Kichiyaki/appmode"
 	"github.com/pkg/errors"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/querycomplexity"
 	"time"
@@ -15,7 +16,6 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/directive"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/resolvers"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/mode"
 )
 
 const (
@@ -36,7 +36,7 @@ func Attach(group *gin.RouterGroup, cfg Config) error {
 	gqlHandler := graphqlHandler(prepareConfig(cfg.Resolver, cfg.Directive))
 	group.GET(graphqlEndpoint, gqlHandler)
 	group.POST(graphqlEndpoint, gqlHandler)
-	if mode.Get() == mode.DevelopmentMode {
+	if appmode.Equals(appmode.DevelopmentMode) {
 		group.GET(playgroundEndpoint, playgroundHandler())
 	}
 	return nil
@@ -57,7 +57,7 @@ func graphqlHandler(cfg generated.Config) gin.HandlerFunc {
 	})
 	srv.SetQueryCache(lru.New(100))
 	srv.Use(querycomplexity.GetComplexityLimitExtension())
-	if mode.Get() == mode.DevelopmentMode {
+	if appmode.Equals(appmode.DevelopmentMode) {
 		srv.Use(extension.Introspection{})
 	}
 

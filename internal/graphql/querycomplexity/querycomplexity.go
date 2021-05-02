@@ -2,13 +2,13 @@ package querycomplexity
 
 import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/Kichiyaki/goutil/safeptr"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safeptr"
 )
 
 const (

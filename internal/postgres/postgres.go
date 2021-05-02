@@ -2,8 +2,8 @@ package postgres
 
 import (
 	"context"
+	"github.com/Kichiyaki/goutil/envutil"
 	"github.com/sirupsen/logrus"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/envutil"
 
 	"github.com/Kichiyaki/go-pg-logrus-query-logger/v10"
 	"github.com/go-pg/pg/v10"

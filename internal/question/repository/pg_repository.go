@@ -2,14 +2,13 @@ package repository
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 	"strings"
 	"time"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/postgres"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
@@ -71,7 +70,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 		Model(item).
 		Context(ctx).
 		Returning("*").
-		Where(sql.BuildConditionEquals(sql.AddAliasToColumnName("id", "question")), id).
+		Where(gopgutil.BuildConditionEquals(gopgutil.AddAliasToColumnName("id", "question")), id).
 		Set("updated_at = ?", time.Now())
 
 	if _, err := baseQuery.
@@ -116,16 +115,18 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.QuestionFilter) 
 
 func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*models.Question, int, error) {
 	var err error
-	items := []*models.Question{}
+	var items []*models.Question
 	total := 0
 	query := repo.
 		Model(&items).
 		Context(ctx).
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
-		Apply(postgres.Sort{
-			Relationships: map[string]string{
-				"qualification": "qualification",
+		Apply(gopgutil.OrderAppender{
+			Relations: map[string]gopgutil.OrderAppenderRelation{
+				"qualification": {
+					Name: "Qualification",
+				},
 			},
 			Orders: cfg.Sort,
 		}.Apply).
@@ -146,14 +147,14 @@ func (repo *pgRepository) GenerateTest(ctx context.Context, cfg *question.Genera
 	subquery := repo.
 		Model(&models.Question{}).
 		Column("id").
-		Where(sql.BuildConditionArray("qualification_id"), pg.Array(cfg.Qualifications)).
+		Where(gopgutil.BuildConditionArray("qualification_id"), pg.Array(cfg.Qualifications)).
 		OrderExpr("random()").
 		Limit(cfg.Limit)
 	items := []*models.Question{}
 	if err := repo.
 		Model(&items).
 		Context(ctx).
-		Where(sql.BuildConditionIn("id"), subquery).
+		Where(gopgutil.BuildConditionIn("id"), subquery).
 		Select(); err != nil && err != pg.ErrNoRows {
 		return nil, errorutil.Wrap(err, messageFailedToFetchModel)
 	}

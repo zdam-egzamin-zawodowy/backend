@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
@@ -65,7 +65,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([
 			Count: true,
 		}
 	}
-	cfg.Sort = sql.SanitizeOrders(cfg.Sort)
+	cfg.Sort = gopgutil.SanitizeOrders(cfg.Sort)
 	return ucase.professionRepository.Fetch(ctx, cfg)
 }
 

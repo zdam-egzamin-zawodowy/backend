@@ -5,7 +5,7 @@ package resolvers
 
 import (
 	"context"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/safeptr"
+	"github.com/Kichiyaki/goutil/safeptr"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"

@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 )
 
 var (
@@ -73,7 +73,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*
 	if cfg.Limit > question.FetchMaxLimit {
 		cfg.Limit = question.FetchMaxLimit
 	}
-	cfg.Sort = sql.SanitizeOrders(cfg.Sort)
+	cfg.Sort = gopgutil.SanitizeOrders(cfg.Sort)
 	return ucase.questionRepository.Fetch(ctx, cfg)
 }
 

@@ -23,7 +23,7 @@ WORKDIR /root/
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/zdamegzawodowy .
 
-ENV MODE=production
+ENV APP_MODE=production
 ENV GIN_MODE=release
 EXPOSE 8080
 

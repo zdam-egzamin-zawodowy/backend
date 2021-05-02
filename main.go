@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/Kichiyaki/appmode"
+	"github.com/Kichiyaki/goutil/envutil"
 	"net/http"
 	"os"
 	"os/signal"
@@ -32,14 +34,12 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/mode"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/envutil"
 )
 
 func init() {
 	os.Setenv("TZ", "UTC")
 
-	if mode.Get() == mode.DevelopmentMode {
+	if appmode.Equals(appmode.DevelopmentMode) {
 		godotenv.Load(".env.local")
 	}
 
@@ -164,12 +164,12 @@ func main() {
 }
 
 func setupLogger() {
-	if mode.Get() == mode.DevelopmentMode {
+	if appmode.Equals(appmode.DevelopmentMode) {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
 	timestampFormat := "2006-01-02 15:04:05"
-	if mode.Get() == mode.ProductionMode {
+	if appmode.Equals(appmode.ProductionMode) {
 		customFormatter := new(logrus.JSONFormatter)
 		customFormatter.TimestampFormat = timestampFormat
 		logrus.SetFormatter(customFormatter)
@@ -185,7 +185,7 @@ func setupRouter() *gin.Engine {
 	router := gin.New()
 
 	router.Use(ginlogrus.Logger(logrus.WithFields(map[string]interface{}{})), gin.Recovery())
-	if mode.Get() == mode.DevelopmentMode {
+	if appmode.Equals(appmode.DevelopmentMode) {
 		router.Use(cors.New(cors.Config{
 			AllowOriginFunc: func(string) bool {
 				return true

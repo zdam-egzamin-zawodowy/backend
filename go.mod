@@ -4,8 +4,11 @@ go 1.16
 
 require (
 	github.com/99designs/gqlgen v0.13.0
+	github.com/Kichiyaki/appmode v0.0.0-20210502105643-0a26207c548d // indirect
 	github.com/Kichiyaki/ginlogrus v0.0.0-20210502060406-bb0049cc40c4
 	github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858
+	github.com/Kichiyaki/gopgutil/v10 v10.0.0-20210502103432-20b73c1e09b3 // indirect
+	github.com/Kichiyaki/goutil v0.0.0-20210502095630-318d17091eab // indirect
 	github.com/agnivade/levenshtein v1.1.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1

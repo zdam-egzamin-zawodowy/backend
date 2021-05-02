@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/sql"
 	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
@@ -109,7 +109,7 @@ func (repo *pgRepository) GetAssociatedQualifications(
 	if err := repo.
 		Model(&qualificationToProfession).
 		Context(ctx).
-		Where(sql.BuildConditionArray("profession_id"), pg.Array(ids)).
+		Where(gopgutil.BuildConditionArray("profession_id"), pg.Array(ids)).
 		Relation("Qualification").
 		Order("qualification.formula ASC", "qualification.code ASC").
 		Select(); err != nil {
