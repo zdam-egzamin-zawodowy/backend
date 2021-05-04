@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
 	"strings"
 
@@ -83,7 +84,9 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
 		Apply(cfg.Filter.Where).
-		Order(cfg.Sort...)
+		Apply(gopgutil.OrderAppender{
+			Orders: cfg.Sort,
+		}.Apply)
 
 	if cfg.Count {
 		total, err = query.SelectAndCount()

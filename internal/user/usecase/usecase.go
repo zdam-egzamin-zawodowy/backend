@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/Kichiyaki/goutil/strutil"
 	"github.com/pkg/errors"
 
@@ -82,7 +81,6 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*mode
 	if cfg.Limit > user.FetchMaxLimit || cfg.Limit <= 0 {
 		cfg.Limit = user.FetchMaxLimit
 	}
-	cfg.Sort = gopgutil.SanitizeOrders(cfg.Sort)
 	return ucase.userRepository.Fetch(ctx, cfg)
 }
 

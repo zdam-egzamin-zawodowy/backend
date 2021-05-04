@@ -148,22 +148,24 @@ func (f *UserFilterOr) WhereWithAlias(q *orm.Query, alias string) *orm.Query {
 	q = q.WhereGroup(func(q *orm.Query) (*orm.Query, error) {
 		if !isZero(f.DisplayNameMATCH) {
 			q = q.WhereOr(
-				gopgutil.BuildConditionMatch(gopgutil.AddAliasToColumnName("display_name", alias)),
+				gopgutil.BuildConditionMatch("?"),
+				gopgutil.AddAliasToColumnName("display_name", alias),
 				f.DisplayNameMATCH,
 			)
 		}
 		if !isZero(f.DisplayNameIEQ) {
 			q = q.WhereOr(
-				gopgutil.BuildConditionIEQ(gopgutil.AddAliasToColumnName("display_name", alias)),
+				gopgutil.BuildConditionIEQ("?"),
+				gopgutil.AddAliasToColumnName("display_name", alias),
 				f.DisplayNameIEQ,
 			)
 		}
 
 		if !isZero(f.EmailMATCH) {
-			q = q.WhereOr(gopgutil.BuildConditionMatch(gopgutil.AddAliasToColumnName("email", alias)), f.EmailMATCH)
+			q = q.WhereOr(gopgutil.BuildConditionMatch("?"), gopgutil.AddAliasToColumnName("email", alias), f.EmailMATCH)
 		}
 		if !isZero(f.EmailIEQ) {
-			q = q.WhereOr(gopgutil.BuildConditionIEQ(gopgutil.AddAliasToColumnName("email", alias)), f.EmailIEQ)
+			q = q.WhereOr(gopgutil.BuildConditionIEQ("?"), gopgutil.AddAliasToColumnName("email", alias), f.EmailIEQ)
 		}
 
 		return q, nil
@@ -205,56 +207,56 @@ func (f *UserFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, err
 	}
 
 	if !isZero(f.ID) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("id", alias), pg.Array(f.ID))
 	}
 	if !isZero(f.IDNEQ) {
-		q = q.Where(gopgutil.BuildConditionNotInArray(gopgutil.AddAliasToColumnName("id", alias)), pg.Array(f.IDNEQ))
+		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("id", alias), pg.Array(f.IDNEQ))
 	}
 
 	if !isZero(f.Activated) {
-		q = q.Where(gopgutil.BuildConditionEquals(gopgutil.AddAliasToColumnName("activated", alias)), f.Activated)
+		q = q.Where(gopgutil.BuildConditionEquals("?"), gopgutil.AddAliasToColumnName("activated", alias), f.Activated)
 	}
 
 	if !isZero(f.DisplayName) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("display_name", alias)), pg.Array(f.DisplayName))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("display_name", alias), pg.Array(f.DisplayName))
 	}
 	if !isZero(f.DisplayNameNEQ) {
-		q = q.Where(gopgutil.BuildConditionNotInArray(gopgutil.AddAliasToColumnName("display_name", alias)), pg.Array(f.DisplayNameNEQ))
+		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("display_name", alias), pg.Array(f.DisplayNameNEQ))
 	}
 	if !isZero(f.DisplayNameMATCH) {
-		q = q.Where(gopgutil.BuildConditionMatch(gopgutil.AddAliasToColumnName("display_name", alias)), f.DisplayNameMATCH)
+		q = q.Where(gopgutil.BuildConditionMatch("?"), gopgutil.AddAliasToColumnName("display_name", alias), f.DisplayNameMATCH)
 	}
 	if !isZero(f.DisplayNameIEQ) {
-		q = q.Where(gopgutil.BuildConditionIEQ(gopgutil.AddAliasToColumnName("display_name", alias)), f.DisplayNameIEQ)
+		q = q.Where(gopgutil.BuildConditionIEQ("?"), gopgutil.AddAliasToColumnName("display_name", alias), f.DisplayNameIEQ)
 	}
 
 	if !isZero(f.Email) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("email", alias)), pg.Array(f.Email))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("email", alias), pg.Array(f.Email))
 	}
 	if !isZero(f.EmailNEQ) {
-		q = q.Where(gopgutil.BuildConditionNotInArray(gopgutil.AddAliasToColumnName("email", alias)), pg.Array(f.EmailNEQ))
+		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("email", alias), pg.Array(f.EmailNEQ))
 	}
 	if !isZero(f.EmailMATCH) {
-		q = q.Where(gopgutil.BuildConditionMatch(gopgutil.AddAliasToColumnName("email", alias)), f.EmailMATCH)
+		q = q.Where(gopgutil.BuildConditionMatch("?"), gopgutil.AddAliasToColumnName("email", alias), f.EmailMATCH)
 	}
 	if !isZero(f.EmailIEQ) {
-		q = q.Where(gopgutil.BuildConditionIEQ(gopgutil.AddAliasToColumnName("email", alias)), f.EmailIEQ)
+		q = q.Where(gopgutil.BuildConditionIEQ("?"), gopgutil.AddAliasToColumnName("email", alias), f.EmailIEQ)
 	}
 
 	if !isZero(f.CreatedAt) {
-		q = q.Where(gopgutil.BuildConditionEquals(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAt)
+		q = q.Where(gopgutil.BuildConditionEquals("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAt)
 	}
 	if !isZero(f.CreatedAtGT) {
-		q = q.Where(gopgutil.BuildConditionGT(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtGT)
+		q = q.Where(gopgutil.BuildConditionGT("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtGT)
 	}
 	if !isZero(f.CreatedAtGTE) {
-		q = q.Where(gopgutil.BuildConditionGTE(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtGTE)
+		q = q.Where(gopgutil.BuildConditionGTE("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtGTE)
 	}
 	if !isZero(f.CreatedAtLT) {
-		q = q.Where(gopgutil.BuildConditionLT(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtLT)
+		q = q.Where(gopgutil.BuildConditionLT("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtLT)
 	}
 	if !isZero(f.CreatedAtLTE) {
-		q = q.Where(gopgutil.BuildConditionLTE(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtLTE)
+		q = q.Where(gopgutil.BuildConditionLTE("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtLTE)
 	}
 
 	if f.Or != nil {

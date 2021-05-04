@@ -130,7 +130,9 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *qualification.FetchCon
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
 		Apply(cfg.Filter.Where).
-		Order(cfg.Sort...)
+		Apply(gopgutil.OrderAppender{
+			Orders: cfg.Sort,
+		}.Apply)
 
 	if cfg.Count {
 		total, err = query.SelectAndCount()

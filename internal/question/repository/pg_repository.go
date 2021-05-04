@@ -70,7 +70,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 		Model(item).
 		Context(ctx).
 		Returning("*").
-		Where(gopgutil.BuildConditionEquals(gopgutil.AddAliasToColumnName("id", "question")), id).
+		Where(gopgutil.BuildConditionEquals("?"), gopgutil.AddAliasToColumnName("id", "question"), id).
 		Set("updated_at = ?", time.Now())
 
 	if _, err := baseQuery.
@@ -123,11 +123,6 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) 
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
 		Apply(gopgutil.OrderAppender{
-			Relations: map[string]gopgutil.OrderAppenderRelation{
-				"qualification": {
-					Name: "Qualification",
-				},
-			},
 			Orders: cfg.Sort,
 		}.Apply).
 		Apply(cfg.Filter.Where)
