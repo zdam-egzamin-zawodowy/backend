@@ -17,8 +17,8 @@ const (
 	AnswerD Answer = "d"
 )
 
-func (role Answer) IsValid() bool {
-	switch role {
+func (answer Answer) IsValid() bool {
+	switch answer {
 	case AnswerA,
 		AnswerB,
 		AnswerC,
