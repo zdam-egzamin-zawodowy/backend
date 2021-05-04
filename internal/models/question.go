@@ -244,9 +244,12 @@ func (f *QuestionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query,
 		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("qualification_id", alias), pg.Array(f.QualificationIDNEQ))
 	}
 
+	var err error
 	if f.QualificationFilter != nil {
-		q = q.Relation("Qualification._")
-		q, _ = f.QualificationFilter.WhereWithAlias(q, "qualification")
+		q, err = f.QualificationFilter.WhereWithAlias(q.Relation("Qualification._"), "qualification")
+		if err != nil {
+			return q, err
+		}
 	}
 
 	if !isZero(f.CreatedAt) {

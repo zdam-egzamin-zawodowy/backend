@@ -98,7 +98,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 }
 
 func (repo *pgRepository) Delete(ctx context.Context, f *models.QuestionFilter) ([]*models.Question, error) {
-	items := []*models.Question{}
+	var items []*models.Question
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -122,10 +122,10 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) 
 		Context(ctx).
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
+		Apply(cfg.Filter.Where).
 		Apply(gopgutil.OrderAppender{
 			Orders: cfg.Sort,
-		}.Apply).
-		Apply(cfg.Filter.Where)
+		}.Apply)
 
 	if cfg.Count {
 		total, err = query.SelectAndCount()
@@ -145,7 +145,7 @@ func (repo *pgRepository) GenerateTest(ctx context.Context, cfg *question.Genera
 		Where(gopgutil.BuildConditionArray("qualification_id"), pg.Array(cfg.Qualifications)).
 		OrderExpr("random()").
 		Limit(cfg.Limit)
-	items := []*models.Question{}
+	var items []*models.Question
 	if err := repo.
 		Model(&items).
 		Context(ctx).
