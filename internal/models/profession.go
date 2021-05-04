@@ -113,37 +113,37 @@ func (f *ProfessionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Quer
 	}
 
 	if !isZero(f.ID) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("id", alias), pg.Array(f.ID))
 	}
 	if !isZero(f.IDNEQ) {
-		q = q.Where(gopgutil.BuildConditionNotInArray(gopgutil.AddAliasToColumnName("id", alias)), pg.Array(f.IDNEQ))
+		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("id", alias), pg.Array(f.IDNEQ))
 	}
 
 	if !isZero(f.Slug) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("slug", alias)), pg.Array(f.Slug))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("slug", alias), pg.Array(f.Slug))
 	}
 	if !isZero(f.SlugNEQ) {
-		q = q.Where(gopgutil.BuildConditionNotInArray(gopgutil.AddAliasToColumnName("slug", alias)), pg.Array(f.SlugNEQ))
+		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("slug", alias), pg.Array(f.SlugNEQ))
 	}
 
 	if !isZero(f.Name) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("name", alias)), pg.Array(f.Name))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("name", alias), pg.Array(f.Name))
 	}
 	if !isZero(f.NameNEQ) {
-		q = q.Where(gopgutil.BuildConditionNotInArray(gopgutil.AddAliasToColumnName("name", alias)), pg.Array(f.NameNEQ))
+		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("name", alias), pg.Array(f.NameNEQ))
 	}
 	if !isZero(f.NameMATCH) {
-		q = q.Where(gopgutil.BuildConditionMatch(gopgutil.AddAliasToColumnName("name", alias)), f.NameMATCH)
+		q = q.Where(gopgutil.BuildConditionMatch("?"), gopgutil.AddAliasToColumnName("name", alias), f.NameMATCH)
 	}
 	if !isZero(f.NameIEQ) {
-		q = q.Where(gopgutil.BuildConditionIEQ(gopgutil.AddAliasToColumnName("name", alias)), f.NameIEQ)
+		q = q.Where(gopgutil.BuildConditionIEQ("?"), gopgutil.AddAliasToColumnName("name", alias), f.NameIEQ)
 	}
 
 	if !isZero(f.DescriptionMATCH) {
-		q = q.Where(gopgutil.BuildConditionMatch(gopgutil.AddAliasToColumnName("description", alias)), f.DescriptionMATCH)
+		q = q.Where(gopgutil.BuildConditionMatch("?"), gopgutil.AddAliasToColumnName("description", alias), f.DescriptionMATCH)
 	}
 	if !isZero(f.DescriptionIEQ) {
-		q = q.Where(gopgutil.BuildConditionIEQ(gopgutil.AddAliasToColumnName("description", alias)), f.DescriptionIEQ)
+		q = q.Where(gopgutil.BuildConditionIEQ("?"), gopgutil.AddAliasToColumnName("description", alias), f.DescriptionIEQ)
 	}
 
 	if !isZero(f.QualificationID) {
@@ -162,19 +162,19 @@ func (f *ProfessionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Quer
 	}
 
 	if !isZero(f.CreatedAt) {
-		q = q.Where(gopgutil.BuildConditionEquals(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAt)
+		q = q.Where(gopgutil.BuildConditionEquals("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAt)
 	}
 	if !isZero(f.CreatedAtGT) {
-		q = q.Where(gopgutil.BuildConditionGT(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtGT)
+		q = q.Where(gopgutil.BuildConditionGT("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtGT)
 	}
 	if !isZero(f.CreatedAtGTE) {
-		q = q.Where(gopgutil.BuildConditionGTE(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtGTE)
+		q = q.Where(gopgutil.BuildConditionGTE("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtGTE)
 	}
 	if !isZero(f.CreatedAtLT) {
-		q = q.Where(gopgutil.BuildConditionLT(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtLT)
+		q = q.Where(gopgutil.BuildConditionLT("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtLT)
 	}
 	if !isZero(f.CreatedAtLTE) {
-		q = q.Where(gopgutil.BuildConditionLTE(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtLTE)
+		q = q.Where(gopgutil.BuildConditionLTE("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtLTE)
 	}
 
 	return q, nil

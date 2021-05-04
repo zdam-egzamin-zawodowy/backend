@@ -62,7 +62,7 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.ProfessionFi
 }
 
 func (repo *pgRepository) Delete(ctx context.Context, f *models.ProfessionFilter) ([]*models.Profession, error) {
-	items := []*models.Profession{}
+	var items []*models.Profession
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -76,7 +76,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.ProfessionFilter
 
 func (repo *pgRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*models.Profession, int, error) {
 	var err error
-	items := []*models.Profession{}
+	var items []*models.Profession
 	total := 0
 	query := repo.
 		Model(&items).
@@ -84,7 +84,9 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
 		Apply(cfg.Filter.Where).
-		Order(cfg.Sort...)
+		Apply(gopgutil.OrderAppender{
+			Orders: cfg.Sort,
+		}.Apply)
 
 	if cfg.Count {
 		total, err = query.SelectAndCount()
@@ -105,7 +107,7 @@ func (repo *pgRepository) GetAssociatedQualifications(
 	for _, id := range ids {
 		m[id] = []*models.Qualification{}
 	}
-	qualificationToProfession := []*models.QualificationToProfession{}
+	var qualificationToProfession []*models.QualificationToProfession
 	if err := repo.
 		Model(&qualificationToProfession).
 		Context(ctx).

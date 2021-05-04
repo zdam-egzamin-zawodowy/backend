@@ -157,13 +157,14 @@ func (input *QuestionInput) ApplyUpdate(q *orm.Query) (*orm.Query, error) {
 	if !input.IsEmpty() {
 		if input.Content != nil {
 			q = q.Set(
-				gopgutil.BuildConditionEquals(gopgutil.AddAliasToColumnName("content", "question")),
+				gopgutil.BuildConditionEquals("content"),
 				*input.Content,
 			)
 		}
 		if input.From != nil {
 			q = q.Set(
-				gopgutil.BuildConditionEquals(gopgutil.AddAliasToColumnName("from", "question")),
+				gopgutil.BuildConditionEquals("?"),
+				pg.Ident("from"),
 				*input.From,
 			)
 		}
@@ -219,49 +220,52 @@ func (f *QuestionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query,
 	}
 
 	if !isZero(f.ID) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("id", alias)), pg.Array(f.ID))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("id", alias), pg.Array(f.ID))
 	}
 	if !isZero(f.IDNEQ) {
-		q = q.Where(gopgutil.BuildConditionNotInArray(gopgutil.AddAliasToColumnName("id", alias)), pg.Array(f.IDNEQ))
+		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("id", alias), pg.Array(f.IDNEQ))
 	}
 
 	if !isZero(f.From) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("from", alias)), pg.Array(f.From))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("from", alias), pg.Array(f.From))
 	}
 
 	if !isZero(f.ContentMATCH) {
-		q = q.Where(gopgutil.BuildConditionMatch(gopgutil.AddAliasToColumnName("content", alias)), f.ContentMATCH)
+		q = q.Where(gopgutil.BuildConditionMatch("?"), gopgutil.AddAliasToColumnName("content", alias), f.ContentMATCH)
 	}
 	if !isZero(f.ContentIEQ) {
-		q = q.Where(gopgutil.BuildConditionIEQ(gopgutil.AddAliasToColumnName("content", alias)), f.ContentIEQ)
+		q = q.Where(gopgutil.BuildConditionIEQ("?"), gopgutil.AddAliasToColumnName("content", alias), f.ContentIEQ)
 	}
 
 	if !isZero(f.QualificationID) {
-		q = q.Where(gopgutil.BuildConditionArray(gopgutil.AddAliasToColumnName("qualification_id", alias)), pg.Array(f.QualificationID))
+		q = q.Where(gopgutil.BuildConditionArray("?"), gopgutil.AddAliasToColumnName("qualification_id", alias), pg.Array(f.QualificationID))
 	}
 	if !isZero(f.QualificationIDNEQ) {
-		q = q.Where(gopgutil.BuildConditionNotInArray(gopgutil.AddAliasToColumnName("qualification_id", alias)), pg.Array(f.QualificationIDNEQ))
+		q = q.Where(gopgutil.BuildConditionNotInArray("?"), gopgutil.AddAliasToColumnName("qualification_id", alias), pg.Array(f.QualificationIDNEQ))
 	}
 
+	var err error
 	if f.QualificationFilter != nil {
-		q = q.Relation("Qualification._")
-		q, _ = f.QualificationFilter.WhereWithAlias(q, "qualification")
+		q, err = f.QualificationFilter.WhereWithAlias(q.Relation("Qualification._"), "qualification")
+		if err != nil {
+			return q, err
+		}
 	}
 
 	if !isZero(f.CreatedAt) {
-		q = q.Where(gopgutil.BuildConditionEquals(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAt)
+		q = q.Where(gopgutil.BuildConditionEquals("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAt)
 	}
 	if !isZero(f.CreatedAtGT) {
-		q = q.Where(gopgutil.BuildConditionGT(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtGT)
+		q = q.Where(gopgutil.BuildConditionGT("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtGT)
 	}
 	if !isZero(f.CreatedAtGTE) {
-		q = q.Where(gopgutil.BuildConditionGTE(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtGTE)
+		q = q.Where(gopgutil.BuildConditionGTE("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtGTE)
 	}
 	if !isZero(f.CreatedAtLT) {
-		q = q.Where(gopgutil.BuildConditionLT(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtLT)
+		q = q.Where(gopgutil.BuildConditionLT("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtLT)
 	}
 	if !isZero(f.CreatedAtLTE) {
-		q = q.Where(gopgutil.BuildConditionLTE(gopgutil.AddAliasToColumnName("created_at", alias)), f.CreatedAtLTE)
+		q = q.Where(gopgutil.BuildConditionLTE("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtLTE)
 	}
 
 	return q, nil

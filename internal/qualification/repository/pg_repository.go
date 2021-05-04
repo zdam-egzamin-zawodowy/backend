@@ -57,7 +57,7 @@ func (repo *pgRepository) UpdateMany(
 	f *models.QualificationFilter,
 	input *models.QualificationInput,
 ) ([]*models.Qualification, error) {
-	items := []*models.Qualification{}
+	var items []*models.Qualification
 	err := repo.RunInTransaction(ctx, func(tx *pg.Tx) error {
 		if input.HasBasicDataToUpdate() {
 			if _, err := tx.
@@ -108,7 +108,7 @@ func (repo *pgRepository) UpdateMany(
 }
 
 func (repo *pgRepository) Delete(ctx context.Context, f *models.QualificationFilter) ([]*models.Qualification, error) {
-	items := []*models.Qualification{}
+	var items []*models.Qualification
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -122,7 +122,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.QualificationFil
 
 func (repo *pgRepository) Fetch(ctx context.Context, cfg *qualification.FetchConfig) ([]*models.Qualification, int, error) {
 	var err error
-	items := []*models.Qualification{}
+	var items []*models.Qualification
 	total := 0
 	query := repo.
 		Model(&items).
@@ -130,7 +130,9 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *qualification.FetchCon
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
 		Apply(cfg.Filter.Where).
-		Order(cfg.Sort...)
+		Apply(gopgutil.OrderAppender{
+			Orders: cfg.Sort,
+		}.Apply)
 
 	if cfg.Count {
 		total, err = query.SelectAndCount()
@@ -150,7 +152,7 @@ func (repo *pgRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 		Context(ctx).
 		Where(gopgutil.BuildConditionEquals("qualification_id"), cfg.QualificationID).
 		Column("profession_id")
-	qualificationIDs := []int{}
+	var qualificationIDs []int
 	err = repo.
 		Model(&models.QualificationToProfession{}).
 		Context(ctx).
@@ -179,7 +181,7 @@ func (repo *pgRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 }
 
 func (repo *pgRepository) associateQualificationWithProfession(tx *pg.Tx, qualificationIDs, professionIDs []int) error {
-	toInsert := []*models.QualificationToProfession{}
+	var toInsert []*models.QualificationToProfession
 	for _, professionID := range professionIDs {
 		for _, qualificationID := range qualificationIDs {
 			toInsert = append(toInsert, &models.QualificationToProfession{

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
 	"strings"
 
@@ -61,7 +62,7 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.UserFilter, 
 }
 
 func (repo *pgRepository) Delete(ctx context.Context, f *models.UserFilter) ([]*models.User, error) {
-	items := []*models.User{}
+	var items []*models.User
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -75,7 +76,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.UserFilter) ([]*
 
 func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*models.User, int, error) {
 	var err error
-	items := []*models.User{}
+	var items []*models.User
 	total := 0
 	query := repo.
 		Model(&items).
@@ -83,7 +84,9 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*
 		Limit(cfg.Limit).
 		Offset(cfg.Offset).
 		Apply(cfg.Filter.Where).
-		Order(cfg.Sort...)
+		Apply(gopgutil.OrderAppender{
+			Orders: cfg.Sort,
+		}.Apply)
 
 	if cfg.Count {
 		total, err = query.SelectAndCount()
