@@ -57,7 +57,7 @@ func (repo *pgRepository) UpdateMany(
 	f *models.QualificationFilter,
 	input *models.QualificationInput,
 ) ([]*models.Qualification, error) {
-	var items []*models.Qualification
+	items := make([]*models.Qualification, 0)
 	err := repo.RunInTransaction(ctx, func(tx *pg.Tx) error {
 		if input.HasBasicDataToUpdate() {
 			if _, err := tx.
@@ -108,7 +108,7 @@ func (repo *pgRepository) UpdateMany(
 }
 
 func (repo *pgRepository) Delete(ctx context.Context, f *models.QualificationFilter) ([]*models.Qualification, error) {
-	var items []*models.Qualification
+	items := make([]*models.Qualification, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -122,7 +122,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.QualificationFil
 
 func (repo *pgRepository) Fetch(ctx context.Context, cfg *qualification.FetchConfig) ([]*models.Qualification, int, error) {
 	var err error
-	var items []*models.Qualification
+	items := make([]*models.Qualification, 0)
 	total := 0
 	query := repo.
 		Model(&items).

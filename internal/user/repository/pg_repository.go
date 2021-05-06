@@ -62,7 +62,7 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.UserFilter, 
 }
 
 func (repo *pgRepository) Delete(ctx context.Context, f *models.UserFilter) ([]*models.User, error) {
-	var items []*models.User
+	items := make([]*models.User, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -76,7 +76,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.UserFilter) ([]*
 
 func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*models.User, int, error) {
 	var err error
-	var items []*models.User
+	items := make([]*models.User, 0)
 	total := 0
 	query := repo.
 		Model(&items).

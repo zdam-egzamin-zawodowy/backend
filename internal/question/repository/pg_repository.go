@@ -98,7 +98,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 }
 
 func (repo *pgRepository) Delete(ctx context.Context, f *models.QuestionFilter) ([]*models.Question, error) {
-	var items []*models.Question
+	items := make([]*models.Question, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -115,7 +115,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.QuestionFilter) 
 
 func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*models.Question, int, error) {
 	var err error
-	var items []*models.Question
+	items := make([]*models.Question, 0)
 	total := 0
 	query := repo.
 		Model(&items).
@@ -145,7 +145,7 @@ func (repo *pgRepository) GenerateTest(ctx context.Context, cfg *question.Genera
 		Where(gopgutil.BuildConditionArray("qualification_id"), pg.Array(cfg.Qualifications)).
 		OrderExpr("random()").
 		Limit(cfg.Limit)
-	var items []*models.Question
+	items := make([]*models.Question, 0)
 	if err := repo.
 		Model(&items).
 		Context(ctx).
