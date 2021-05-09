@@ -6,4 +6,5 @@ const (
 	MaxDisplayNameLength = 32
 	MinPasswordLength    = 6
 	MaxPasswordLength    = 64
+	MaxOrders            = 3
 )

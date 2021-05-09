@@ -64,6 +64,10 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([
 			Count: true,
 		}
 	}
+	if len(cfg.Sort) > profession.MaxOrders {
+		cfg.Sort = cfg.Sort[0:profession.MaxOrders]
+	}
+
 	return ucase.professionRepository.Fetch(ctx, cfg)
 }
 

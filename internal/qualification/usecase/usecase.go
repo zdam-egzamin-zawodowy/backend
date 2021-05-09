@@ -64,6 +64,9 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *qualification.FetchConfig)
 			Count: true,
 		}
 	}
+	if len(cfg.Sort) > qualification.MaxOrders {
+		cfg.Sort = cfg.Sort[0:qualification.MaxOrders]
+	}
 	return ucase.qualificationRepository.Fetch(ctx, cfg)
 }
 

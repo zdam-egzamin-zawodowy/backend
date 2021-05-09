@@ -81,6 +81,9 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*mode
 	if cfg.Limit > user.FetchMaxLimit || cfg.Limit <= 0 {
 		cfg.Limit = user.FetchMaxLimit
 	}
+	if len(cfg.Sort) > user.MaxOrders {
+		cfg.Sort = cfg.Sort[0:user.MaxOrders]
+	}
 	return ucase.userRepository.Fetch(ctx, cfg)
 }
 
