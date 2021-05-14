@@ -25,8 +25,11 @@ type PGRepositoryConfig struct {
 }
 
 func NewPGRepository(cfg *PGRepositoryConfig) (question.Repository, error) {
-	if cfg == nil || cfg.DB == nil || cfg.FileStorage == nil {
-		return nil, errors.New("question/pg_repository: *pg.DB and filestorage.FileStorage are required")
+	if cfg == nil || cfg.DB == nil {
+		return nil, errors.New("cfg.DB is required")
+	}
+	if cfg.FileStorage == nil {
+		return nil, errors.New("cfg.FileStorage is required")
 	}
 	return &pgRepository{
 		cfg.DB,

@@ -22,7 +22,7 @@ func GinContextToContext() gin.HandlerFunc {
 func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
 	ginContext := ctx.Value(ginContextToContextKey)
 	if ginContext == nil {
-		err := errors.New("could not retrieve gin.Context")
+		err := errors.New("couldn't retrieve gin.Context")
 		return nil, err
 	}
 

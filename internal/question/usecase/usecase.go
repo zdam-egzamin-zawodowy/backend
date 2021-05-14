@@ -26,7 +26,7 @@ type Config struct {
 
 func New(cfg *Config) (question.Usecase, error) {
 	if cfg == nil || cfg.QuestionRepository == nil {
-		return nil, errors.New("question/usecase: cfg.QuestionRepository is required")
+		return nil, errors.New("cfg.QuestionRepository is required")
 	}
 	return &usecase{
 		cfg.QuestionRepository,

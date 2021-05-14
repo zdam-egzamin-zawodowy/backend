@@ -48,7 +48,7 @@ func (g *tokenGenerator) Generate(metadata Metadata) (string, error) {
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	accessToken, err := at.SignedString([]byte(g.accessSecret))
 	if err != nil {
-		return "", errors.Wrap(err, "TokenGenerator.Generate")
+		return "", errors.Wrap(err, "couldn't get signed access token")
 	}
 
 	return accessToken, nil
@@ -67,10 +67,10 @@ func verifyToken(secret string, tokenString string) (*jwt.Token, error) {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "verifyToken")
+		return nil, errors.Wrap(err, "couldn't parse the token")
 	}
 	if !token.Valid {
-		return nil, errors.New("Token is invalid")
+		return nil, errors.New("token is invalid")
 	}
 	return token, nil
 }
@@ -85,15 +85,15 @@ func extractTokenMetadata(secret, tokenString string) (*Metadata, error) {
 	if ok {
 		staySignedIn, ok := claims["stay_signed_in"].(bool)
 		if !ok {
-			return nil, errors.New("Invalid token payload (staySignedIn should be a boolean)")
+			return nil, errors.New("invalid token payload (staySignedIn should be a boolean)")
 		}
 		email, ok := claims["email"].(string)
 		if !ok {
-			return nil, errors.New("Invalid token payload (email should be a string)")
+			return nil, errors.New("invalid token payload (email should be a string)")
 		}
 		password, ok := claims["password"].(string)
 		if !ok {
-			return nil, errors.New("Invalid token payload (password should be a string)")
+			return nil, errors.New("invalid token payload (password should be a string)")
 		}
 		return &Metadata{
 			StaySignedIn: staySignedIn,
@@ -104,5 +104,5 @@ func extractTokenMetadata(secret, tokenString string) (*Metadata, error) {
 		}, nil
 	}
 
-	return nil, errors.New("Cannot extract token metadata")
+	return nil, errors.New("couldn't extract token metadata")
 }

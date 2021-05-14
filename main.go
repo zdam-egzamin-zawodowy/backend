@@ -63,26 +63,26 @@ func main() {
 		DB: dbConn,
 	})
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal(errors.Wrap(err, "userRepository"))
 	}
 	professionRepository, err := professionrepository.NewPGRepository(&professionrepository.PGRepositoryConfig{
 		DB: dbConn,
 	})
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal(errors.Wrap(err, "professionRepository"))
 	}
 	qualificationRepository, err := qualificationrepository.NewPGRepository(&qualificationrepository.PGRepositoryConfig{
 		DB: dbConn,
 	})
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal(errors.Wrap(err, "qualificationRepository"))
 	}
 	questionRepository, err := questionrepository.NewPGRepository(&questionrepository.PGRepositoryConfig{
 		DB:          dbConn,
 		FileStorage: fileStorage,
 	})
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal(errors.Wrap(err, "questionRepository"))
 	}
 
 	//usecases
@@ -91,13 +91,13 @@ func main() {
 		TokenGenerator: jwt.NewTokenGenerator(envutil.GetenvString("ACCESS_SECRET")),
 	})
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal(errors.Wrap(err, "authUsecase"))
 	}
 	userUsecase, err := userusecase.New(&userusecase.Config{
 		UserRepository: userRepository,
 	})
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal(errors.Wrap(err, "userUsecase"))
 	}
 	professionUsecase, err := professionusecase.New(&professionusecase.Config{
 		ProfessionRepository: professionRepository,
@@ -109,13 +109,13 @@ func main() {
 		QualificationRepository: qualificationRepository,
 	})
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal(errors.Wrap(err, "qualificationUsecase"))
 	}
 	questionUsecase, err := questionusecase.New(&questionusecase.Config{
 		QuestionRepository: questionRepository,
 	})
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal(errors.Wrap(err, "questionUsecase"))
 	}
 
 	router := setupRouter()
@@ -145,7 +145,7 @@ func main() {
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logrus.Fatalf("listen: %s\n", err)
+			logrus.Fatalln("listen:", err)
 		}
 	}()
 	logrus.Info("Server is listening on the port 8080")
@@ -158,7 +158,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		logrus.Fatal("Server Shutdown:", err)
+		logrus.Fatalln("Server Shutdown:", err)
 	}
 	logrus.Info("Server exiting")
 }

@@ -18,7 +18,7 @@ type Config struct {
 
 func New(cfg *Config) (profession.Usecase, error) {
 	if cfg == nil || cfg.ProfessionRepository == nil {
-		return nil, errors.New("profession/usecase: ProfessionRepository is required")
+		return nil, errors.New("cfg.ProfessionRepository is required")
 	}
 	return &usecase{
 		cfg.ProfessionRepository,

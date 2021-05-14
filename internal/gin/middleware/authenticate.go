@@ -35,7 +35,7 @@ func Authenticate(ucase auth.Usecase) gin.HandlerFunc {
 func UserFromContext(ctx context.Context) (*models.User, error) {
 	user := ctx.Value(authenticateKey)
 	if user == nil {
-		err := errors.New("Could not retrieve *models.User")
+		err := errors.New("couldn't retrieve *models.User")
 		return nil, err
 	}
 

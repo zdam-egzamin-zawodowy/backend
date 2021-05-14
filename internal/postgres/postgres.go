@@ -13,7 +13,7 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
 )
 
-var log = logrus.WithField("package", "internal/db")
+var log = logrus.WithField("package", "internal/postgres")
 
 type Config struct {
 	LogQueries bool

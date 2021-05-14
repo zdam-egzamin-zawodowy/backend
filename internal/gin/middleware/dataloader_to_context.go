@@ -23,7 +23,7 @@ func DataLoaderToContext(cfg dataloader.Config) gin.HandlerFunc {
 func DataLoaderFromContext(ctx context.Context) (*dataloader.DataLoader, error) {
 	dataLoader := ctx.Value(dataLoaderToContext)
 	if dataLoader == nil {
-		err := errors.New("could not retrieve dataloader.DataLoader")
+		err := errors.New("couldn't retrieve dataloader.DataLoader")
 		return nil, err
 	}
 

@@ -23,7 +23,7 @@ type PGRepositoryConfig struct {
 
 func NewPGRepository(cfg *PGRepositoryConfig) (user.Repository, error) {
 	if cfg == nil || cfg.DB == nil {
-		return nil, errors.New("user/pg_repository: *pg.DB is required")
+		return nil, errors.New("cfg.DB is required")
 	}
 	return &pgRepository{
 		cfg.DB,
