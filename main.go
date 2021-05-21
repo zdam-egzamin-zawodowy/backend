@@ -14,6 +14,7 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/resolvers"
 
 	"github.com/pkg/errors"
+
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
 	authusecase "github.com/zdam-egzamin-zawodowy/backend/internal/auth/usecase"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
@@ -33,6 +34,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
+
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage"
 )
 
