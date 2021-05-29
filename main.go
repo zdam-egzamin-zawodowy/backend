@@ -186,7 +186,10 @@ func setupLogger() {
 func setupRouter() *gin.Engine {
 	router := gin.New()
 
-	router.Use(ginlogrus.Logger(logrus.WithFields(map[string]interface{}{})), gin.Recovery())
+	router.Use(gin.Recovery())
+	if !envutil.GetenvBool("DISABLE_ACCESS_LOG") {
+		router.Use(ginlogrus.Logger(logrus.StandardLogger()))
+	}
 	if appmode.Equals(appmode.DevelopmentMode) {
 		router.Use(cors.New(cors.Config{
 			AllowOriginFunc: func(string) bool {
