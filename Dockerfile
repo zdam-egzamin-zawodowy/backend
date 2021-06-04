@@ -1,4 +1,4 @@
-FROM golang:alpine as builder
+FROM golang as builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -11,7 +11,7 @@ RUN go mod download
 
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
-RUN go generate ./..
+RUN go generate ./...
 RUN go build -o zdamegzawodowy .
 
 ######## Start a new stage from scratch #######
