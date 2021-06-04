@@ -1,2 +1,2 @@
-graphql:
-	bash internal/graphql/generate.sh
+generate:
+	go generate ./...
