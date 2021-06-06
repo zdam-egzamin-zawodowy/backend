@@ -24,7 +24,7 @@ FILE_STORAGE_PATH=path_to_the_folder_where_uploaded_files_will_be_stored
 
 1. Clone this repo.
 ```
-git@github.com:zdam-egzamin-zawodowy/backend.git
+git clone git@github.com:zdam-egzamin-zawodowy/backend.git
 ```
 2. Set the required env variables.
 3. Run the app.
