@@ -10,7 +10,8 @@ import (
 	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
 	"github.com/sethvargo/go-password/password"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 var log = logrus.WithField("package", "internal/postgres")
@@ -20,7 +21,7 @@ type Config struct {
 }
 
 func init() {
-	orm.RegisterTable((*models.QualificationToProfession)(nil))
+	orm.RegisterTable((*model.QualificationToProfession)(nil))
 }
 
 func Connect(cfg *Config) (*pg.DB, error) {
@@ -55,11 +56,11 @@ func prepareOptions() *pg.Options {
 func createSchema(db *pg.DB) error {
 	return db.RunInTransaction(context.Background(), func(tx *pg.Tx) error {
 		modelsToCreate := []interface{}{
-			(*models.User)(nil),
-			(*models.Profession)(nil),
-			(*models.Qualification)(nil),
-			(*models.QualificationToProfession)(nil),
-			(*models.Question)(nil),
+			(*model.User)(nil),
+			(*model.Profession)(nil),
+			(*model.Qualification)(nil),
+			(*model.QualificationToProfession)(nil),
+			(*model.Question)(nil),
 		}
 
 		for _, model := range modelsToCreate {
@@ -72,7 +73,7 @@ func createSchema(db *pg.DB) error {
 			}
 		}
 
-		total, err := tx.Model(modelsToCreate[0]).Where("role = ?", models.RoleAdmin).Count()
+		total, err := tx.Model(modelsToCreate[0]).Where("role = ?", model.RoleAdmin).Count()
 		if err != nil {
 			return errors.Wrap(err, "couldn't count admins")
 		}
@@ -84,10 +85,10 @@ func createSchema(db *pg.DB) error {
 			}
 			email := "admin@admin.com"
 			_, err = tx.
-				Model(&models.User{
+				Model(&model.User{
 					DisplayName: "admin",
 					Email:       email,
-					Role:        models.RoleAdmin,
+					Role:        model.RoleAdmin,
 					Activated:   &activated,
 					Password:    pswd,
 				}).

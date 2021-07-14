@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/pkg/errors"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
 )
 
@@ -16,31 +16,33 @@ var (
 	}
 )
 
-type usecase struct {
-	questionRepository question.Repository
-}
-
 type Config struct {
 	QuestionRepository question.Repository
 }
 
-func New(cfg *Config) (question.Usecase, error) {
+type Usecase struct {
+	questionRepository question.Repository
+}
+
+var _ question.Usecase = &Usecase{}
+
+func New(cfg *Config) (*Usecase, error) {
 	if cfg == nil || cfg.QuestionRepository == nil {
 		return nil, errors.New("cfg.QuestionRepository is required")
 	}
-	return &usecase{
+	return &Usecase{
 		cfg.QuestionRepository,
 	}, nil
 }
 
-func (ucase *usecase) Store(ctx context.Context, input *models.QuestionInput) (*models.Question, error) {
+func (ucase *Usecase) Store(ctx context.Context, input *model.QuestionInput) (*model.Question, error) {
 	if err := validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.questionRepository.Store(ctx, input)
 }
 
-func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.QuestionInput) (*models.Question, error) {
+func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.QuestionInput) (*model.Question, error) {
 	if id <= 0 {
 		return nil, errors.New(messageInvalidID)
 	}
@@ -59,11 +61,11 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *models.Q
 	return item, nil
 }
 
-func (ucase *usecase) Delete(ctx context.Context, f *models.QuestionFilter) ([]*models.Question, error) {
+func (ucase *Usecase) Delete(ctx context.Context, f *model.QuestionFilter) ([]*model.Question, error) {
 	return ucase.questionRepository.Delete(ctx, f)
 }
 
-func (ucase *usecase) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*models.Question, int, error) {
+func (ucase *Usecase) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*model.Question, int, error) {
 	if cfg == nil {
 		cfg = &question.FetchConfig{
 			Limit: question.FetchMaxLimit,
@@ -79,11 +81,11 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*
 	return ucase.questionRepository.Fetch(ctx, cfg)
 }
 
-func (ucase *usecase) GetByID(ctx context.Context, id int) (*models.Question, error) {
+func (ucase *Usecase) GetByID(ctx context.Context, id int) (*model.Question, error) {
 	items, _, err := ucase.Fetch(ctx, &question.FetchConfig{
 		Limit: 1,
 		Count: false,
-		Filter: &models.QuestionFilter{
+		Filter: &model.QuestionFilter{
 			ID: []int{id},
 		},
 	})
@@ -96,7 +98,7 @@ func (ucase *usecase) GetByID(ctx context.Context, id int) (*models.Question, er
 	return items[0], nil
 }
 
-func (ucase *usecase) GenerateTest(ctx context.Context, cfg *question.GenerateTestConfig) ([]*models.Question, error) {
+func (ucase *Usecase) GenerateTest(ctx context.Context, cfg *question.GenerateTestConfig) ([]*model.Question, error) {
 	if cfg == nil {
 		cfg = &question.GenerateTestConfig{
 			Limit: question.TestMaxLimit,
@@ -112,7 +114,7 @@ type validateOptions struct {
 	allowNilValues bool
 }
 
-func validateInput(input *models.QuestionInput, opts validateOptions) error {
+func validateInput(input *model.QuestionInput, opts validateOptions) error {
 	if input.IsEmpty() {
 		return errors.New(messageEmptyPayload)
 	}

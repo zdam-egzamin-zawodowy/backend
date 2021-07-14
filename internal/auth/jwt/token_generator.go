@@ -25,22 +25,17 @@ func (opts Metadata) ToMapClaims() jwt.MapClaims {
 	return mClaims
 }
 
-type TokenGenerator interface {
-	Generate(metadata Metadata) (string, error)
-	ExtractAccessTokenMetadata(token string) (*Metadata, error)
-}
-
-type tokenGenerator struct {
+type TokenGenerator struct {
 	accessSecret string
 }
 
-func NewTokenGenerator(accessSecret string) TokenGenerator {
-	return &tokenGenerator{
+func NewTokenGenerator(accessSecret string) *TokenGenerator {
+	return &TokenGenerator{
 		accessSecret: accessSecret,
 	}
 }
 
-func (g *tokenGenerator) Generate(metadata Metadata) (string, error) {
+func (g *TokenGenerator) Generate(metadata Metadata) (string, error) {
 	atClaims := metadata.ToMapClaims()
 	if !metadata.StaySignedIn {
 		atClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
@@ -54,7 +49,7 @@ func (g *tokenGenerator) Generate(metadata Metadata) (string, error) {
 	return accessToken, nil
 }
 
-func (g *tokenGenerator) ExtractAccessTokenMetadata(token string) (*Metadata, error) {
+func (g *TokenGenerator) ExtractAccessTokenMetadata(token string) (*Metadata, error) {
 	return extractTokenMetadata(g.accessSecret, token)
 }
 

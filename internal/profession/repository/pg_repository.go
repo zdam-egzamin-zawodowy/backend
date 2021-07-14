@@ -9,28 +9,31 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
 )
-
-type pgRepository struct {
-	*pg.DB
-}
 
 type PGRepositoryConfig struct {
 	DB *pg.DB
 }
 
-func NewPGRepository(cfg *PGRepositoryConfig) (profession.Repository, error) {
+type PGRepository struct {
+	*pg.DB
+}
+
+var _ profession.Repository = &PGRepository{}
+
+func NewPGRepository(cfg *PGRepositoryConfig) (*PGRepository, error) {
 	if cfg == nil || cfg.DB == nil {
 		return nil, errors.New("cfg.DB is required")
 	}
-	return &pgRepository{
+	return &PGRepository{
 		cfg.DB,
 	}, nil
 }
 
-func (repo *pgRepository) Store(ctx context.Context, input *models.ProfessionInput) (*models.Profession, error) {
+func (repo *PGRepository) Store(ctx context.Context, input *model.ProfessionInput) (*model.Profession, error) {
 	item := input.ToProfession()
 	if _, err := repo.
 		Model(item).
@@ -42,9 +45,9 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.ProfessionInp
 	return item, nil
 }
 
-func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.ProfessionFilter, input *models.ProfessionInput) ([]*models.Profession, error) {
+func (repo *PGRepository) UpdateMany(ctx context.Context, f *model.ProfessionFilter, input *model.ProfessionInput) ([]*model.Profession, error) {
 	if _, err := repo.
-		Model(&models.Profession{}).
+		Model(&model.Profession{}).
 		Context(ctx).
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
@@ -61,8 +64,8 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.ProfessionFi
 	return items, nil
 }
 
-func (repo *pgRepository) Delete(ctx context.Context, f *models.ProfessionFilter) ([]*models.Profession, error) {
-	items := make([]*models.Profession, 0)
+func (repo *PGRepository) Delete(ctx context.Context, f *model.ProfessionFilter) ([]*model.Profession, error) {
+	items := make([]*model.Profession, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -74,9 +77,9 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.ProfessionFilter
 	return items, nil
 }
 
-func (repo *pgRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*models.Profession, int, error) {
+func (repo *PGRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*model.Profession, int, error) {
 	var err error
-	items := make([]*models.Profession, 0)
+	items := make([]*model.Profession, 0)
 	total := 0
 	query := repo.
 		Model(&items).
@@ -99,15 +102,15 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig
 	return items, total, nil
 }
 
-func (repo *pgRepository) GetAssociatedQualifications(
+func (repo *PGRepository) GetAssociatedQualifications(
 	ctx context.Context,
 	ids ...int,
-) (map[int][]*models.Qualification, error) {
-	m := make(map[int][]*models.Qualification)
+) (map[int][]*model.Qualification, error) {
+	m := make(map[int][]*model.Qualification)
 	for _, id := range ids {
-		m[id] = make([]*models.Qualification, 0)
+		m[id] = make([]*model.Qualification, 0)
 	}
-	var qualificationToProfession []*models.QualificationToProfession
+	var qualificationToProfession []*model.QualificationToProfession
 	if err := repo.
 		Model(&qualificationToProfession).
 		Context(ctx).

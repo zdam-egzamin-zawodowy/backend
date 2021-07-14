@@ -3,11 +3,11 @@ package qualification
 import (
 	"context"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 type FetchConfig struct {
-	Filter *models.QualificationFilter
+	Filter *model.QualificationFilter
 	Offset int
 	Limit  int
 	Sort   []string
@@ -23,9 +23,9 @@ type GetSimilarConfig struct {
 }
 
 type Repository interface {
-	Store(ctx context.Context, input *models.QualificationInput) (*models.Qualification, error)
-	UpdateMany(ctx context.Context, f *models.QualificationFilter, input *models.QualificationInput) ([]*models.Qualification, error)
-	Delete(ctx context.Context, f *models.QualificationFilter) ([]*models.Qualification, error)
-	Fetch(ctx context.Context, cfg *FetchConfig) ([]*models.Qualification, int, error)
-	GetSimilar(ctx context.Context, cfg *GetSimilarConfig) ([]*models.Qualification, int, error)
+	Store(ctx context.Context, input *model.QualificationInput) (*model.Qualification, error)
+	UpdateMany(ctx context.Context, f *model.QualificationFilter, input *model.QualificationInput) ([]*model.Qualification, error)
+	Delete(ctx context.Context, f *model.QualificationFilter) ([]*model.Qualification, error)
+	Fetch(ctx context.Context, cfg *FetchConfig) ([]*model.Qualification, int, error)
+	GetSimilar(ctx context.Context, cfg *GetSimilarConfig) ([]*model.Qualification, int, error)
 }

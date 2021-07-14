@@ -6,13 +6,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 // QualificationLoaderConfig captures the config to create a new QualificationLoader
 type QualificationLoaderConfig struct {
 	// Fetch is a method that provides the data for the loader
-	Fetch func(keys []int) ([]*models.Qualification, []error)
+	Fetch func(keys []int) ([]*model.Qualification, []error)
 
 	// Wait is how long wait before sending a batch
 	Wait time.Duration
@@ -33,7 +33,7 @@ func NewQualificationLoader(config QualificationLoaderConfig) *QualificationLoad
 // QualificationLoader batches and caches requests
 type QualificationLoader struct {
 	// this method provides the data for the loader
-	fetch func(keys []int) ([]*models.Qualification, []error)
+	fetch func(keys []int) ([]*model.Qualification, []error)
 
 	// how long to done before sending a batch
 	wait time.Duration
@@ -44,7 +44,7 @@ type QualificationLoader struct {
 	// INTERNAL
 
 	// lazily created cache
-	cache map[int]*models.Qualification
+	cache map[int]*model.Qualification
 
 	// the current batch. keys will continue to be collected until timeout is hit,
 	// then everything will be sent to the fetch method and out to the listeners
@@ -56,25 +56,25 @@ type QualificationLoader struct {
 
 type qualificationLoaderBatch struct {
 	keys    []int
-	data    []*models.Qualification
+	data    []*model.Qualification
 	error   []error
 	closing bool
 	done    chan struct{}
 }
 
 // Load a Qualification by key, batching and caching will be applied automatically
-func (l *QualificationLoader) Load(key int) (*models.Qualification, error) {
+func (l *QualificationLoader) Load(key int) (*model.Qualification, error) {
 	return l.LoadThunk(key)()
 }
 
 // LoadThunk returns a function that when called will block waiting for a Qualification.
 // This method should be used if you want one goroutine to make requests to many
 // different data loaders without blocking until the thunk is called.
-func (l *QualificationLoader) LoadThunk(key int) func() (*models.Qualification, error) {
+func (l *QualificationLoader) LoadThunk(key int) func() (*model.Qualification, error) {
 	l.mu.Lock()
 	if it, ok := l.cache[key]; ok {
 		l.mu.Unlock()
-		return func() (*models.Qualification, error) {
+		return func() (*model.Qualification, error) {
 			return it, nil
 		}
 	}
@@ -85,10 +85,10 @@ func (l *QualificationLoader) LoadThunk(key int) func() (*models.Qualification, 
 	pos := batch.keyIndex(l, key)
 	l.mu.Unlock()
 
-	return func() (*models.Qualification, error) {
+	return func() (*model.Qualification, error) {
 		<-batch.done
 
-		var data *models.Qualification
+		var data *model.Qualification
 		if pos < len(batch.data) {
 			data = batch.data[pos]
 		}
@@ -113,14 +113,14 @@ func (l *QualificationLoader) LoadThunk(key int) func() (*models.Qualification, 
 
 // LoadAll fetches many keys at once. It will be broken into appropriate sized
 // sub batches depending on how the loader is configured
-func (l *QualificationLoader) LoadAll(keys []int) ([]*models.Qualification, []error) {
-	results := make([]func() (*models.Qualification, error), len(keys))
+func (l *QualificationLoader) LoadAll(keys []int) ([]*model.Qualification, []error) {
+	results := make([]func() (*model.Qualification, error), len(keys))
 
 	for i, key := range keys {
 		results[i] = l.LoadThunk(key)
 	}
 
-	qualifications := make([]*models.Qualification, len(keys))
+	qualifications := make([]*model.Qualification, len(keys))
 	errors := make([]error, len(keys))
 	for i, thunk := range results {
 		qualifications[i], errors[i] = thunk()
@@ -131,13 +131,13 @@ func (l *QualificationLoader) LoadAll(keys []int) ([]*models.Qualification, []er
 // LoadAllThunk returns a function that when called will block waiting for a Qualifications.
 // This method should be used if you want one goroutine to make requests to many
 // different data loaders without blocking until the thunk is called.
-func (l *QualificationLoader) LoadAllThunk(keys []int) func() ([]*models.Qualification, []error) {
-	results := make([]func() (*models.Qualification, error), len(keys))
+func (l *QualificationLoader) LoadAllThunk(keys []int) func() ([]*model.Qualification, []error) {
+	results := make([]func() (*model.Qualification, error), len(keys))
 	for i, key := range keys {
 		results[i] = l.LoadThunk(key)
 	}
-	return func() ([]*models.Qualification, []error) {
-		qualifications := make([]*models.Qualification, len(keys))
+	return func() ([]*model.Qualification, []error) {
+		qualifications := make([]*model.Qualification, len(keys))
 		errors := make([]error, len(keys))
 		for i, thunk := range results {
 			qualifications[i], errors[i] = thunk()
@@ -149,7 +149,7 @@ func (l *QualificationLoader) LoadAllThunk(keys []int) func() ([]*models.Qualifi
 // Prime the cache with the provided key and value. If the key already exists, no change is made
 // and false is returned.
 // (To forcefully prime the cache, clear the key first with loader.clear(key).prime(key, value).)
-func (l *QualificationLoader) Prime(key int, value *models.Qualification) bool {
+func (l *QualificationLoader) Prime(key int, value *model.Qualification) bool {
 	l.mu.Lock()
 	var found bool
 	if _, found = l.cache[key]; !found {
@@ -169,9 +169,9 @@ func (l *QualificationLoader) Clear(key int) {
 	l.mu.Unlock()
 }
 
-func (l *QualificationLoader) unsafeSet(key int, value *models.Qualification) {
+func (l *QualificationLoader) unsafeSet(key int, value *model.Qualification) {
 	if l.cache == nil {
-		l.cache = map[int]*models.Qualification{}
+		l.cache = map[int]*model.Qualification{}
 	}
 	l.cache[key] = value
 }

@@ -5,8 +5,9 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 const (
@@ -32,16 +33,16 @@ func Authenticate(ucase auth.Usecase) gin.HandlerFunc {
 	}
 }
 
-func UserFromContext(ctx context.Context) (*models.User, error) {
+func UserFromContext(ctx context.Context) (*model.User, error) {
 	user := ctx.Value(authenticateKey)
 	if user == nil {
-		err := errors.New("couldn't retrieve *models.User")
+		err := errors.New("couldn't retrieve *model.User")
 		return nil, err
 	}
 
-	u, ok := user.(*models.User)
+	u, ok := user.(*model.User)
 	if !ok {
-		err := errors.New("*models.User has wrong type")
+		err := errors.New("*model.User has wrong type")
 		return nil, err
 	}
 	return u, nil
