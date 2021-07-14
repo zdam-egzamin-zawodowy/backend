@@ -3,11 +3,11 @@ package profession
 import (
 	"context"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 type FetchConfig struct {
-	Filter *models.ProfessionFilter
+	Filter *model.ProfessionFilter
 	Offset int
 	Limit  int
 	Sort   []string
@@ -15,9 +15,9 @@ type FetchConfig struct {
 }
 
 type Repository interface {
-	Store(ctx context.Context, input *models.ProfessionInput) (*models.Profession, error)
-	UpdateMany(ctx context.Context, f *models.ProfessionFilter, input *models.ProfessionInput) ([]*models.Profession, error)
-	Delete(ctx context.Context, f *models.ProfessionFilter) ([]*models.Profession, error)
-	Fetch(ctx context.Context, cfg *FetchConfig) ([]*models.Profession, int, error)
-	GetAssociatedQualifications(ctx context.Context, ids ...int) (map[int][]*models.Qualification, error)
+	Store(ctx context.Context, input *model.ProfessionInput) (*model.Profession, error)
+	UpdateMany(ctx context.Context, f *model.ProfessionFilter, input *model.ProfessionInput) ([]*model.Profession, error)
+	Delete(ctx context.Context, f *model.ProfessionFilter) ([]*model.Profession, error)
+	Fetch(ctx context.Context, cfg *FetchConfig) ([]*model.Profession, int, error)
+	GetAssociatedQualifications(ctx context.Context, ids ...int) (map[int][]*model.Qualification, error)
 }

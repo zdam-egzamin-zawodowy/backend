@@ -9,7 +9,8 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
 )
 
@@ -30,7 +31,7 @@ func NewPGRepository(cfg *PGRepositoryConfig) (user.Repository, error) {
 	}, nil
 }
 
-func (repo *pgRepository) Store(ctx context.Context, input *models.UserInput) (*models.User, error) {
+func (repo *pgRepository) Store(ctx context.Context, input *model.UserInput) (*model.User, error) {
 	item := input.ToUser()
 	if _, err := repo.
 		Model(item).
@@ -42,9 +43,9 @@ func (repo *pgRepository) Store(ctx context.Context, input *models.UserInput) (*
 	return item, nil
 }
 
-func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.UserFilter, input *models.UserInput) ([]*models.User, error) {
+func (repo *pgRepository) UpdateMany(ctx context.Context, f *model.UserFilter, input *model.UserInput) ([]*model.User, error) {
 	if _, err := repo.
-		Model(&models.User{}).
+		Model(&model.User{}).
 		Context(ctx).
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
@@ -61,8 +62,8 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *models.UserFilter, 
 	return items, nil
 }
 
-func (repo *pgRepository) Delete(ctx context.Context, f *models.UserFilter) ([]*models.User, error) {
-	items := make([]*models.User, 0)
+func (repo *pgRepository) Delete(ctx context.Context, f *model.UserFilter) ([]*model.User, error) {
+	items := make([]*model.User, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -74,9 +75,9 @@ func (repo *pgRepository) Delete(ctx context.Context, f *models.UserFilter) ([]*
 	return items, nil
 }
 
-func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*models.User, int, error) {
+func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*model.User, int, error) {
 	var err error
-	items := make([]*models.User, 0)
+	items := make([]*model.User, 0)
 	total := 0
 	query := repo.
 		Model(&items).

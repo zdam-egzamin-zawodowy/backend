@@ -3,11 +3,11 @@ package question
 import (
 	"context"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 type FetchConfig struct {
-	Filter *models.QuestionFilter
+	Filter *model.QuestionFilter
 	Offset int
 	Limit  int
 	Sort   []string
@@ -20,9 +20,9 @@ type GenerateTestConfig struct {
 }
 
 type Repository interface {
-	Store(ctx context.Context, input *models.QuestionInput) (*models.Question, error)
-	UpdateOneByID(ctx context.Context, id int, input *models.QuestionInput) (*models.Question, error)
-	Delete(ctx context.Context, f *models.QuestionFilter) ([]*models.Question, error)
-	Fetch(ctx context.Context, cfg *FetchConfig) ([]*models.Question, int, error)
-	GenerateTest(ctx context.Context, cfg *GenerateTestConfig) ([]*models.Question, error)
+	Store(ctx context.Context, input *model.QuestionInput) (*model.Question, error)
+	UpdateOneByID(ctx context.Context, id int, input *model.QuestionInput) (*model.Question, error)
+	Delete(ctx context.Context, f *model.QuestionFilter) ([]*model.Question, error)
+	Fetch(ctx context.Context, cfg *FetchConfig) ([]*model.Question, int, error)
+	GenerateTest(ctx context.Context, cfg *GenerateTestConfig) ([]*model.Question, error)
 }

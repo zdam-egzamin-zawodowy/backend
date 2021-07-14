@@ -3,11 +3,11 @@ package user
 import (
 	"context"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 type FetchConfig struct {
-	Filter *models.UserFilter
+	Filter *model.UserFilter
 	Offset int
 	Limit  int
 	Sort   []string
@@ -15,8 +15,8 @@ type FetchConfig struct {
 }
 
 type Repository interface {
-	Store(ctx context.Context, input *models.UserInput) (*models.User, error)
-	UpdateMany(ctx context.Context, f *models.UserFilter, input *models.UserInput) ([]*models.User, error)
-	Delete(ctx context.Context, f *models.UserFilter) ([]*models.User, error)
-	Fetch(ctx context.Context, cfg *FetchConfig) ([]*models.User, int, error)
+	Store(ctx context.Context, input *model.UserInput) (*model.User, error)
+	UpdateMany(ctx context.Context, f *model.UserFilter, input *model.UserInput) ([]*model.User, error)
+	Delete(ctx context.Context, f *model.UserFilter) ([]*model.User, error)
+	Fetch(ctx context.Context, cfg *FetchConfig) ([]*model.User, int, error)
 }

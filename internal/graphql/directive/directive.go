@@ -5,8 +5,9 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/99designs/gqlgen/graphql"
+
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/models"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 )
 
@@ -23,7 +24,7 @@ func (d *Directive) Authenticated(ctx context.Context, _ interface{}, next graph
 	return next(ctx)
 }
 
-func (d *Directive) HasRole(ctx context.Context, _ interface{}, next graphql.Resolver, role models.Role) (interface{}, error) {
+func (d *Directive) HasRole(ctx context.Context, _ interface{}, next graphql.Resolver, role model.Role) (interface{}, error) {
 	user, err := middleware.UserFromContext(ctx)
 	if err != nil {
 		return nil, errorutil.Wrap(err, messageMustBeSignedIn)
