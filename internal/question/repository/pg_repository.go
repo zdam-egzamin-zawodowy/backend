@@ -15,24 +15,26 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 )
 
-type pgRepository struct {
-	*pg.DB
-	*repository
-}
-
 type PGRepositoryConfig struct {
 	DB          *pg.DB
 	FileStorage fstorage.FileStorage
 }
 
-func NewPGRepository(cfg *PGRepositoryConfig) (question.Repository, error) {
+type PGRepository struct {
+	*pg.DB
+	*repository
+}
+
+var _ question.Repository = &PGRepository{}
+
+func NewPGRepository(cfg *PGRepositoryConfig) (*PGRepository, error) {
 	if cfg == nil || cfg.DB == nil {
 		return nil, errors.New("cfg.DB is required")
 	}
 	if cfg.FileStorage == nil {
 		return nil, errors.New("cfg.FileStorage is required")
 	}
-	return &pgRepository{
+	return &PGRepository{
 		cfg.DB,
 		&repository{
 			fileStorage: cfg.FileStorage,
@@ -40,7 +42,7 @@ func NewPGRepository(cfg *PGRepositoryConfig) (question.Repository, error) {
 	}, nil
 }
 
-func (repo *pgRepository) Store(ctx context.Context, input *model.QuestionInput) (*model.Question, error) {
+func (repo *PGRepository) Store(ctx context.Context, input *model.QuestionInput) (*model.Question, error) {
 	item := input.ToQuestion()
 	baseQuery := repo.
 		Model(item).
@@ -68,7 +70,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *model.QuestionInput)
 	return item, nil
 }
 
-func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *model.QuestionInput) (*model.Question, error) {
+func (repo *PGRepository) UpdateOneByID(ctx context.Context, id int, input *model.QuestionInput) (*model.Question, error) {
 	item := &model.Question{}
 	baseQuery := repo.
 		Model(item).
@@ -101,7 +103,7 @@ func (repo *pgRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 	return item, nil
 }
 
-func (repo *pgRepository) Delete(ctx context.Context, f *model.QuestionFilter) ([]*model.Question, error) {
+func (repo *PGRepository) Delete(ctx context.Context, f *model.QuestionFilter) ([]*model.Question, error) {
 	items := make([]*model.Question, 0)
 	if _, err := repo.
 		Model(&items).
@@ -117,7 +119,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *model.QuestionFilter) (
 	return items, nil
 }
 
-func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*model.Question, int, error) {
+func (repo *PGRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*model.Question, int, error) {
 	var err error
 	items := make([]*model.Question, 0)
 	total := 0
@@ -142,7 +144,7 @@ func (repo *pgRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) 
 	return items, total, nil
 }
 
-func (repo *pgRepository) GenerateTest(ctx context.Context, cfg *question.GenerateTestConfig) ([]*model.Question, error) {
+func (repo *PGRepository) GenerateTest(ctx context.Context, cfg *question.GenerateTestConfig) ([]*model.Question, error) {
 	subquery := repo.
 		Model(&model.Question{}).
 		Column("id").

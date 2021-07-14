@@ -9,31 +9,33 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
 )
 
-type usecase struct {
-	userRepository user.Repository
-}
-
 type Config struct {
 	UserRepository user.Repository
 }
 
-func New(cfg *Config) (user.Usecase, error) {
+type Usecase struct {
+	userRepository user.Repository
+}
+
+var _ user.Usecase = &Usecase{}
+
+func New(cfg *Config) (*Usecase, error) {
 	if cfg == nil || cfg.UserRepository == nil {
 		return nil, errors.New("cfg.UserRepository is required")
 	}
-	return &usecase{
+	return &Usecase{
 		cfg.UserRepository,
 	}, nil
 }
 
-func (ucase *usecase) Store(ctx context.Context, input *model.UserInput) (*model.User, error) {
+func (ucase *Usecase) Store(ctx context.Context, input *model.UserInput) (*model.User, error) {
 	if err := validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.userRepository.Store(ctx, input)
 }
 
-func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *model.UserInput) (*model.User, error) {
+func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.UserInput) (*model.User, error) {
 	if id <= 0 {
 		return nil, errors.New(messageInvalidID)
 	}
@@ -53,7 +55,7 @@ func (ucase *usecase) UpdateOneByID(ctx context.Context, id int, input *model.Us
 	return items[0], nil
 }
 
-func (ucase *usecase) UpdateMany(ctx context.Context, f *model.UserFilter, input *model.UserInput) ([]*model.User, error) {
+func (ucase *Usecase) UpdateMany(ctx context.Context, f *model.UserFilter, input *model.UserInput) ([]*model.User, error) {
 	if f == nil {
 		return []*model.User{}, nil
 	}
@@ -67,11 +69,11 @@ func (ucase *usecase) UpdateMany(ctx context.Context, f *model.UserFilter, input
 	return items, nil
 }
 
-func (ucase *usecase) Delete(ctx context.Context, f *model.UserFilter) ([]*model.User, error) {
+func (ucase *Usecase) Delete(ctx context.Context, f *model.UserFilter) ([]*model.User, error) {
 	return ucase.userRepository.Delete(ctx, f)
 }
 
-func (ucase *usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*model.User, int, error) {
+func (ucase *Usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*model.User, int, error) {
 	if cfg == nil {
 		cfg = &user.FetchConfig{
 			Limit: user.FetchMaxLimit,
@@ -87,7 +89,7 @@ func (ucase *usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*mode
 	return ucase.userRepository.Fetch(ctx, cfg)
 }
 
-func (ucase *usecase) GetByID(ctx context.Context, id int) (*model.User, error) {
+func (ucase *Usecase) GetByID(ctx context.Context, id int) (*model.User, error) {
 	items, _, err := ucase.Fetch(ctx, &user.FetchConfig{
 		Limit: 1,
 		Count: false,
@@ -104,7 +106,7 @@ func (ucase *usecase) GetByID(ctx context.Context, id int) (*model.User, error) 
 	return items[0], nil
 }
 
-func (ucase *usecase) GetByCredentials(ctx context.Context, email, password string) (*model.User, error) {
+func (ucase *Usecase) GetByCredentials(ctx context.Context, email, password string) (*model.User, error) {
 	items, _, err := ucase.Fetch(ctx, &user.FetchConfig{
 		Limit: 1,
 		Count: false,

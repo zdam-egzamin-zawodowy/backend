@@ -14,24 +14,26 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
 )
 
-type pgRepository struct {
-	*pg.DB
-}
-
 type PGRepositoryConfig struct {
 	DB *pg.DB
 }
 
-func NewPGRepository(cfg *PGRepositoryConfig) (user.Repository, error) {
+type PGRepository struct {
+	*pg.DB
+}
+
+var _ user.Repository = &PGRepository{}
+
+func NewPGRepository(cfg *PGRepositoryConfig) (*PGRepository, error) {
 	if cfg == nil || cfg.DB == nil {
 		return nil, errors.New("cfg.DB is required")
 	}
-	return &pgRepository{
+	return &PGRepository{
 		cfg.DB,
 	}, nil
 }
 
-func (repo *pgRepository) Store(ctx context.Context, input *model.UserInput) (*model.User, error) {
+func (repo *PGRepository) Store(ctx context.Context, input *model.UserInput) (*model.User, error) {
 	item := input.ToUser()
 	if _, err := repo.
 		Model(item).
@@ -43,7 +45,7 @@ func (repo *pgRepository) Store(ctx context.Context, input *model.UserInput) (*m
 	return item, nil
 }
 
-func (repo *pgRepository) UpdateMany(ctx context.Context, f *model.UserFilter, input *model.UserInput) ([]*model.User, error) {
+func (repo *PGRepository) UpdateMany(ctx context.Context, f *model.UserFilter, input *model.UserInput) ([]*model.User, error) {
 	if _, err := repo.
 		Model(&model.User{}).
 		Context(ctx).
@@ -62,7 +64,7 @@ func (repo *pgRepository) UpdateMany(ctx context.Context, f *model.UserFilter, i
 	return items, nil
 }
 
-func (repo *pgRepository) Delete(ctx context.Context, f *model.UserFilter) ([]*model.User, error) {
+func (repo *PGRepository) Delete(ctx context.Context, f *model.UserFilter) ([]*model.User, error) {
 	items := make([]*model.User, 0)
 	if _, err := repo.
 		Model(&items).
@@ -75,7 +77,7 @@ func (repo *pgRepository) Delete(ctx context.Context, f *model.UserFilter) ([]*m
 	return items, nil
 }
 
-func (repo *pgRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*model.User, int, error) {
+func (repo *PGRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*model.User, int, error) {
 	var err error
 	items := make([]*model.User, 0)
 	total := 0

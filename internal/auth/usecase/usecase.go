@@ -11,27 +11,29 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
 )
 
-type usecase struct {
-	userRepository user.Repository
-	tokenGenerator jwt.TokenGenerator
-}
-
 type Config struct {
 	UserRepository user.Repository
-	TokenGenerator jwt.TokenGenerator
+	TokenGenerator *jwt.TokenGenerator
 }
 
-func New(cfg *Config) (auth.Usecase, error) {
+type Usecase struct {
+	userRepository user.Repository
+	tokenGenerator *jwt.TokenGenerator
+}
+
+var _ auth.Usecase = &Usecase{}
+
+func New(cfg *Config) (*Usecase, error) {
 	if cfg == nil || cfg.UserRepository == nil {
 		return nil, errors.New("cfg.UserRepository is required")
 	}
-	return &usecase{
+	return &Usecase{
 		cfg.UserRepository,
 		cfg.TokenGenerator,
 	}, nil
 }
 
-func (ucase *usecase) SignIn(ctx context.Context, email, password string, staySignedIn bool) (*model.User, string, error) {
+func (ucase *Usecase) SignIn(ctx context.Context, email, password string, staySignedIn bool) (*model.User, string, error) {
 	u, err := ucase.GetUserByCredentials(ctx, email, password)
 	if err != nil {
 		return nil, "", err
@@ -51,7 +53,7 @@ func (ucase *usecase) SignIn(ctx context.Context, email, password string, staySi
 	return u, token, nil
 }
 
-func (ucase *usecase) ExtractAccessTokenMetadata(ctx context.Context, accessToken string) (*model.User, error) {
+func (ucase *Usecase) ExtractAccessTokenMetadata(ctx context.Context, accessToken string) (*model.User, error) {
 	metadata, err := ucase.tokenGenerator.ExtractAccessTokenMetadata(accessToken)
 	if err != nil {
 		return nil, errorutil.Wrap(err, messageInvalidAccessToken)
@@ -60,7 +62,7 @@ func (ucase *usecase) ExtractAccessTokenMetadata(ctx context.Context, accessToke
 	return ucase.GetUserByCredentials(ctx, metadata.Credentials.Email, metadata.Credentials.Password)
 }
 
-func (ucase *usecase) GetUserByCredentials(ctx context.Context, email, password string) (*model.User, error) {
+func (ucase *Usecase) GetUserByCredentials(ctx context.Context, email, password string) (*model.User, error) {
 	users, _, err := ucase.userRepository.Fetch(ctx, &user.FetchConfig{
 		Limit: 1,
 		Count: false,
