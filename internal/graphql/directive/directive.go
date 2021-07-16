@@ -8,7 +8,7 @@ import (
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
+	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 )
 
 type Directive struct{}

@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"strings"
 
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
+	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
 

@@ -8,7 +8,7 @@ import (
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
+	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 )
 
 type Config struct {

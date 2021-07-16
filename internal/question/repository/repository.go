@@ -3,12 +3,12 @@ package repository
 import (
 	"path/filepath"
 
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage/fstorageutil"
+	"github.com/zdam-egzamin-zawodowy/backend/fstorage/fstorageutil"
 
 	"github.com/99designs/gqlgen/graphql"
 
+	"github.com/zdam-egzamin-zawodowy/backend/fstorage"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage"
 )
 
 type repository struct {

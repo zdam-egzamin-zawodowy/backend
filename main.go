@@ -35,7 +35,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage"
+	"github.com/zdam-egzamin-zawodowy/backend/fstorage"
 )
 
 func init() {

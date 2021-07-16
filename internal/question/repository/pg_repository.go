@@ -9,10 +9,10 @@ import (
 
 	"github.com/go-pg/pg/v10"
 
+	"github.com/zdam-egzamin-zawodowy/backend/fstorage"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/fstorage"
-	"github.com/zdam-egzamin-zawodowy/backend/pkg/util/errorutil"
+	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 )
 
 type PGRepositoryConfig struct {
