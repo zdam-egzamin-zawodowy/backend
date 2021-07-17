@@ -3,8 +3,7 @@ package middleware
 import (
 	"context"
 	"github.com/pkg/errors"
-
-	"github.com/gin-gonic/gin"
+	"net/http"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
@@ -18,18 +17,20 @@ var (
 	authenticateKey contextKey = "current_user"
 )
 
-func Authenticate(ucase auth.Usecase) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token := extractToken(c.GetHeader(authorizationHeader))
-		if token != "" {
-			ctx := c.Request.Context()
-			user, err := ucase.ExtractAccessTokenMetadata(ctx, token)
-			if err == nil && user != nil {
-				ctx = context.WithValue(ctx, authenticateKey, user)
-				c.Request = c.Request.WithContext(ctx)
+func Authenticate(ucase auth.Usecase) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token := extractToken(r.Header.Get("Authorization"))
+			if token != "" {
+				ctx := r.Context()
+				user, err := ucase.ExtractAccessTokenMetadata(ctx, token)
+				if err == nil && user != nil {
+					ctx = context.WithValue(ctx, authenticateKey, user)
+					r = r.WithContext(ctx)
+				}
 			}
-		}
-		c.Next()
+			next.ServeHTTP(w, r)
+		})
 	}
 }
 

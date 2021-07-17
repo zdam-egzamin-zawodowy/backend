@@ -20,7 +20,7 @@ DB_POOL_SIZE=40
 LOG_DB_QUERIES=true
 ACCESS_SECRET=access_token_secret
 FILE_STORAGE_PATH=path_to_the_folder_where_uploaded_files_will_be_stored
-DISABLE_ACCESS_LOG=false
+ENABLE_ACCESS_LOG=false
 ```
 
 1. Clone this repo.

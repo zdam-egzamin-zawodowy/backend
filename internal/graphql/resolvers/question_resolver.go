@@ -7,7 +7,7 @@ import (
 	"context"
 	"github.com/Kichiyaki/goutil/safeptr"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/chi/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"

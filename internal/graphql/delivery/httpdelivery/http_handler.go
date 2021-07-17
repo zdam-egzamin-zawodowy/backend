@@ -3,16 +3,19 @@ package httpdelivery
 import (
 	"fmt"
 	"github.com/Kichiyaki/appmode"
+	"github.com/go-chi/chi/v5"
 	"github.com/pkg/errors"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/querycomplexity"
+	"net/http"
 	"time"
+
+	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/querycomplexity"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/gin-gonic/gin"
+
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/directive"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/resolvers"
@@ -29,21 +32,20 @@ type Config struct {
 	Directive *directive.Directive
 }
 
-func Attach(group *gin.RouterGroup, cfg Config) error {
+func Attach(r chi.Router, cfg Config) error {
 	if cfg.Resolver == nil {
 		return errors.New("cfg.Resolver is required")
 	}
 	gqlHandler := graphqlHandler(prepareConfig(cfg.Resolver, cfg.Directive))
-	group.GET(graphqlEndpoint, gqlHandler)
-	group.POST(graphqlEndpoint, gqlHandler)
+	r.Get(graphqlEndpoint, gqlHandler)
+	r.Post(graphqlEndpoint, gqlHandler)
 	if appmode.Equals(appmode.DevelopmentMode) {
-		group.GET(playgroundEndpoint, playgroundHandler())
+		r.Get(playgroundEndpoint, playgroundHandler())
 	}
 	return nil
 }
 
-// Defining the GraphQL handler
-func graphqlHandler(cfg generated.Config) gin.HandlerFunc {
+func graphqlHandler(cfg generated.Config) http.HandlerFunc {
 	srv := handler.New(generated.NewExecutableSchema(cfg))
 
 	srv.AddTransport(transport.GET{})
@@ -61,19 +63,18 @@ func graphqlHandler(cfg generated.Config) gin.HandlerFunc {
 		srv.Use(extension.Introspection{})
 	}
 
-	return func(c *gin.Context) {
-		c.Header("Cache-Control", "no-store, must-revalidate")
-		srv.ServeHTTP(c.Writer, c.Request)
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.Header.Add("Cache-Control", "no-store, must-revalidate")
+		srv.ServeHTTP(w, r)
 	}
 }
 
-// Defining the Playground handler
-func playgroundHandler() gin.HandlerFunc {
+func playgroundHandler() http.HandlerFunc {
 	h := playground.Handler("Playground", graphqlEndpoint)
 
-	return func(c *gin.Context) {
-		c.Header("Cache-Control", fmt.Sprintf(`public, max-age=%d`, playgroundTTL))
-		h.ServeHTTP(c.Writer, c.Request)
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.Header.Add("Cache-Control", fmt.Sprintf(`public, max-age=%d`, playgroundTTL))
+		h.ServeHTTP(w, r)
 	}
 }
 

@@ -3,8 +3,8 @@ package middleware
 import (
 	"context"
 	"github.com/pkg/errors"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/dataloader"
 )
 
@@ -12,11 +12,12 @@ var (
 	dataLoaderToContext contextKey = "data_loader"
 )
 
-func DataLoaderToContext(cfg dataloader.Config) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		ctx := context.WithValue(c.Request.Context(), dataLoaderToContext, dataloader.New(cfg))
-		c.Request = c.Request.WithContext(ctx)
-		c.Next()
+func DataLoaderToContext(cfg dataloader.Config) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := context.WithValue(r.Context(), dataLoaderToContext, dataloader.New(cfg))
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
 	}
 }
 
