@@ -6,16 +6,22 @@ import (
 	"github.com/Kichiyaki/chilogrus"
 	"github.com/Kichiyaki/goutil/envutil"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-pg/pg/v10"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/zdam-egzamin-zawodowy/backend/internal/auth"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/chi/middleware"
 	graphqlhttpdelivery "github.com/zdam-egzamin-zawodowy/backend/internal/graphql/delivery/httpdelivery"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/directive"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/resolvers"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
+	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
 
 	"github.com/pkg/errors"
 
@@ -63,95 +69,21 @@ func main() {
 		logrus.Fatal(errors.Wrap(err, "Couldn't connect to the db"))
 	}
 
-	//repositories
-	userRepository, err := userrepository.NewPGRepository(&userrepository.PGRepositoryConfig{
-		DB: dbConn,
-	})
-	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "userRepository"))
-	}
-	professionRepository, err := professionrepository.NewPGRepository(&professionrepository.PGRepositoryConfig{
-		DB: dbConn,
-	})
-	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "professionRepository"))
-	}
-	qualificationRepository, err := qualificationrepository.NewPGRepository(&qualificationrepository.PGRepositoryConfig{
-		DB: dbConn,
-	})
-	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "qualificationRepository"))
-	}
-	questionRepository, err := questionrepository.NewPGRepository(&questionrepository.PGRepositoryConfig{
-		DB:          dbConn,
-		FileStorage: fileStorage,
-	})
-	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "questionRepository"))
-	}
-
-	//usecases
-	authUsecase, err := authusecase.New(&authusecase.Config{
-		UserRepository: userRepository,
-		TokenGenerator: jwt.NewTokenGenerator(envutil.GetenvString("ACCESS_SECRET")),
-	})
-	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "authUsecase"))
-	}
-	userUsecase, err := userusecase.New(&userusecase.Config{
-		UserRepository: userRepository,
-	})
-	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "userUsecase"))
-	}
-	professionUsecase, err := professionusecase.New(&professionusecase.Config{
-		ProfessionRepository: professionRepository,
-	})
+	repos, err := prepareRepositories(dbConn, fileStorage)
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	qualificationUsecase, err := qualificationusecase.New(&qualificationusecase.Config{
-		QualificationRepository: qualificationRepository,
-	})
+
+	ucases, err := prepareUsecases(repos)
 	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "qualificationUsecase"))
-	}
-	questionUsecase, err := questionusecase.New(&questionusecase.Config{
-		QuestionRepository: questionRepository,
-	})
-	if err != nil {
-		logrus.Fatal(errors.Wrap(err, "questionUsecase"))
+		logrus.Fatal(err)
 	}
 
-	router := prepareRouter()
-	router.Group(func(r chi.Router) {
-		r.Use(
-			middleware.DataLoaderToContext(dataloader.Config{
-				ProfessionRepo:    professionRepository,
-				QualificationRepo: qualificationRepository,
-			}),
-			middleware.Authenticate(authUsecase),
-		)
-		err := graphqlhttpdelivery.Attach(r, graphqlhttpdelivery.Config{
-			Resolver: &resolvers.Resolver{
-				AuthUsecase:          authUsecase,
-				UserUsecase:          userUsecase,
-				ProfessionUsecase:    professionUsecase,
-				QualificationUsecase: qualificationUsecase,
-				QuestionUsecase:      questionUsecase,
-			},
-			Directive: &directive.Directive{},
-		})
-		if err != nil {
-			log.Fatalln(err)
-		}
-	})
 	srv := &http.Server{
 		Addr:    ":8080",
-		Handler: router,
+		Handler: prepareRouter(repos, ucases),
 	}
 	go func() {
-		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logrus.Fatalln("listen:", err)
 		}
@@ -189,7 +121,101 @@ func prepareLogger() {
 	}
 }
 
-func prepareRouter() *chi.Mux {
+type repositories struct {
+	userRepository          user.Repository
+	professionRepository    profession.Repository
+	qualificationRepository qualification.Repository
+	questionRepository      question.Repository
+}
+
+func prepareRepositories(dbConn *pg.DB, fileStorage fstorage.FileStorage) (*repositories, error) {
+	var err error
+	repos := &repositories{}
+
+	repos.userRepository, err = userrepository.NewPGRepository(&userrepository.PGRepositoryConfig{
+		DB: dbConn,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "userRepository")
+	}
+
+	repos.professionRepository, err = professionrepository.NewPGRepository(&professionrepository.PGRepositoryConfig{
+		DB: dbConn,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "professionRepository")
+	}
+
+	repos.qualificationRepository, err = qualificationrepository.NewPGRepository(&qualificationrepository.PGRepositoryConfig{
+		DB: dbConn,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "qualificationRepository")
+	}
+
+	repos.questionRepository, err = questionrepository.NewPGRepository(&questionrepository.PGRepositoryConfig{
+		DB:          dbConn,
+		FileStorage: fileStorage,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "questionRepository")
+	}
+
+	return repos, nil
+}
+
+type usecases struct {
+	authUsecase          auth.Usecase
+	userUsecase          user.Usecase
+	professionUsecase    profession.Usecase
+	qualificationUsecase qualification.Usecase
+	questionUsecase      question.Usecase
+}
+
+func prepareUsecases(repos *repositories) (*usecases, error) {
+	var err error
+	ucases := &usecases{}
+
+	ucases.authUsecase, err = authusecase.New(&authusecase.Config{
+		UserRepository: repos.userRepository,
+		TokenGenerator: jwt.NewTokenGenerator(envutil.GetenvString("ACCESS_SECRET")),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "authUsecase")
+	}
+
+	ucases.userUsecase, err = userusecase.New(&userusecase.Config{
+		UserRepository: repos.userRepository,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "userUsecase")
+	}
+
+	ucases.professionUsecase, err = professionusecase.New(&professionusecase.Config{
+		ProfessionRepository: repos.professionRepository,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "professionUsecase")
+	}
+
+	ucases.qualificationUsecase, err = qualificationusecase.New(&qualificationusecase.Config{
+		QualificationRepository: repos.qualificationRepository,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "qualificationUsecase")
+	}
+
+	ucases.questionUsecase, err = questionusecase.New(&questionusecase.Config{
+		QuestionRepository: repos.questionRepository,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "questionUsecase")
+	}
+
+	return ucases, nil
+}
+
+func prepareRouter(repos *repositories, ucases *usecases) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(chimiddleware.RealIP)
@@ -210,6 +236,29 @@ func prepareRouter() *chi.Mux {
 			MaxAge:           300,
 		}))
 	}
+
+	r.Group(func(r chi.Router) {
+		r.Use(
+			middleware.DataLoaderToContext(dataloader.Config{
+				ProfessionRepo:    repos.professionRepository,
+				QualificationRepo: repos.qualificationRepository,
+			}),
+			middleware.Authenticate(ucases.authUsecase),
+		)
+		err := graphqlhttpdelivery.Attach(r, graphqlhttpdelivery.Config{
+			Resolver: &resolvers.Resolver{
+				AuthUsecase:          ucases.authUsecase,
+				UserUsecase:          ucases.userUsecase,
+				ProfessionUsecase:    ucases.professionUsecase,
+				QualificationUsecase: ucases.qualificationUsecase,
+				QuestionUsecase:      ucases.questionUsecase,
+			},
+			Directive: &directive.Directive{},
+		})
+		if err != nil {
+			log.Fatalln(err)
+		}
+	})
 
 	return r
 }
