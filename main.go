@@ -3,12 +3,16 @@ package main
 import (
 	"context"
 	"github.com/Kichiyaki/appmode"
+	"github.com/Kichiyaki/chilogrus"
 	"github.com/Kichiyaki/goutil/envutil"
+	"github.com/go-chi/chi/v5"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/zdam-egzamin-zawodowy/backend/internal/chi/middleware"
 	graphqlhttpdelivery "github.com/zdam-egzamin-zawodowy/backend/internal/graphql/delivery/httpdelivery"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/directive"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/resolvers"
@@ -17,7 +21,6 @@ import (
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
 	authusecase "github.com/zdam-egzamin-zawodowy/backend/internal/auth/usecase"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/gin/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/dataloader"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/postgres"
 	professionrepository "github.com/zdam-egzamin-zawodowy/backend/internal/profession/repository"
@@ -29,13 +32,13 @@ import (
 	userrepository "github.com/zdam-egzamin-zawodowy/backend/internal/user/repository"
 	userusecase "github.com/zdam-egzamin-zawodowy/backend/internal/user/usecase"
 
-	"github.com/Kichiyaki/ginlogrus"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
 	"github.com/zdam-egzamin-zawodowy/backend/fstorage"
+
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 func init() {
@@ -45,7 +48,7 @@ func init() {
 		godotenv.Load(".env.local")
 	}
 
-	setupLogger()
+	prepareLogger()
 }
 
 func main() {
@@ -120,25 +123,28 @@ func main() {
 		logrus.Fatal(errors.Wrap(err, "questionUsecase"))
 	}
 
-	router := setupRouter()
-	graphql := router.Group("")
-	graphql.Use(
-		middleware.GinContextToContext(),
-		middleware.DataLoaderToContext(dataloader.Config{
-			ProfessionRepo:    professionRepository,
-			QualificationRepo: qualificationRepository,
-		}),
-		middleware.Authenticate(authUsecase),
-	)
-	graphqlhttpdelivery.Attach(graphql, graphqlhttpdelivery.Config{
-		Resolver: &resolvers.Resolver{
-			AuthUsecase:          authUsecase,
-			UserUsecase:          userUsecase,
-			ProfessionUsecase:    professionUsecase,
-			QualificationUsecase: qualificationUsecase,
-			QuestionUsecase:      questionUsecase,
-		},
-		Directive: &directive.Directive{},
+	router := prepareRouter()
+	router.Group(func(r chi.Router) {
+		r.Use(
+			middleware.DataLoaderToContext(dataloader.Config{
+				ProfessionRepo:    professionRepository,
+				QualificationRepo: qualificationRepository,
+			}),
+			middleware.Authenticate(authUsecase),
+		)
+		err := graphqlhttpdelivery.Attach(r, graphqlhttpdelivery.Config{
+			Resolver: &resolvers.Resolver{
+				AuthUsecase:          authUsecase,
+				UserUsecase:          userUsecase,
+				ProfessionUsecase:    professionUsecase,
+				QualificationUsecase: qualificationUsecase,
+				QuestionUsecase:      questionUsecase,
+			},
+			Directive: &directive.Directive{},
+		})
+		if err != nil {
+			log.Fatalln(err)
+		}
 	})
 	srv := &http.Server{
 		Addr:    ":8080",
@@ -165,7 +171,7 @@ func main() {
 	logrus.Info("Server exiting")
 }
 
-func setupLogger() {
+func prepareLogger() {
 	if appmode.Equals(appmode.DevelopmentMode) {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
@@ -183,25 +189,27 @@ func setupLogger() {
 	}
 }
 
-func setupRouter() *gin.Engine {
-	router := gin.New()
+func prepareRouter() *chi.Mux {
+	r := chi.NewRouter()
 
-	router.Use(gin.Recovery())
-	if !envutil.GetenvBool("DISABLE_ACCESS_LOG") {
-		router.Use(ginlogrus.Logger(logrus.StandardLogger()))
+	r.Use(chimiddleware.RealIP)
+	if envutil.GetenvBool("ENABLE_ACCESS_LOG") {
+		r.Use(chilogrus.Logger(logrus.StandardLogger()))
 	}
+	r.Use(chimiddleware.Recoverer)
+
 	if appmode.Equals(appmode.DevelopmentMode) {
-		router.Use(cors.New(cors.Config{
-			AllowOriginFunc: func(string) bool {
+		r.Use(cors.Handler(cors.Options{
+			AllowOriginFunc: func(*http.Request, string) bool {
 				return true
 			},
 			AllowCredentials: true,
-			ExposeHeaders:    []string{"Authorization"},
-			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-			AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
-			AllowWebSockets:  false,
+			ExposedHeaders:   []string{"Authorization"},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+			AllowedHeaders:   []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+			MaxAge:           300,
 		}))
 	}
 
-	return router
+	return r
 }
