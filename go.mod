@@ -8,7 +8,7 @@ require (
 	github.com/Kichiyaki/chilogrus v0.0.0-20210717074801-6ecc28dbf6b9
 	github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858
 	github.com/Kichiyaki/gopgutil/v10 v10.0.0-20210521204542-cc672e361b3d
-	github.com/Kichiyaki/goutil v0.0.0-20210504132659-3d843a787db7
+	github.com/Kichiyaki/goutil v0.0.0-20210727060523-b40a549d5a72
 	github.com/agnivade/levenshtein v1.1.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi/v5 v5.0.3
