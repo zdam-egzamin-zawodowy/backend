@@ -17,17 +17,13 @@ var _ pg.BeforeInsertHook = (*User)(nil)
 type User struct {
 	tableName struct{} `pg:"alias:user"`
 
-	ID                            int       `json:"id" pg:",pk" xml:"id" gqlgen:"id"`
-	DisplayName                   string    `json:"displayName" pg:",use_zero,notnull" xml:"displayName" gqlgen:"displayName"`
-	Password                      string    `json:"-" gqlgen:"-" xml:"password"`
-	Email                         string    `json:"email" pg:",unique" xml:"email" gqlgen:"email"`
-	CreatedAt                     time.Time `json:"createdAt" pg:"default:now()" xml:"createdAt" gqlgen:"createdAt"`
-	Role                          Role      `json:"role" xml:"role" gqlgen:"role"`
-	Activated                     *bool     `json:"activated" pg:"default:false,use_zero" xml:"activated" gqlgen:"activated"`
-	ActivationToken               string    `json:"-" gqlgen:"-" xml:"activationToken"`
-	ActivationTokenGeneratedAt    time.Time `json:"-" gqlgen:"-" pg:"default:now()" xml:"activationTokenGeneratedAt"`
-	ResetPasswordToken            string    `json:"-" gqlgen:"-" xml:"resetPasswordToken"`
-	ResetPasswordTokenGeneratedAt time.Time `json:"-" gqlgen:"-" pg:"default:now()" xml:"resetPasswordTokenGeneratedAt"`
+	ID          int       `json:"id" pg:",pk" xml:"id" gqlgen:"id"`
+	DisplayName string    `json:"displayName" pg:",use_zero,notnull" xml:"displayName" gqlgen:"displayName"`
+	Password    string    `json:"-" gqlgen:"-" xml:"password"`
+	Email       string    `json:"email" pg:",unique" xml:"email" gqlgen:"email"`
+	CreatedAt   time.Time `json:"createdAt" pg:"default:now()" xml:"createdAt" gqlgen:"createdAt"`
+	Role        Role      `json:"role" xml:"role" gqlgen:"role"`
+	Activated   *bool     `json:"activated" pg:"default:false,use_zero" xml:"activated" gqlgen:"activated"`
 }
 
 func (u *User) BeforeInsert(ctx context.Context) (context.Context, error) {
