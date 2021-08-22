@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/Kichiyaki/appmode v0.0.0-20210502105643-0a26207c548d
-	github.com/Kichiyaki/chilogrus v0.0.0-20210717074801-6ecc28dbf6b9
+	github.com/Kichiyaki/chilogrus v0.1.0
 	github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858
 	github.com/Kichiyaki/gopgutil/v10 v10.0.0-20210521204542-cc672e361b3d
 	github.com/Kichiyaki/goutil v0.0.0-20210727060523-b40a549d5a72
