@@ -6,6 +6,8 @@ github.com/Kichiyaki/appmode v0.0.0-20210502105643-0a26207c548d h1:ApX13STtfJc2Y
 github.com/Kichiyaki/appmode v0.0.0-20210502105643-0a26207c548d/go.mod h1:41p1KTy/fiVocPnJR2h/iXh2NvWWVBdNoZrN8TWVXUI=
 github.com/Kichiyaki/chilogrus v0.0.0-20210717074801-6ecc28dbf6b9 h1:ze0F+qhjUaQrZ+3UdZ6Dz3L21T/mZwB6UzzZ8LdG44Y=
 github.com/Kichiyaki/chilogrus v0.0.0-20210717074801-6ecc28dbf6b9/go.mod h1:DkStLjMOKdbuZ/qFps1/fUW+17Glvefijm5NS1KCbIE=
+github.com/Kichiyaki/chilogrus v0.1.0 h1:1Lr28v5Q2PCIE82fPccMhC6AiU3cKsA1gvCB1XXjpgE=
+github.com/Kichiyaki/chilogrus v0.1.0/go.mod h1:tLUYHMQpIsv9lPCjvo50+xZ0YWmpV2YWALrwNaZr19c=
 github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858 h1:O7EPPY5lWaKbYB/5yJzE8WMesismUYuje7gOemo1UNo=
 github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858/go.mod h1:ADHVWnGlWcRn1aGthuh7I1Lrn6zzsjkVJju151dXyDw=
 github.com/Kichiyaki/gopgutil/v10 v10.0.0-20210521204542-cc672e361b3d h1:7ZJVfFgAR0zNf5fNc6M9v2PZbXvTgGgDjQo4/+NIezQ=
