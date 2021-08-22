@@ -1,6 +1,6 @@
 module github.com/zdam-egzamin-zawodowy/backend
 
-go 1.16
+go 1.17
 
 require (
 	github.com/99designs/gqlgen v0.13.0
@@ -28,4 +28,22 @@ require (
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+)
+
+require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
+	github.com/go-pg/zerochecker v0.2.0 // indirect
+	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/gosimple/unidecode v1.0.0 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/russross/blackfriday/v2 v2.0.1 // indirect
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
+	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
+	github.com/urfave/cli/v2 v2.1.1 // indirect
+	github.com/vmihailenco/bufpool v0.1.11 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.1 // indirect
+	github.com/vmihailenco/tagparser v0.1.2 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
+	golang.org/x/tools v0.0.0-20200114235610-7ae403b6b589 // indirect
+	mellium.im/sasl v0.2.1 // indirect
 )
