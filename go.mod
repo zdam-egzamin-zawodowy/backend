@@ -11,7 +11,7 @@ require (
 	github.com/Kichiyaki/goutil v0.1.0
 	github.com/agnivade/levenshtein v1.1.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/go-chi/chi/v5 v5.0.3
+	github.com/go-chi/chi/v5 v5.0.4
 	github.com/go-chi/cors v1.2.0
 	github.com/go-pg/pg/v10 v10.10.4
 	github.com/google/uuid v1.3.0
