@@ -13,7 +13,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi/v5 v5.0.4
 	github.com/go-chi/cors v1.2.0
-	github.com/go-pg/pg/v10 v10.10.4
+	github.com/go-pg/pg/v10 v10.10.5
 	github.com/google/uuid v1.3.0
 	github.com/gosimple/slug v1.10.0
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
