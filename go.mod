@@ -3,7 +3,7 @@ module github.com/zdam-egzamin-zawodowy/backend
 go 1.17
 
 require (
-	github.com/99designs/gqlgen v0.13.0
+	github.com/99designs/gqlgen v0.14.0
 	github.com/Kichiyaki/appmode v1.0.0
 	github.com/Kichiyaki/chilogrus v0.1.0
 	github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858
@@ -22,7 +22,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sethvargo/go-password v0.2.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/vektah/gqlparser/v2 v2.1.0
+	github.com/vektah/gqlparser/v2 v2.2.0
 	golang.org/x/crypto v0.0.0-20210915214749-c084706c2272
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/text v0.3.6 // indirect
@@ -44,6 +44,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.1 // indirect
 	github.com/vmihailenco/tagparser v0.1.2 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/tools v0.0.0-20200114235610-7ae403b6b589 // indirect
+	golang.org/x/mod v0.3.0 // indirect
+	golang.org/x/tools v0.0.0-20210106214847-113979e3529a // indirect
 	mellium.im/sasl v0.2.1 // indirect
 )
