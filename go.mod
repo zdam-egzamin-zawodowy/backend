@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/99designs/gqlgen v0.14.0
-	github.com/Kichiyaki/appmode v1.0.0
+	github.com/Kichiyaki/appmode v1.0.1
 	github.com/Kichiyaki/chilogrus v0.1.0
 	github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858
 	github.com/Kichiyaki/gopgutil/v10 v10.0.0-20210521204542-cc672e361b3d
