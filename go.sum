@@ -6,6 +6,8 @@ github.com/99designs/gqlgen v0.14.0/go.mod h1:S7z4boV+Nx4VvzMUpVrY/YuHjFX4n7rDyu
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Kichiyaki/appmode v1.0.0 h1:Kgk+pi45/wqIcrWmnloACUsm8HbOGd6UumSRCsm484g=
 github.com/Kichiyaki/appmode v1.0.0/go.mod h1:FDT0lWIX9MBiyiUt4b/xo6BQQyV7aebsi+x5fcljMjk=
+github.com/Kichiyaki/appmode v1.0.1 h1:DRyrRi6JeIaxK1wTZZxKFJiwD8C/Lmj0sV73il7Z2vE=
+github.com/Kichiyaki/appmode v1.0.1/go.mod h1:EY3cHa98DiSDsUiNjQk7gh3ihLhUTDAbrwBMhFi0nWM=
 github.com/Kichiyaki/chilogrus v0.1.0 h1:1Lr28v5Q2PCIE82fPccMhC6AiU3cKsA1gvCB1XXjpgE=
 github.com/Kichiyaki/chilogrus v0.1.0/go.mod h1:tLUYHMQpIsv9lPCjvo50+xZ0YWmpV2YWALrwNaZr19c=
 github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858 h1:O7EPPY5lWaKbYB/5yJzE8WMesismUYuje7gOemo1UNo=
