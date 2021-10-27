@@ -3,7 +3,7 @@ package jwt
 import (
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 )
 
@@ -40,6 +40,7 @@ func (g *TokenGenerator) Generate(metadata Metadata) (string, error) {
 	if !metadata.StaySignedIn {
 		atClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 	}
+
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	accessToken, err := at.SignedString([]byte(g.accessSecret))
 	if err != nil {
@@ -64,9 +65,11 @@ func verifyToken(secret string, tokenString string) (*jwt.Token, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "couldn't parse the token")
 	}
+
 	if !token.Valid {
 		return nil, errors.New("token is invalid")
 	}
+
 	return token, nil
 }
 
@@ -77,27 +80,28 @@ func extractTokenMetadata(secret, tokenString string) (*Metadata, error) {
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
-	if ok {
-		staySignedIn, ok := claims["stay_signed_in"].(bool)
-		if !ok {
-			return nil, errors.New("invalid token payload (staySignedIn should be a boolean)")
-		}
-		email, ok := claims["email"].(string)
-		if !ok {
-			return nil, errors.New("invalid token payload (email should be a string)")
-		}
-		password, ok := claims["password"].(string)
-		if !ok {
-			return nil, errors.New("invalid token payload (password should be a string)")
-		}
-		return &Metadata{
-			StaySignedIn: staySignedIn,
-			Credentials: Credentials{
-				Email:    email,
-				Password: password,
-			},
-		}, nil
+	if !ok {
+		return nil, errors.New("couldn't extract token metadata")
 	}
 
-	return nil, errors.New("couldn't extract token metadata")
+	staySignedIn, ok := claims["stay_signed_in"].(bool)
+	if !ok {
+		return nil, errors.New("invalid token payload (staySignedIn should be a boolean)")
+	}
+	email, ok := claims["email"].(string)
+	if !ok {
+		return nil, errors.New("invalid token payload (email should be a string)")
+	}
+	password, ok := claims["password"].(string)
+	if !ok {
+		return nil, errors.New("invalid token payload (password should be a string)")
+	}
+
+	return &Metadata{
+		StaySignedIn: staySignedIn,
+		Credentials: Credentials{
+			Email:    email,
+			Password: password,
+		},
+	}, nil
 }
