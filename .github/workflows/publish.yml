@@ -35,7 +35,7 @@ jobs:
           username: ${{ secrets.REGISTRY_LOGIN }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: Push the REST API to Docker Hub
+      - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
           context: .
