@@ -194,7 +194,7 @@ type UserFilter struct {
 	CreatedAtLT  time.Time `json:"createdAtLT" xml:"createdAtLT" gqlgen:"createdAtLT"`
 	CreatedAtLTE time.Time `json:"createdAtLTE" xml:"createdAtLTE" gqlgen:"createdAtLTE"`
 
-	Or *UserFilterOr
+	Or UserFilterOr
 }
 
 func (f *UserFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, error) {
@@ -255,9 +255,7 @@ func (f *UserFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, err
 		q = q.Where(gopgutil.BuildConditionLTE("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtLTE)
 	}
 
-	if f.Or != nil {
-		q = f.Or.WhereWithAlias(q, alias)
-	}
+	q = f.Or.WhereWithAlias(q, alias)
 
 	return q, nil
 }

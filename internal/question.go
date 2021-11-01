@@ -203,9 +203,9 @@ type QuestionFilter struct {
 	ContentMATCH string `json:"contentMATCH" xml:"contentMATCH" gqlgen:"contentMATCH"`
 	ContentIEQ   string `json:"contentIEQ" xml:"contentIEQ" gqlgen:"contentIEQ"`
 
-	QualificationID     []int                `json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
-	QualificationIDNEQ  []int                `json:"qualificationIDNEQ" xml:"qualificationIDNEQ" gqlgen:"qualificationIDNEQ"`
-	QualificationFilter *QualificationFilter `json:"qualificationFilter" xml:"qualificationFilter" gqlgen:"qualificationFilter"`
+	QualificationID     []int               `json:"qualificationID" xml:"qualificationID" gqlgen:"qualificationID"`
+	QualificationIDNEQ  []int               `json:"qualificationIDNEQ" xml:"qualificationIDNEQ" gqlgen:"qualificationIDNEQ"`
+	QualificationFilter QualificationFilter `json:"qualificationFilter" xml:"qualificationFilter" gqlgen:"qualificationFilter"`
 
 	CreatedAt    time.Time `gqlgen:"createdAt" json:"createdAt" xml:"createdAt"`
 	CreatedAtGT  time.Time `gqlgen:"createdAtGT" json:"createdAtGT" xml:"createdAtGT"`
@@ -245,11 +245,9 @@ func (f *QuestionFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query,
 	}
 
 	var err error
-	if f.QualificationFilter != nil {
-		q, err = f.QualificationFilter.WhereWithAlias(q.Relation("Qualification._"), "qualification")
-		if err != nil {
-			return q, err
-		}
+	q, err = f.QualificationFilter.WhereWithAlias(q.Relation("Qualification._"), "qualification")
+	if err != nil {
+		return q, err
 	}
 
 	if !isZero(f.CreatedAt) {
