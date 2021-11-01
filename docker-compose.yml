@@ -1,0 +1,26 @@
+version: '3.6'
+
+services:
+  cdn:
+    image: nginx:alpine
+    volumes:
+      - ./dev/upload:/usr/share/nginx/html
+      - ./dev/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "9000:80"
+    environment:
+      - NGINX_PORT=80
+    restart: unless-stopped
+
+  zdamegzzawodowydb:
+    image: postgres:12.8
+    container_name: zdamegzzawodowydb
+    restart: unless-stopped
+    volumes:
+      - './dev/pgdata:/var/lib/postgresql/data'
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=zdamegzzawodowy
+      - POSTGRES_DB=zdamegzzawodowy
+      - TZ=UTC
