@@ -10,10 +10,10 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the source from the current directory to the Working Directory inside the container
-COPY . .
+COPY ../.. .
 RUN apk --no-cache add musl-dev gcc build-base
 RUN go generate ./...
-RUN go build -o zdamegzawodowy .
+RUN go build -o zdamegzawodowy ./cmd/server
 
 ######## Start a new stage from scratch #######
 FROM alpine:latest
@@ -26,10 +26,6 @@ WORKDIR /root/
 COPY --from=builder /app/zdamegzawodowy .
 
 ENV APP_MODE=production
-ENV GIN_MODE=release
 EXPOSE 8080
-
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait ./wait
-RUN chmod +x ./wait
 
 CMD ./wait && ./zdamegzawodowy

@@ -23,15 +23,9 @@ FILE_STORAGE_PATH=path_to_the_folder_where_uploaded_files_will_be_stored
 ENABLE_ACCESS_LOG=false
 ```
 
-1. Clone this repo.
-```
-git clone git@github.com:zdam-egzamin-zawodowy/backend.git
-```
+1. Clone this repo - ``git clone git@github.com:zdam-egzamin-zawodowy/backend.git``.
 2. Set the required env variables.
-3. Run the app.
-```
-go run main.go
-```
+3. Run the app - ``go run ./cmd/server/main.go``.
 
 ## License
 Distributed under the MIT License. See ``LICENSE`` for more information.
