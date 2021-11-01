@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth/jwt"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
 	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 )
@@ -33,7 +33,7 @@ func New(cfg *Config) (*Usecase, error) {
 	}, nil
 }
 
-func (ucase *Usecase) SignIn(ctx context.Context, email, password string, staySignedIn bool) (*model.User, string, error) {
+func (ucase *Usecase) SignIn(ctx context.Context, email, password string, staySignedIn bool) (*internal.User, string, error) {
 	u, err := ucase.GetUserByCredentials(ctx, email, password)
 	if err != nil {
 		return nil, "", err
@@ -53,7 +53,7 @@ func (ucase *Usecase) SignIn(ctx context.Context, email, password string, staySi
 	return u, token, nil
 }
 
-func (ucase *Usecase) ExtractAccessTokenMetadata(ctx context.Context, accessToken string) (*model.User, error) {
+func (ucase *Usecase) ExtractAccessTokenMetadata(ctx context.Context, accessToken string) (*internal.User, error) {
 	metadata, err := ucase.tokenGenerator.ExtractAccessTokenMetadata(accessToken)
 	if err != nil {
 		return nil, errorutil.Wrap(err, messageInvalidAccessToken)
@@ -62,11 +62,11 @@ func (ucase *Usecase) ExtractAccessTokenMetadata(ctx context.Context, accessToke
 	return ucase.GetUserByCredentials(ctx, metadata.Credentials.Email, metadata.Credentials.Password)
 }
 
-func (ucase *Usecase) GetUserByCredentials(ctx context.Context, email, password string) (*model.User, error) {
+func (ucase *Usecase) GetUserByCredentials(ctx context.Context, email, password string) (*internal.User, error) {
 	users, _, err := ucase.userRepository.Fetch(ctx, &user.FetchConfig{
 		Limit: 1,
 		Count: false,
-		Filter: &model.UserFilter{
+		Filter: &internal.UserFilter{
 			Email: []string{email},
 		},
 	})

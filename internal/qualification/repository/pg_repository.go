@@ -4,13 +4,13 @@ import (
 	"context"
 	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
 )
 
@@ -33,7 +33,7 @@ func NewPGRepository(cfg *PGRepositoryConfig) (*PGRepository, error) {
 	}, nil
 }
 
-func (repo *PGRepository) Store(ctx context.Context, input *model.QualificationInput) (*model.Qualification, error) {
+func (repo *PGRepository) Store(ctx context.Context, input *internal.QualificationInput) (*internal.Qualification, error) {
 	item := input.ToQualification()
 	err := repo.RunInTransaction(ctx, func(tx *pg.Tx) error {
 		if _, err := tx.
@@ -57,14 +57,14 @@ func (repo *PGRepository) Store(ctx context.Context, input *model.QualificationI
 
 func (repo *PGRepository) UpdateMany(
 	ctx context.Context,
-	f *model.QualificationFilter,
-	input *model.QualificationInput,
-) ([]*model.Qualification, error) {
-	items := make([]*model.Qualification, 0)
+	f *internal.QualificationFilter,
+	input *internal.QualificationInput,
+) ([]*internal.Qualification, error) {
+	items := make([]*internal.Qualification, 0)
 	err := repo.RunInTransaction(ctx, func(tx *pg.Tx) error {
 		if input.HasBasicDataToUpdate() {
 			if _, err := tx.
-				Model(&model.Qualification{}).
+				Model(&internal.Qualification{}).
 				Context(ctx).
 				Apply(input.ApplyUpdate).
 				Apply(f.Where).
@@ -89,7 +89,7 @@ func (repo *PGRepository) UpdateMany(
 		if len(qualificationIDs) > 0 {
 			if len(input.DissociateProfession) > 0 {
 				_, err := tx.
-					Model(&model.QualificationToProfession{}).
+					Model(&internal.QualificationToProfession{}).
 					Where(gopgutil.BuildConditionArray("profession_id"), pg.Array(input.DissociateProfession)).
 					Where(gopgutil.BuildConditionArray("qualification_id"), pg.Array(qualificationIDs)).
 					Delete()
@@ -110,8 +110,8 @@ func (repo *PGRepository) UpdateMany(
 	return items, err
 }
 
-func (repo *PGRepository) Delete(ctx context.Context, f *model.QualificationFilter) ([]*model.Qualification, error) {
-	items := make([]*model.Qualification, 0)
+func (repo *PGRepository) Delete(ctx context.Context, f *internal.QualificationFilter) ([]*internal.Qualification, error) {
+	items := make([]*internal.Qualification, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -123,9 +123,9 @@ func (repo *PGRepository) Delete(ctx context.Context, f *model.QualificationFilt
 	return items, nil
 }
 
-func (repo *PGRepository) Fetch(ctx context.Context, cfg *qualification.FetchConfig) ([]*model.Qualification, int, error) {
+func (repo *PGRepository) Fetch(ctx context.Context, cfg *qualification.FetchConfig) ([]*internal.Qualification, int, error) {
 	var err error
-	items := make([]*model.Qualification, 0)
+	items := make([]*internal.Qualification, 0)
 	total := 0
 	query := repo.
 		Model(&items).
@@ -148,16 +148,16 @@ func (repo *PGRepository) Fetch(ctx context.Context, cfg *qualification.FetchCon
 	return items, total, nil
 }
 
-func (repo *PGRepository) GetSimilar(ctx context.Context, cfg *qualification.GetSimilarConfig) ([]*model.Qualification, int, error) {
+func (repo *PGRepository) GetSimilar(ctx context.Context, cfg *qualification.GetSimilarConfig) ([]*internal.Qualification, int, error) {
 	var err error
 	subquery := repo.
-		Model(&model.QualificationToProfession{}).
+		Model(&internal.QualificationToProfession{}).
 		Context(ctx).
 		Where(gopgutil.BuildConditionEquals("qualification_id"), cfg.QualificationID).
 		Column("profession_id")
 	var qualificationIDs []int
 	err = repo.
-		Model(&model.QualificationToProfession{}).
+		Model(&internal.QualificationToProfession{}).
 		Context(ctx).
 		Column("qualification_id").
 		With("prof", subquery).
@@ -169,14 +169,14 @@ func (repo *PGRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 	}
 
 	if len(qualificationIDs) == 0 {
-		return []*model.Qualification{}, 0, nil
+		return []*internal.Qualification{}, 0, nil
 	}
 
 	return repo.Fetch(ctx, &qualification.FetchConfig{
 		Sort:   cfg.Sort,
 		Limit:  cfg.Limit,
 		Offset: cfg.Offset,
-		Filter: &model.QualificationFilter{
+		Filter: &internal.QualificationFilter{
 			ID: qualificationIDs,
 		},
 		Count: cfg.Count,
@@ -184,10 +184,10 @@ func (repo *PGRepository) GetSimilar(ctx context.Context, cfg *qualification.Get
 }
 
 func (repo *PGRepository) associateQualificationWithProfession(tx *pg.Tx, qualificationIDs, professionIDs []int) error {
-	var toInsert []*model.QualificationToProfession
+	var toInsert []*internal.QualificationToProfession
 	for _, professionID := range professionIDs {
 		for _, qualificationID := range qualificationIDs {
-			toInsert = append(toInsert, &model.QualificationToProfession{
+			toInsert = append(toInsert, &internal.QualificationToProfession{
 				ProfessionID:    professionID,
 				QualificationID: qualificationID,
 			})

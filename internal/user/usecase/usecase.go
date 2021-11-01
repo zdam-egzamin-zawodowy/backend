@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/Kichiyaki/goutil/strutil"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
 )
 
@@ -28,20 +28,20 @@ func New(cfg *Config) (*Usecase, error) {
 	}, nil
 }
 
-func (ucase *Usecase) Store(ctx context.Context, input *model.UserInput) (*model.User, error) {
+func (ucase *Usecase) Store(ctx context.Context, input *internal.UserInput) (*internal.User, error) {
 	if err := validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.userRepository.Store(ctx, input)
 }
 
-func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.UserInput) (*model.User, error) {
+func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *internal.UserInput) (*internal.User, error) {
 	if id <= 0 {
 		return nil, errors.New(messageInvalidID)
 	}
 	items, err := ucase.UpdateMany(
 		ctx,
-		&model.UserFilter{
+		&internal.UserFilter{
 			ID: []int{id},
 		},
 		input.Sanitize(),
@@ -55,9 +55,9 @@ func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.Us
 	return items[0], nil
 }
 
-func (ucase *Usecase) UpdateMany(ctx context.Context, f *model.UserFilter, input *model.UserInput) ([]*model.User, error) {
+func (ucase *Usecase) UpdateMany(ctx context.Context, f *internal.UserFilter, input *internal.UserInput) ([]*internal.User, error) {
 	if f == nil {
-		return []*model.User{}, nil
+		return []*internal.User{}, nil
 	}
 	if err := validateInput(input.Sanitize(), validateOptions{true}); err != nil {
 		return nil, err
@@ -69,11 +69,11 @@ func (ucase *Usecase) UpdateMany(ctx context.Context, f *model.UserFilter, input
 	return items, nil
 }
 
-func (ucase *Usecase) Delete(ctx context.Context, f *model.UserFilter) ([]*model.User, error) {
+func (ucase *Usecase) Delete(ctx context.Context, f *internal.UserFilter) ([]*internal.User, error) {
 	return ucase.userRepository.Delete(ctx, f)
 }
 
-func (ucase *Usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*model.User, int, error) {
+func (ucase *Usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*internal.User, int, error) {
 	if cfg == nil {
 		cfg = &user.FetchConfig{
 			Limit: user.FetchMaxLimit,
@@ -89,11 +89,11 @@ func (ucase *Usecase) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*mode
 	return ucase.userRepository.Fetch(ctx, cfg)
 }
 
-func (ucase *Usecase) GetByID(ctx context.Context, id int) (*model.User, error) {
+func (ucase *Usecase) GetByID(ctx context.Context, id int) (*internal.User, error) {
 	items, _, err := ucase.Fetch(ctx, &user.FetchConfig{
 		Limit: 1,
 		Count: false,
-		Filter: &model.UserFilter{
+		Filter: &internal.UserFilter{
 			ID: []int{id},
 		},
 	})
@@ -106,11 +106,11 @@ func (ucase *Usecase) GetByID(ctx context.Context, id int) (*model.User, error) 
 	return items[0], nil
 }
 
-func (ucase *Usecase) GetByCredentials(ctx context.Context, email, password string) (*model.User, error) {
+func (ucase *Usecase) GetByCredentials(ctx context.Context, email, password string) (*internal.User, error) {
 	items, _, err := ucase.Fetch(ctx, &user.FetchConfig{
 		Limit: 1,
 		Count: false,
-		Filter: &model.UserFilter{
+		Filter: &internal.UserFilter{
 			Email: []string{email},
 		},
 	})
@@ -130,7 +130,7 @@ type validateOptions struct {
 	acceptNilValues bool
 }
 
-func validateInput(input *model.UserInput, opts validateOptions) error {
+func validateInput(input *internal.UserInput, opts validateOptions) error {
 	if input.IsEmpty() {
 		return errors.New(messageEmptyPayload)
 	}

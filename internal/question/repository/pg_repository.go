@@ -4,13 +4,13 @@ import (
 	"context"
 	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 	"strings"
 	"time"
 
 	"github.com/go-pg/pg/v10"
 
 	"github.com/zdam-egzamin-zawodowy/backend/fstorage"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/question"
 	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 )
@@ -42,7 +42,7 @@ func NewPGRepository(cfg *PGRepositoryConfig) (*PGRepository, error) {
 	}, nil
 }
 
-func (repo *PGRepository) Store(ctx context.Context, input *model.QuestionInput) (*model.Question, error) {
+func (repo *PGRepository) Store(ctx context.Context, input *internal.QuestionInput) (*internal.Question, error) {
 	item := input.ToQuestion()
 	baseQuery := repo.
 		Model(item).
@@ -70,8 +70,8 @@ func (repo *PGRepository) Store(ctx context.Context, input *model.QuestionInput)
 	return item, nil
 }
 
-func (repo *PGRepository) UpdateOneByID(ctx context.Context, id int, input *model.QuestionInput) (*model.Question, error) {
-	item := &model.Question{}
+func (repo *PGRepository) UpdateOneByID(ctx context.Context, id int, input *internal.QuestionInput) (*internal.Question, error) {
+	item := &internal.Question{}
 	baseQuery := repo.
 		Model(item).
 		Context(ctx).
@@ -103,8 +103,8 @@ func (repo *PGRepository) UpdateOneByID(ctx context.Context, id int, input *mode
 	return item, nil
 }
 
-func (repo *PGRepository) Delete(ctx context.Context, f *model.QuestionFilter) ([]*model.Question, error) {
-	items := make([]*model.Question, 0)
+func (repo *PGRepository) Delete(ctx context.Context, f *internal.QuestionFilter) ([]*internal.Question, error) {
+	items := make([]*internal.Question, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -119,9 +119,9 @@ func (repo *PGRepository) Delete(ctx context.Context, f *model.QuestionFilter) (
 	return items, nil
 }
 
-func (repo *PGRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*model.Question, int, error) {
+func (repo *PGRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) ([]*internal.Question, int, error) {
 	var err error
-	items := make([]*model.Question, 0)
+	items := make([]*internal.Question, 0)
 	total := 0
 	query := repo.
 		Model(&items).
@@ -144,14 +144,14 @@ func (repo *PGRepository) Fetch(ctx context.Context, cfg *question.FetchConfig) 
 	return items, total, nil
 }
 
-func (repo *PGRepository) GenerateTest(ctx context.Context, cfg *question.GenerateTestConfig) ([]*model.Question, error) {
+func (repo *PGRepository) GenerateTest(ctx context.Context, cfg *question.GenerateTestConfig) ([]*internal.Question, error) {
 	subquery := repo.
-		Model(&model.Question{}).
+		Model(&internal.Question{}).
 		Column("id").
 		Where(gopgutil.BuildConditionArray("qualification_id"), pg.Array(cfg.Qualifications)).
 		OrderExpr("random()").
 		Limit(cfg.Limit)
-	items := make([]*model.Question, 0)
+	items := make([]*internal.Question, 0)
 	if err := repo.
 		Model(&items).
 		Context(ctx).

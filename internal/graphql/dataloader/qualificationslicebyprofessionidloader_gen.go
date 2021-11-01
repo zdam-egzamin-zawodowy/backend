@@ -3,16 +3,15 @@
 package dataloader
 
 import (
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 	"sync"
 	"time"
-
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 // QualificationSliceByProfessionIDLoaderConfig captures the config to create a new QualificationSliceByProfessionIDLoader
 type QualificationSliceByProfessionIDLoaderConfig struct {
 	// Fetch is a method that provides the data for the loader
-	Fetch func(keys []int) ([][]*model.Qualification, []error)
+	Fetch func(keys []int) ([][]*internal.Qualification, []error)
 
 	// Wait is how long wait before sending a batch
 	Wait time.Duration
@@ -33,7 +32,7 @@ func NewQualificationSliceByProfessionIDLoader(config QualificationSliceByProfes
 // QualificationSliceByProfessionIDLoader batches and caches requests
 type QualificationSliceByProfessionIDLoader struct {
 	// this method provides the data for the loader
-	fetch func(keys []int) ([][]*model.Qualification, []error)
+	fetch func(keys []int) ([][]*internal.Qualification, []error)
 
 	// how long to done before sending a batch
 	wait time.Duration
@@ -44,7 +43,7 @@ type QualificationSliceByProfessionIDLoader struct {
 	// INTERNAL
 
 	// lazily created cache
-	cache map[int][]*model.Qualification
+	cache map[int][]*internal.Qualification
 
 	// the current batch. keys will continue to be collected until timeout is hit,
 	// then everything will be sent to the fetch method and out to the listeners
@@ -56,25 +55,25 @@ type QualificationSliceByProfessionIDLoader struct {
 
 type qualificationSliceByProfessionIDLoaderBatch struct {
 	keys    []int
-	data    [][]*model.Qualification
+	data    [][]*internal.Qualification
 	error   []error
 	closing bool
 	done    chan struct{}
 }
 
 // Load a Qualification by key, batching and caching will be applied automatically
-func (l *QualificationSliceByProfessionIDLoader) Load(key int) ([]*model.Qualification, error) {
+func (l *QualificationSliceByProfessionIDLoader) Load(key int) ([]*internal.Qualification, error) {
 	return l.LoadThunk(key)()
 }
 
 // LoadThunk returns a function that when called will block waiting for a Qualification.
 // This method should be used if you want one goroutine to make requests to many
 // different data loaders without blocking until the thunk is called.
-func (l *QualificationSliceByProfessionIDLoader) LoadThunk(key int) func() ([]*model.Qualification, error) {
+func (l *QualificationSliceByProfessionIDLoader) LoadThunk(key int) func() ([]*internal.Qualification, error) {
 	l.mu.Lock()
 	if it, ok := l.cache[key]; ok {
 		l.mu.Unlock()
-		return func() ([]*model.Qualification, error) {
+		return func() ([]*internal.Qualification, error) {
 			return it, nil
 		}
 	}
@@ -85,10 +84,10 @@ func (l *QualificationSliceByProfessionIDLoader) LoadThunk(key int) func() ([]*m
 	pos := batch.keyIndex(l, key)
 	l.mu.Unlock()
 
-	return func() ([]*model.Qualification, error) {
+	return func() ([]*internal.Qualification, error) {
 		<-batch.done
 
-		var data []*model.Qualification
+		var data []*internal.Qualification
 		if pos < len(batch.data) {
 			data = batch.data[pos]
 		}
@@ -113,14 +112,14 @@ func (l *QualificationSliceByProfessionIDLoader) LoadThunk(key int) func() ([]*m
 
 // LoadAll fetches many keys at once. It will be broken into appropriate sized
 // sub batches depending on how the loader is configured
-func (l *QualificationSliceByProfessionIDLoader) LoadAll(keys []int) ([][]*model.Qualification, []error) {
-	results := make([]func() ([]*model.Qualification, error), len(keys))
+func (l *QualificationSliceByProfessionIDLoader) LoadAll(keys []int) ([][]*internal.Qualification, []error) {
+	results := make([]func() ([]*internal.Qualification, error), len(keys))
 
 	for i, key := range keys {
 		results[i] = l.LoadThunk(key)
 	}
 
-	qualifications := make([][]*model.Qualification, len(keys))
+	qualifications := make([][]*internal.Qualification, len(keys))
 	errors := make([]error, len(keys))
 	for i, thunk := range results {
 		qualifications[i], errors[i] = thunk()
@@ -131,13 +130,13 @@ func (l *QualificationSliceByProfessionIDLoader) LoadAll(keys []int) ([][]*model
 // LoadAllThunk returns a function that when called will block waiting for a Qualifications.
 // This method should be used if you want one goroutine to make requests to many
 // different data loaders without blocking until the thunk is called.
-func (l *QualificationSliceByProfessionIDLoader) LoadAllThunk(keys []int) func() ([][]*model.Qualification, []error) {
-	results := make([]func() ([]*model.Qualification, error), len(keys))
+func (l *QualificationSliceByProfessionIDLoader) LoadAllThunk(keys []int) func() ([][]*internal.Qualification, []error) {
+	results := make([]func() ([]*internal.Qualification, error), len(keys))
 	for i, key := range keys {
 		results[i] = l.LoadThunk(key)
 	}
-	return func() ([][]*model.Qualification, []error) {
-		qualifications := make([][]*model.Qualification, len(keys))
+	return func() ([][]*internal.Qualification, []error) {
+		qualifications := make([][]*internal.Qualification, len(keys))
 		errors := make([]error, len(keys))
 		for i, thunk := range results {
 			qualifications[i], errors[i] = thunk()
@@ -149,13 +148,13 @@ func (l *QualificationSliceByProfessionIDLoader) LoadAllThunk(keys []int) func()
 // Prime the cache with the provided key and value. If the key already exists, no change is made
 // and false is returned.
 // (To forcefully prime the cache, clear the key first with loader.clear(key).prime(key, value).)
-func (l *QualificationSliceByProfessionIDLoader) Prime(key int, value []*model.Qualification) bool {
+func (l *QualificationSliceByProfessionIDLoader) Prime(key int, value []*internal.Qualification) bool {
 	l.mu.Lock()
 	var found bool
 	if _, found = l.cache[key]; !found {
 		// make a copy when writing to the cache, its easy to pass a pointer in from a loop var
 		// and end up with the whole cache pointing to the same value.
-		cpy := make([]*model.Qualification, len(value))
+		cpy := make([]*internal.Qualification, len(value))
 		copy(cpy, value)
 		l.unsafeSet(key, cpy)
 	}
@@ -170,9 +169,9 @@ func (l *QualificationSliceByProfessionIDLoader) Clear(key int) {
 	l.mu.Unlock()
 }
 
-func (l *QualificationSliceByProfessionIDLoader) unsafeSet(key int, value []*model.Qualification) {
+func (l *QualificationSliceByProfessionIDLoader) unsafeSet(key int, value []*internal.Qualification) {
 	if l.cache == nil {
-		l.cache = map[int][]*model.Qualification{}
+		l.cache = map[int][]*internal.Qualification{}
 	}
 	l.cache[key] = value
 }

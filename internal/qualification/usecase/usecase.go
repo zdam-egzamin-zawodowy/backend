@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/qualification"
 )
 
@@ -27,14 +27,14 @@ func New(cfg *Config) (*Usecase, error) {
 	}, nil
 }
 
-func (ucase *Usecase) Store(ctx context.Context, input *model.QualificationInput) (*model.Qualification, error) {
+func (ucase *Usecase) Store(ctx context.Context, input *internal.QualificationInput) (*internal.Qualification, error) {
 	if err := validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.qualificationRepository.Store(ctx, input)
 }
 
-func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.QualificationInput) (*model.Qualification, error) {
+func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *internal.QualificationInput) (*internal.Qualification, error) {
 	if id <= 0 {
 		return nil, errors.New(messageInvalidID)
 	}
@@ -42,7 +42,7 @@ func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.Qu
 		return nil, err
 	}
 	items, err := ucase.qualificationRepository.UpdateMany(ctx,
-		&model.QualificationFilter{
+		&internal.QualificationFilter{
 			ID: []int{id},
 		},
 		input)
@@ -55,11 +55,11 @@ func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.Qu
 	return items[0], nil
 }
 
-func (ucase *Usecase) Delete(ctx context.Context, f *model.QualificationFilter) ([]*model.Qualification, error) {
+func (ucase *Usecase) Delete(ctx context.Context, f *internal.QualificationFilter) ([]*internal.Qualification, error) {
 	return ucase.qualificationRepository.Delete(ctx, f)
 }
 
-func (ucase *Usecase) Fetch(ctx context.Context, cfg *qualification.FetchConfig) ([]*model.Qualification, int, error) {
+func (ucase *Usecase) Fetch(ctx context.Context, cfg *qualification.FetchConfig) ([]*internal.Qualification, int, error) {
 	if cfg == nil {
 		cfg = &qualification.FetchConfig{
 			Limit: qualification.FetchDefaultLimit,
@@ -72,11 +72,11 @@ func (ucase *Usecase) Fetch(ctx context.Context, cfg *qualification.FetchConfig)
 	return ucase.qualificationRepository.Fetch(ctx, cfg)
 }
 
-func (ucase *Usecase) GetByID(ctx context.Context, id int) (*model.Qualification, error) {
+func (ucase *Usecase) GetByID(ctx context.Context, id int) (*internal.Qualification, error) {
 	items, _, err := ucase.Fetch(ctx, &qualification.FetchConfig{
 		Limit: 1,
 		Count: false,
-		Filter: &model.QualificationFilter{
+		Filter: &internal.QualificationFilter{
 			ID: []int{id},
 		},
 	})
@@ -89,11 +89,11 @@ func (ucase *Usecase) GetByID(ctx context.Context, id int) (*model.Qualification
 	return items[0], nil
 }
 
-func (ucase *Usecase) GetBySlug(ctx context.Context, slug string) (*model.Qualification, error) {
+func (ucase *Usecase) GetBySlug(ctx context.Context, slug string) (*internal.Qualification, error) {
 	items, _, err := ucase.Fetch(ctx, &qualification.FetchConfig{
 		Limit: 1,
 		Count: false,
-		Filter: &model.QualificationFilter{
+		Filter: &internal.QualificationFilter{
 			Slug: []string{slug},
 		},
 	})
@@ -106,7 +106,7 @@ func (ucase *Usecase) GetBySlug(ctx context.Context, slug string) (*model.Qualif
 	return items[0], nil
 }
 
-func (ucase *Usecase) GetSimilar(ctx context.Context, cfg *qualification.GetSimilarConfig) ([]*model.Qualification, int, error) {
+func (ucase *Usecase) GetSimilar(ctx context.Context, cfg *qualification.GetSimilarConfig) ([]*internal.Qualification, int, error) {
 	if cfg == nil || cfg.QualificationID <= 0 {
 		return nil, 0, errors.New(messageQualificationIDIsRequired)
 	}
@@ -117,7 +117,7 @@ type validateOptions struct {
 	allowNilValues bool
 }
 
-func validateInput(input *model.QualificationInput, opts validateOptions) error {
+func validateInput(input *internal.QualificationInput, opts validateOptions) error {
 	if input.IsEmpty() {
 		return errors.New(messageEmptyPayload)
 	}

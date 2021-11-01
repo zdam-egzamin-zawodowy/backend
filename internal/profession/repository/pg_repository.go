@@ -4,13 +4,13 @@ import (
 	"context"
 	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
 )
 
@@ -33,7 +33,7 @@ func NewPGRepository(cfg *PGRepositoryConfig) (*PGRepository, error) {
 	}, nil
 }
 
-func (repo *PGRepository) Store(ctx context.Context, input *model.ProfessionInput) (*model.Profession, error) {
+func (repo *PGRepository) Store(ctx context.Context, input *internal.ProfessionInput) (*internal.Profession, error) {
 	item := input.ToProfession()
 	if _, err := repo.
 		Model(item).
@@ -45,9 +45,9 @@ func (repo *PGRepository) Store(ctx context.Context, input *model.ProfessionInpu
 	return item, nil
 }
 
-func (repo *PGRepository) UpdateMany(ctx context.Context, f *model.ProfessionFilter, input *model.ProfessionInput) ([]*model.Profession, error) {
+func (repo *PGRepository) UpdateMany(ctx context.Context, f *internal.ProfessionFilter, input *internal.ProfessionInput) ([]*internal.Profession, error) {
 	if _, err := repo.
-		Model(&model.Profession{}).
+		Model(&internal.Profession{}).
 		Context(ctx).
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
@@ -64,8 +64,8 @@ func (repo *PGRepository) UpdateMany(ctx context.Context, f *model.ProfessionFil
 	return items, nil
 }
 
-func (repo *PGRepository) Delete(ctx context.Context, f *model.ProfessionFilter) ([]*model.Profession, error) {
-	items := make([]*model.Profession, 0)
+func (repo *PGRepository) Delete(ctx context.Context, f *internal.ProfessionFilter) ([]*internal.Profession, error) {
+	items := make([]*internal.Profession, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -77,9 +77,9 @@ func (repo *PGRepository) Delete(ctx context.Context, f *model.ProfessionFilter)
 	return items, nil
 }
 
-func (repo *PGRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*model.Profession, int, error) {
+func (repo *PGRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*internal.Profession, int, error) {
 	var err error
-	items := make([]*model.Profession, 0)
+	items := make([]*internal.Profession, 0)
 	total := 0
 	query := repo.
 		Model(&items).
@@ -105,12 +105,12 @@ func (repo *PGRepository) Fetch(ctx context.Context, cfg *profession.FetchConfig
 func (repo *PGRepository) GetAssociatedQualifications(
 	ctx context.Context,
 	ids ...int,
-) (map[int][]*model.Qualification, error) {
-	m := make(map[int][]*model.Qualification)
+) (map[int][]*internal.Qualification, error) {
+	m := make(map[int][]*internal.Qualification)
 	for _, id := range ids {
-		m[id] = make([]*model.Qualification, 0)
+		m[id] = make([]*internal.Qualification, 0)
 	}
-	var qualificationToProfession []*model.QualificationToProfession
+	var qualificationToProfession []*internal.QualificationToProfession
 	if err := repo.
 		Model(&qualificationToProfession).
 		Context(ctx).

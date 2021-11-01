@@ -3,10 +3,10 @@ package middleware
 import (
 	"context"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 	"net/http"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/auth"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 const (
@@ -34,14 +34,14 @@ func Authenticate(ucase auth.Usecase) func(next http.Handler) http.Handler {
 	}
 }
 
-func UserFromContext(ctx context.Context) (*model.User, error) {
+func UserFromContext(ctx context.Context) (*internal.User, error) {
 	user := ctx.Value(authenticateKey)
 	if user == nil {
 		err := errors.New("couldn't retrieve *model.User")
 		return nil, err
 	}
 
-	u, ok := user.(*model.User)
+	u, ok := user.(*internal.User)
 	if !ok {
 		err := errors.New("*model.User has wrong type")
 		return nil, err

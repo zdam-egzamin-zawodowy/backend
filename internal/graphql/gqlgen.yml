@@ -19,52 +19,52 @@ models:
       - github.com/99designs/gqlgen/graphql.Int32
   Role:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.Role
+      - github.com/zdam-egzamin-zawodowy/backend/internal.Role
   User:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.User
+      - github.com/zdam-egzamin-zawodowy/backend/internal.User
   UserFilter:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.UserFilter
+      - github.com/zdam-egzamin-zawodowy/backend/internal.UserFilter
   UserFilterOr:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.UserFilterOr
+      - github.com/zdam-egzamin-zawodowy/backend/internal.UserFilterOr
   UserInput:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.UserInput
+      - github.com/zdam-egzamin-zawodowy/backend/internal.UserInput
   UpdateManyUsersInput:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.UserInput
+      - github.com/zdam-egzamin-zawodowy/backend/internal.UserInput
   Profession:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.Profession
+      - github.com/zdam-egzamin-zawodowy/backend/internal.Profession
   ProfessionFilter:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.ProfessionFilter
+      - github.com/zdam-egzamin-zawodowy/backend/internal.ProfessionFilter
   ProfessionInput:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.ProfessionInput
+      - github.com/zdam-egzamin-zawodowy/backend/internal.ProfessionInput
   Qualification:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.Qualification
+      - github.com/zdam-egzamin-zawodowy/backend/internal.Qualification
   QualificationFilter:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.QualificationFilter
+      - github.com/zdam-egzamin-zawodowy/backend/internal.QualificationFilter
   QualificationFilterOr:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.QualificationFilterOr
+      - github.com/zdam-egzamin-zawodowy/backend/internal.QualificationFilterOr
   QualificationInput:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.QualificationInput
+      - github.com/zdam-egzamin-zawodowy/backend/internal.QualificationInput
   Answer:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.Answer
+      - github.com/zdam-egzamin-zawodowy/backend/internal.Answer
   Question:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.Question
+      - github.com/zdam-egzamin-zawodowy/backend/internal.Question
   QuestionFilter:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.QuestionFilter
+      - github.com/zdam-egzamin-zawodowy/backend/internal.QuestionFilter
   QuestionInput:
     model:
-      - github.com/zdam-egzamin-zawodowy/backend/internal/model.QuestionInput
+      - github.com/zdam-egzamin-zawodowy/backend/internal.QuestionInput

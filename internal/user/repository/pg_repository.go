@@ -4,13 +4,13 @@ import (
 	"context"
 	"github.com/Kichiyaki/gopgutil/v10"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 	"strings"
 
 	"github.com/zdam-egzamin-zawodowy/backend/util/errorutil"
 
 	"github.com/go-pg/pg/v10"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
 )
 
@@ -33,7 +33,7 @@ func NewPGRepository(cfg *PGRepositoryConfig) (*PGRepository, error) {
 	}, nil
 }
 
-func (repo *PGRepository) Store(ctx context.Context, input *model.UserInput) (*model.User, error) {
+func (repo *PGRepository) Store(ctx context.Context, input *internal.UserInput) (*internal.User, error) {
 	item := input.ToUser()
 	if _, err := repo.
 		Model(item).
@@ -45,9 +45,9 @@ func (repo *PGRepository) Store(ctx context.Context, input *model.UserInput) (*m
 	return item, nil
 }
 
-func (repo *PGRepository) UpdateMany(ctx context.Context, f *model.UserFilter, input *model.UserInput) ([]*model.User, error) {
+func (repo *PGRepository) UpdateMany(ctx context.Context, f *internal.UserFilter, input *internal.UserInput) ([]*internal.User, error) {
 	if _, err := repo.
-		Model(&model.User{}).
+		Model(&internal.User{}).
 		Context(ctx).
 		Apply(input.ApplyUpdate).
 		Apply(f.Where).
@@ -64,8 +64,8 @@ func (repo *PGRepository) UpdateMany(ctx context.Context, f *model.UserFilter, i
 	return items, nil
 }
 
-func (repo *PGRepository) Delete(ctx context.Context, f *model.UserFilter) ([]*model.User, error) {
-	items := make([]*model.User, 0)
+func (repo *PGRepository) Delete(ctx context.Context, f *internal.UserFilter) ([]*internal.User, error) {
+	items := make([]*internal.User, 0)
 	if _, err := repo.
 		Model(&items).
 		Context(ctx).
@@ -77,9 +77,9 @@ func (repo *PGRepository) Delete(ctx context.Context, f *model.UserFilter) ([]*m
 	return items, nil
 }
 
-func (repo *PGRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*model.User, int, error) {
+func (repo *PGRepository) Fetch(ctx context.Context, cfg *user.FetchConfig) ([]*internal.User, int, error) {
 	var err error
-	items := make([]*model.User, 0)
+	items := make([]*internal.User, 0)
 	total := 0
 	query := repo.
 		Model(&items).

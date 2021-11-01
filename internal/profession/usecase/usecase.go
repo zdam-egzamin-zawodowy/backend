@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"github.com/pkg/errors"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/profession"
 )
 
@@ -27,14 +27,14 @@ func New(cfg *Config) (*Usecase, error) {
 	}, nil
 }
 
-func (ucase *Usecase) Store(ctx context.Context, input *model.ProfessionInput) (*model.Profession, error) {
+func (ucase *Usecase) Store(ctx context.Context, input *internal.ProfessionInput) (*internal.Profession, error) {
 	if err := validateInput(input.Sanitize(), validateOptions{false}); err != nil {
 		return nil, err
 	}
 	return ucase.professionRepository.Store(ctx, input)
 }
 
-func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.ProfessionInput) (*model.Profession, error) {
+func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *internal.ProfessionInput) (*internal.Profession, error) {
 	if id <= 0 {
 		return nil, errors.New(messageInvalidID)
 	}
@@ -42,7 +42,7 @@ func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.Pr
 		return nil, err
 	}
 	items, err := ucase.professionRepository.UpdateMany(ctx,
-		&model.ProfessionFilter{
+		&internal.ProfessionFilter{
 			ID: []int{id},
 		},
 		input)
@@ -55,11 +55,11 @@ func (ucase *Usecase) UpdateOneByID(ctx context.Context, id int, input *model.Pr
 	return items[0], nil
 }
 
-func (ucase *Usecase) Delete(ctx context.Context, f *model.ProfessionFilter) ([]*model.Profession, error) {
+func (ucase *Usecase) Delete(ctx context.Context, f *internal.ProfessionFilter) ([]*internal.Profession, error) {
 	return ucase.professionRepository.Delete(ctx, f)
 }
 
-func (ucase *Usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*model.Profession, int, error) {
+func (ucase *Usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([]*internal.Profession, int, error) {
 	if cfg == nil {
 		cfg = &profession.FetchConfig{
 			Limit: profession.FetchDefaultLimit,
@@ -73,11 +73,11 @@ func (ucase *Usecase) Fetch(ctx context.Context, cfg *profession.FetchConfig) ([
 	return ucase.professionRepository.Fetch(ctx, cfg)
 }
 
-func (ucase *Usecase) GetByID(ctx context.Context, id int) (*model.Profession, error) {
+func (ucase *Usecase) GetByID(ctx context.Context, id int) (*internal.Profession, error) {
 	items, _, err := ucase.Fetch(ctx, &profession.FetchConfig{
 		Limit: 1,
 		Count: false,
-		Filter: &model.ProfessionFilter{
+		Filter: &internal.ProfessionFilter{
 			ID: []int{id},
 		},
 	})
@@ -90,11 +90,11 @@ func (ucase *Usecase) GetByID(ctx context.Context, id int) (*model.Profession, e
 	return items[0], nil
 }
 
-func (ucase *Usecase) GetBySlug(ctx context.Context, slug string) (*model.Profession, error) {
+func (ucase *Usecase) GetBySlug(ctx context.Context, slug string) (*internal.Profession, error) {
 	items, _, err := ucase.Fetch(ctx, &profession.FetchConfig{
 		Limit: 1,
 		Count: false,
-		Filter: &model.ProfessionFilter{
+		Filter: &internal.ProfessionFilter{
 			Slug: []string{slug},
 		},
 	})
@@ -111,7 +111,7 @@ type validateOptions struct {
 	allowNilValues bool
 }
 
-func validateInput(input *model.ProfessionInput, opts validateOptions) error {
+func validateInput(input *internal.ProfessionInput, opts validateOptions) error {
 	if input.IsEmpty() {
 		return errors.New(messageEmptyPayload)
 	}

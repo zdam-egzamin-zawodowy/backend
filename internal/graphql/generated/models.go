@@ -3,30 +3,30 @@
 package generated
 
 import (
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 )
 
 type ProfessionList struct {
-	Total int                 `json:"total"`
-	Items []*model.Profession `json:"items"`
+	Total int                    `json:"total"`
+	Items []*internal.Profession `json:"items"`
 }
 
 type QualificationList struct {
-	Total int                    `json:"total"`
-	Items []*model.Qualification `json:"items"`
+	Total int                       `json:"total"`
+	Items []*internal.Qualification `json:"items"`
 }
 
 type QuestionList struct {
-	Total int               `json:"total"`
-	Items []*model.Question `json:"items"`
+	Total int                  `json:"total"`
+	Items []*internal.Question `json:"items"`
 }
 
 type UserList struct {
-	Total int           `json:"total"`
-	Items []*model.User `json:"items"`
+	Total int              `json:"total"`
+	Items []*internal.User `json:"items"`
 }
 
 type UserWithToken struct {
-	Token string      `json:"token"`
-	User  *model.User `json:"user"`
+	Token string         `json:"token"`
+	User  *internal.User `json:"user"`
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 	"path/filepath"
 
 	"github.com/zdam-egzamin-zawodowy/backend/fstorage/fstorageutil"
@@ -8,14 +9,13 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 
 	"github.com/zdam-egzamin-zawodowy/backend/fstorage"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 type repository struct {
 	fileStorage fstorage.FileStorage
 }
 
-func (repo *repository) saveImages(destination *model.Question, input *model.QuestionInput) {
+func (repo *repository) saveImages(destination *internal.Question, input *internal.QuestionInput) {
 	images := [...]*graphql.Upload{
 		input.Image,
 		input.AnswerAImage,
@@ -58,7 +58,7 @@ func (repo *repository) deleteImages(images []string) {
 	}
 }
 
-func (repo *repository) deleteImagesBasedOnInput(question *model.Question, input *model.QuestionInput) {
+func (repo *repository) deleteImagesBasedOnInput(question *internal.Question, input *internal.QuestionInput) {
 	images := []string{}
 
 	if input.DeleteImage != nil &&
@@ -104,7 +104,7 @@ func (repo *repository) deleteImagesBasedOnInput(question *model.Question, input
 	repo.deleteImages(images)
 }
 
-func (repo *repository) getAllImagesAndDelete(questions []*model.Question) {
+func (repo *repository) getAllImagesAndDelete(questions []*internal.Question) {
 	images := []string{}
 
 	for _, question := range questions {

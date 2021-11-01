@@ -6,33 +6,33 @@ package resolvers
 import (
 	"context"
 	"github.com/Kichiyaki/goutil/safeptr"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 
 	"github.com/zdam-egzamin-zawodowy/backend/internal/chi/middleware"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/graphql/generated"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 	"github.com/zdam-egzamin-zawodowy/backend/internal/user"
 )
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput) (*model.User, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, input internal.UserInput) (*internal.User, error) {
 	return r.UserUsecase.Store(ctx, &input)
 }
 
-func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error) {
+func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input internal.UserInput) (*internal.User, error) {
 	return r.UserUsecase.UpdateOneByID(ctx, id, &input)
 }
 
-func (r *mutationResolver) UpdateManyUsers(ctx context.Context, ids []int, input model.UserInput) ([]*model.User, error) {
+func (r *mutationResolver) UpdateManyUsers(ctx context.Context, ids []int, input internal.UserInput) ([]*internal.User, error) {
 	return r.UserUsecase.UpdateMany(
 		ctx,
-		&model.UserFilter{
+		&internal.UserFilter{
 			ID: ids,
 		},
 		&input,
 	)
 }
 
-func (r *mutationResolver) DeleteUsers(ctx context.Context, ids []int) ([]*model.User, error) {
-	return r.UserUsecase.Delete(ctx, &model.UserFilter{
+func (r *mutationResolver) DeleteUsers(ctx context.Context, ids []int) ([]*internal.User, error) {
+	return r.UserUsecase.Delete(ctx, &internal.UserFilter{
 		ID: ids,
 	})
 }
@@ -59,7 +59,7 @@ func (r *mutationResolver) SignIn(
 
 func (r *queryResolver) Users(
 	ctx context.Context,
-	filter *model.UserFilter,
+	filter *internal.UserFilter,
 	limit *int,
 	offset *int,
 	sort []string,
@@ -79,11 +79,11 @@ func (r *queryResolver) Users(
 	return userList, err
 }
 
-func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+func (r *queryResolver) User(ctx context.Context, id int) (*internal.User, error) {
 	return r.UserUsecase.GetByID(ctx, id)
 }
 
-func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+func (r *queryResolver) Me(ctx context.Context) (*internal.User, error) {
 	u, _ := middleware.UserFromContext(ctx)
 	return u, nil
 }

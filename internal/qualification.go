@@ -1,4 +1,4 @@
-package model
+package internal
 
 import (
 	"context"
@@ -58,9 +58,8 @@ type QualificationInput struct {
 	DissociateProfession []int   `json:"dissociateProfession" xml:"dissociateProfession" gqlgen:"dissociateProfession"`
 }
 
-func (input *QualificationInput) IsEmpty() bool {
-	return input == nil &&
-		input.Name == nil &&
+func (input QualificationInput) IsEmpty() bool {
+	return input.Name == nil &&
 		input.Code == nil &&
 		input.Formula == nil &&
 		input.Description == nil &&
@@ -68,12 +67,11 @@ func (input *QualificationInput) IsEmpty() bool {
 		len(input.DissociateProfession) == 0
 }
 
-func (input *QualificationInput) HasBasicDataToUpdate() bool {
-	return input != nil &&
-		(input.Name != nil ||
-			input.Code != nil ||
-			input.Formula != nil ||
-			input.Description != nil)
+func (input QualificationInput) HasBasicDataToUpdate() bool {
+	return input.Name != nil ||
+		input.Code != nil ||
+		input.Formula != nil ||
+		input.Description != nil
 }
 
 func (input *QualificationInput) Sanitize() *QualificationInput {
@@ -193,7 +191,7 @@ type QualificationFilter struct {
 	CreatedAtLT  time.Time `gqlgen:"createdAtLT" json:"createdAtLT" xml:"createdAtLT"`
 	CreatedAtLTE time.Time `json:"createdAtLTE" xml:"createdAtLTE" gqlgen:"createdAtLTE"`
 
-	Or *QualificationFilterOr `json:"or" xml:"or" gqlgen:"or"`
+	Or QualificationFilterOr `json:"or" xml:"or" gqlgen:"or"`
 }
 
 func (f *QualificationFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Query, error) {
@@ -286,9 +284,7 @@ func (f *QualificationFilter) WhereWithAlias(q *orm.Query, alias string) (*orm.Q
 		q = q.Where(gopgutil.BuildConditionLTE("?"), gopgutil.AddAliasToColumnName("created_at", alias), f.CreatedAtLTE)
 	}
 
-	if f.Or != nil {
-		q = f.Or.WhereWithAlias(q, alias)
-	}
+	q = f.Or.WhereWithAlias(q, alias)
 
 	return q, nil
 }

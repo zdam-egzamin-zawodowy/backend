@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/zdam-egzamin-zawodowy/backend/internal"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -16,7 +17,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
-	"github.com/zdam-egzamin-zawodowy/backend/internal/model"
 )
 
 // region    ************************** generated!.gotpl **************************
@@ -45,25 +45,25 @@ type ResolverRoot interface {
 
 type DirectiveRoot struct {
 	Authenticated func(ctx context.Context, obj interface{}, next graphql.Resolver, yes bool) (res interface{}, err error)
-	HasRole       func(ctx context.Context, obj interface{}, next graphql.Resolver, role model.Role) (res interface{}, err error)
+	HasRole       func(ctx context.Context, obj interface{}, next graphql.Resolver, role internal.Role) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreateProfession     func(childComplexity int, input model.ProfessionInput) int
-		CreateQualification  func(childComplexity int, input model.QualificationInput) int
-		CreateQuestion       func(childComplexity int, input model.QuestionInput) int
-		CreateUser           func(childComplexity int, input model.UserInput) int
+		CreateProfession     func(childComplexity int, input internal.ProfessionInput) int
+		CreateQualification  func(childComplexity int, input internal.QualificationInput) int
+		CreateQuestion       func(childComplexity int, input internal.QuestionInput) int
+		CreateUser           func(childComplexity int, input internal.UserInput) int
 		DeleteProfessions    func(childComplexity int, ids []int) int
 		DeleteQualifications func(childComplexity int, ids []int) int
 		DeleteQuestions      func(childComplexity int, ids []int) int
 		DeleteUsers          func(childComplexity int, ids []int) int
 		SignIn               func(childComplexity int, email string, password string, staySignedIn *bool) int
-		UpdateManyUsers      func(childComplexity int, ids []int, input model.UserInput) int
-		UpdateProfession     func(childComplexity int, id int, input model.ProfessionInput) int
-		UpdateQualification  func(childComplexity int, id int, input model.QualificationInput) int
-		UpdateQuestion       func(childComplexity int, id int, input model.QuestionInput) int
-		UpdateUser           func(childComplexity int, id int, input model.UserInput) int
+		UpdateManyUsers      func(childComplexity int, ids []int, input internal.UserInput) int
+		UpdateProfession     func(childComplexity int, id int, input internal.ProfessionInput) int
+		UpdateQualification  func(childComplexity int, id int, input internal.QualificationInput) int
+		UpdateQuestion       func(childComplexity int, id int, input internal.QuestionInput) int
+		UpdateUser           func(childComplexity int, id int, input internal.UserInput) int
 	}
 
 	Profession struct {
@@ -99,13 +99,13 @@ type ComplexityRoot struct {
 		GenerateTest          func(childComplexity int, qualificationIDs []int, limit *int) int
 		Me                    func(childComplexity int) int
 		Profession            func(childComplexity int, id *int, slug *string) int
-		Professions           func(childComplexity int, filter *model.ProfessionFilter, limit *int, offset *int, sort []string) int
+		Professions           func(childComplexity int, filter *internal.ProfessionFilter, limit *int, offset *int, sort []string) int
 		Qualification         func(childComplexity int, id *int, slug *string) int
-		Qualifications        func(childComplexity int, filter *model.QualificationFilter, limit *int, offset *int, sort []string) int
-		Questions             func(childComplexity int, filter *model.QuestionFilter, limit *int, offset *int, sort []string) int
+		Qualifications        func(childComplexity int, filter *internal.QualificationFilter, limit *int, offset *int, sort []string) int
+		Questions             func(childComplexity int, filter *internal.QuestionFilter, limit *int, offset *int, sort []string) int
 		SimilarQualifications func(childComplexity int, qualificationID int, limit *int, offset *int, sort []string) int
 		User                  func(childComplexity int, id int) int
-		Users                 func(childComplexity int, filter *model.UserFilter, limit *int, offset *int, sort []string) int
+		Users                 func(childComplexity int, filter *internal.UserFilter, limit *int, offset *int, sort []string) int
 	}
 
 	Question struct {
@@ -154,38 +154,38 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateProfession(ctx context.Context, input model.ProfessionInput) (*model.Profession, error)
-	UpdateProfession(ctx context.Context, id int, input model.ProfessionInput) (*model.Profession, error)
-	DeleteProfessions(ctx context.Context, ids []int) ([]*model.Profession, error)
-	CreateQualification(ctx context.Context, input model.QualificationInput) (*model.Qualification, error)
-	UpdateQualification(ctx context.Context, id int, input model.QualificationInput) (*model.Qualification, error)
-	DeleteQualifications(ctx context.Context, ids []int) ([]*model.Qualification, error)
-	CreateQuestion(ctx context.Context, input model.QuestionInput) (*model.Question, error)
-	UpdateQuestion(ctx context.Context, id int, input model.QuestionInput) (*model.Question, error)
-	DeleteQuestions(ctx context.Context, ids []int) ([]*model.Question, error)
-	CreateUser(ctx context.Context, input model.UserInput) (*model.User, error)
-	UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error)
-	UpdateManyUsers(ctx context.Context, ids []int, input model.UserInput) ([]*model.User, error)
-	DeleteUsers(ctx context.Context, ids []int) ([]*model.User, error)
+	CreateProfession(ctx context.Context, input internal.ProfessionInput) (*internal.Profession, error)
+	UpdateProfession(ctx context.Context, id int, input internal.ProfessionInput) (*internal.Profession, error)
+	DeleteProfessions(ctx context.Context, ids []int) ([]*internal.Profession, error)
+	CreateQualification(ctx context.Context, input internal.QualificationInput) (*internal.Qualification, error)
+	UpdateQualification(ctx context.Context, id int, input internal.QualificationInput) (*internal.Qualification, error)
+	DeleteQualifications(ctx context.Context, ids []int) ([]*internal.Qualification, error)
+	CreateQuestion(ctx context.Context, input internal.QuestionInput) (*internal.Question, error)
+	UpdateQuestion(ctx context.Context, id int, input internal.QuestionInput) (*internal.Question, error)
+	DeleteQuestions(ctx context.Context, ids []int) ([]*internal.Question, error)
+	CreateUser(ctx context.Context, input internal.UserInput) (*internal.User, error)
+	UpdateUser(ctx context.Context, id int, input internal.UserInput) (*internal.User, error)
+	UpdateManyUsers(ctx context.Context, ids []int, input internal.UserInput) ([]*internal.User, error)
+	DeleteUsers(ctx context.Context, ids []int) ([]*internal.User, error)
 	SignIn(ctx context.Context, email string, password string, staySignedIn *bool) (*UserWithToken, error)
 }
 type ProfessionResolver interface {
-	Qualifications(ctx context.Context, obj *model.Profession) ([]*model.Qualification, error)
+	Qualifications(ctx context.Context, obj *internal.Profession) ([]*internal.Qualification, error)
 }
 type QueryResolver interface {
-	Professions(ctx context.Context, filter *model.ProfessionFilter, limit *int, offset *int, sort []string) (*ProfessionList, error)
-	Profession(ctx context.Context, id *int, slug *string) (*model.Profession, error)
-	Qualifications(ctx context.Context, filter *model.QualificationFilter, limit *int, offset *int, sort []string) (*QualificationList, error)
+	Professions(ctx context.Context, filter *internal.ProfessionFilter, limit *int, offset *int, sort []string) (*ProfessionList, error)
+	Profession(ctx context.Context, id *int, slug *string) (*internal.Profession, error)
+	Qualifications(ctx context.Context, filter *internal.QualificationFilter, limit *int, offset *int, sort []string) (*QualificationList, error)
 	SimilarQualifications(ctx context.Context, qualificationID int, limit *int, offset *int, sort []string) (*QualificationList, error)
-	Qualification(ctx context.Context, id *int, slug *string) (*model.Qualification, error)
-	Questions(ctx context.Context, filter *model.QuestionFilter, limit *int, offset *int, sort []string) (*QuestionList, error)
-	GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*model.Question, error)
-	Users(ctx context.Context, filter *model.UserFilter, limit *int, offset *int, sort []string) (*UserList, error)
-	User(ctx context.Context, id int) (*model.User, error)
-	Me(ctx context.Context) (*model.User, error)
+	Qualification(ctx context.Context, id *int, slug *string) (*internal.Qualification, error)
+	Questions(ctx context.Context, filter *internal.QuestionFilter, limit *int, offset *int, sort []string) (*QuestionList, error)
+	GenerateTest(ctx context.Context, qualificationIDs []int, limit *int) ([]*internal.Question, error)
+	Users(ctx context.Context, filter *internal.UserFilter, limit *int, offset *int, sort []string) (*UserList, error)
+	User(ctx context.Context, id int) (*internal.User, error)
+	Me(ctx context.Context) (*internal.User, error)
 }
 type QuestionResolver interface {
-	Qualification(ctx context.Context, obj *model.Question) (*model.Qualification, error)
+	Qualification(ctx context.Context, obj *internal.Question) (*internal.Qualification, error)
 }
 
 type executableSchema struct {
@@ -213,7 +213,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateProfession(childComplexity, args["input"].(model.ProfessionInput)), true
+		return e.complexity.Mutation.CreateProfession(childComplexity, args["input"].(internal.ProfessionInput)), true
 
 	case "Mutation.createQualification":
 		if e.complexity.Mutation.CreateQualification == nil {
@@ -225,7 +225,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateQualification(childComplexity, args["input"].(model.QualificationInput)), true
+		return e.complexity.Mutation.CreateQualification(childComplexity, args["input"].(internal.QualificationInput)), true
 
 	case "Mutation.createQuestion":
 		if e.complexity.Mutation.CreateQuestion == nil {
@@ -237,7 +237,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateQuestion(childComplexity, args["input"].(model.QuestionInput)), true
+		return e.complexity.Mutation.CreateQuestion(childComplexity, args["input"].(internal.QuestionInput)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -249,7 +249,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(model.UserInput)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(internal.UserInput)), true
 
 	case "Mutation.deleteProfessions":
 		if e.complexity.Mutation.DeleteProfessions == nil {
@@ -321,7 +321,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateManyUsers(childComplexity, args["ids"].([]int), args["input"].(model.UserInput)), true
+		return e.complexity.Mutation.UpdateManyUsers(childComplexity, args["ids"].([]int), args["input"].(internal.UserInput)), true
 
 	case "Mutation.updateProfession":
 		if e.complexity.Mutation.UpdateProfession == nil {
@@ -333,7 +333,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProfession(childComplexity, args["id"].(int), args["input"].(model.ProfessionInput)), true
+		return e.complexity.Mutation.UpdateProfession(childComplexity, args["id"].(int), args["input"].(internal.ProfessionInput)), true
 
 	case "Mutation.updateQualification":
 		if e.complexity.Mutation.UpdateQualification == nil {
@@ -345,7 +345,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateQualification(childComplexity, args["id"].(int), args["input"].(model.QualificationInput)), true
+		return e.complexity.Mutation.UpdateQualification(childComplexity, args["id"].(int), args["input"].(internal.QualificationInput)), true
 
 	case "Mutation.updateQuestion":
 		if e.complexity.Mutation.UpdateQuestion == nil {
@@ -357,7 +357,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateQuestion(childComplexity, args["id"].(int), args["input"].(model.QuestionInput)), true
+		return e.complexity.Mutation.UpdateQuestion(childComplexity, args["id"].(int), args["input"].(internal.QuestionInput)), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -369,7 +369,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateUser(childComplexity, args["id"].(int), args["input"].(model.UserInput)), true
+		return e.complexity.Mutation.UpdateUser(childComplexity, args["id"].(int), args["input"].(internal.UserInput)), true
 
 	case "Profession.createdAt":
 		if e.complexity.Profession.CreatedAt == nil {
@@ -531,7 +531,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Professions(childComplexity, args["filter"].(*model.ProfessionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
+		return e.complexity.Query.Professions(childComplexity, args["filter"].(*internal.ProfessionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
 
 	case "Query.qualification":
 		if e.complexity.Query.Qualification == nil {
@@ -555,7 +555,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Qualifications(childComplexity, args["filter"].(*model.QualificationFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
+		return e.complexity.Query.Qualifications(childComplexity, args["filter"].(*internal.QualificationFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
 
 	case "Query.questions":
 		if e.complexity.Query.Questions == nil {
@@ -567,7 +567,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Questions(childComplexity, args["filter"].(*model.QuestionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
+		return e.complexity.Query.Questions(childComplexity, args["filter"].(*internal.QuestionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
 
 	case "Query.similarQualifications":
 		if e.complexity.Query.SimilarQualifications == nil {
@@ -603,7 +603,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Users(childComplexity, args["filter"].(*model.UserFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
+		return e.complexity.Query.Users(childComplexity, args["filter"].(*internal.UserFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string)), true
 
 	case "Question.answerA":
 		if e.complexity.Question.AnswerA == nil {
@@ -1267,7 +1267,7 @@ func (ec *executionContext) dir_authenticated_args(ctx context.Context, rawArgs 
 func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.Role
+	var arg0 internal.Role
 	if tmp, ok := rawArgs["role"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
 		arg0, err = ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx, tmp)
@@ -1282,7 +1282,7 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 func (ec *executionContext) field_Mutation_createProfession_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.ProfessionInput
+	var arg0 internal.ProfessionInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNProfessionInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionInput(ctx, tmp)
@@ -1297,7 +1297,7 @@ func (ec *executionContext) field_Mutation_createProfession_args(ctx context.Con
 func (ec *executionContext) field_Mutation_createQualification_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.QualificationInput
+	var arg0 internal.QualificationInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNQualificationInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationInput(ctx, tmp)
@@ -1312,7 +1312,7 @@ func (ec *executionContext) field_Mutation_createQualification_args(ctx context.
 func (ec *executionContext) field_Mutation_createQuestion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.QuestionInput
+	var arg0 internal.QuestionInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNQuestionInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionInput(ctx, tmp)
@@ -1327,7 +1327,7 @@ func (ec *executionContext) field_Mutation_createQuestion_args(ctx context.Conte
 func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.UserInput
+	var arg0 internal.UserInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUserInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserInput(ctx, tmp)
@@ -1444,7 +1444,7 @@ func (ec *executionContext) field_Mutation_updateManyUsers_args(ctx context.Cont
 		}
 	}
 	args["ids"] = arg0
-	var arg1 model.UserInput
+	var arg1 internal.UserInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNUpdateManyUsersInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserInput(ctx, tmp)
@@ -1468,7 +1468,7 @@ func (ec *executionContext) field_Mutation_updateProfession_args(ctx context.Con
 		}
 	}
 	args["id"] = arg0
-	var arg1 model.ProfessionInput
+	var arg1 internal.ProfessionInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNProfessionInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionInput(ctx, tmp)
@@ -1492,7 +1492,7 @@ func (ec *executionContext) field_Mutation_updateQualification_args(ctx context.
 		}
 	}
 	args["id"] = arg0
-	var arg1 model.QualificationInput
+	var arg1 internal.QualificationInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNQualificationInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationInput(ctx, tmp)
@@ -1516,7 +1516,7 @@ func (ec *executionContext) field_Mutation_updateQuestion_args(ctx context.Conte
 		}
 	}
 	args["id"] = arg0
-	var arg1 model.QuestionInput
+	var arg1 internal.QuestionInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNQuestionInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionInput(ctx, tmp)
@@ -1540,7 +1540,7 @@ func (ec *executionContext) field_Mutation_updateUser_args(ctx context.Context, 
 		}
 	}
 	args["id"] = arg0
-	var arg1 model.UserInput
+	var arg1 internal.UserInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNUserInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserInput(ctx, tmp)
@@ -1618,7 +1618,7 @@ func (ec *executionContext) field_Query_profession_args(ctx context.Context, raw
 func (ec *executionContext) field_Query_professions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.ProfessionFilter
+	var arg0 *internal.ProfessionFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 		arg0, err = ec.unmarshalOProfessionFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionFilter(ctx, tmp)
@@ -1684,7 +1684,7 @@ func (ec *executionContext) field_Query_qualification_args(ctx context.Context, 
 func (ec *executionContext) field_Query_qualifications_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.QualificationFilter
+	var arg0 *internal.QualificationFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 		arg0, err = ec.unmarshalOQualificationFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationFilter(ctx, tmp)
@@ -1726,7 +1726,7 @@ func (ec *executionContext) field_Query_qualifications_args(ctx context.Context,
 func (ec *executionContext) field_Query_questions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.QuestionFilter
+	var arg0 *internal.QuestionFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 		arg0, err = ec.unmarshalOQuestionFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionFilter(ctx, tmp)
@@ -1825,7 +1825,7 @@ func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs m
 func (ec *executionContext) field_Query_users_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.UserFilter
+	var arg0 *internal.UserFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 		arg0, err = ec.unmarshalOUserFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserFilter(ctx, tmp)
@@ -1928,7 +1928,7 @@ func (ec *executionContext) _Mutation_createProfession(ctx context.Context, fiel
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateProfession(rctx, args["input"].(model.ProfessionInput))
+			return ec.resolvers.Mutation().CreateProfession(rctx, args["input"].(internal.ProfessionInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -1958,7 +1958,7 @@ func (ec *executionContext) _Mutation_createProfession(ctx context.Context, fiel
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.Profession); ok {
+		if data, ok := tmp.(*internal.Profession); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.Profession`, tmp)
@@ -1970,7 +1970,7 @@ func (ec *executionContext) _Mutation_createProfession(ctx context.Context, fiel
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Profession)
+	res := resTmp.(*internal.Profession)
 	fc.Result = res
 	return ec.marshalOProfession2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfession(ctx, field.Selections, res)
 }
@@ -2001,7 +2001,7 @@ func (ec *executionContext) _Mutation_updateProfession(ctx context.Context, fiel
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateProfession(rctx, args["id"].(int), args["input"].(model.ProfessionInput))
+			return ec.resolvers.Mutation().UpdateProfession(rctx, args["id"].(int), args["input"].(internal.ProfessionInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -2031,7 +2031,7 @@ func (ec *executionContext) _Mutation_updateProfession(ctx context.Context, fiel
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.Profession); ok {
+		if data, ok := tmp.(*internal.Profession); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.Profession`, tmp)
@@ -2043,7 +2043,7 @@ func (ec *executionContext) _Mutation_updateProfession(ctx context.Context, fiel
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Profession)
+	res := resTmp.(*internal.Profession)
 	fc.Result = res
 	return ec.marshalOProfession2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfession(ctx, field.Selections, res)
 }
@@ -2104,7 +2104,7 @@ func (ec *executionContext) _Mutation_deleteProfessions(ctx context.Context, fie
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*model.Profession); ok {
+		if data, ok := tmp.([]*internal.Profession); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/zdam-egzamin-zawodowy/backend/internal/model.Profession`, tmp)
@@ -2116,7 +2116,7 @@ func (ec *executionContext) _Mutation_deleteProfessions(ctx context.Context, fie
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Profession)
+	res := resTmp.([]*internal.Profession)
 	fc.Result = res
 	return ec.marshalOProfession2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionᚄ(ctx, field.Selections, res)
 }
@@ -2147,7 +2147,7 @@ func (ec *executionContext) _Mutation_createQualification(ctx context.Context, f
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateQualification(rctx, args["input"].(model.QualificationInput))
+			return ec.resolvers.Mutation().CreateQualification(rctx, args["input"].(internal.QualificationInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -2177,7 +2177,7 @@ func (ec *executionContext) _Mutation_createQualification(ctx context.Context, f
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.Qualification); ok {
+		if data, ok := tmp.(*internal.Qualification); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.Qualification`, tmp)
@@ -2189,7 +2189,7 @@ func (ec *executionContext) _Mutation_createQualification(ctx context.Context, f
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Qualification)
+	res := resTmp.(*internal.Qualification)
 	fc.Result = res
 	return ec.marshalOQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualification(ctx, field.Selections, res)
 }
@@ -2220,7 +2220,7 @@ func (ec *executionContext) _Mutation_updateQualification(ctx context.Context, f
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateQualification(rctx, args["id"].(int), args["input"].(model.QualificationInput))
+			return ec.resolvers.Mutation().UpdateQualification(rctx, args["id"].(int), args["input"].(internal.QualificationInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -2250,7 +2250,7 @@ func (ec *executionContext) _Mutation_updateQualification(ctx context.Context, f
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.Qualification); ok {
+		if data, ok := tmp.(*internal.Qualification); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.Qualification`, tmp)
@@ -2262,7 +2262,7 @@ func (ec *executionContext) _Mutation_updateQualification(ctx context.Context, f
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Qualification)
+	res := resTmp.(*internal.Qualification)
 	fc.Result = res
 	return ec.marshalOQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualification(ctx, field.Selections, res)
 }
@@ -2323,7 +2323,7 @@ func (ec *executionContext) _Mutation_deleteQualifications(ctx context.Context, 
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*model.Qualification); ok {
+		if data, ok := tmp.([]*internal.Qualification); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/zdam-egzamin-zawodowy/backend/internal/model.Qualification`, tmp)
@@ -2335,7 +2335,7 @@ func (ec *executionContext) _Mutation_deleteQualifications(ctx context.Context, 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Qualification)
+	res := resTmp.([]*internal.Qualification)
 	fc.Result = res
 	return ec.marshalOQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationᚄ(ctx, field.Selections, res)
 }
@@ -2366,7 +2366,7 @@ func (ec *executionContext) _Mutation_createQuestion(ctx context.Context, field 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateQuestion(rctx, args["input"].(model.QuestionInput))
+			return ec.resolvers.Mutation().CreateQuestion(rctx, args["input"].(internal.QuestionInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -2396,7 +2396,7 @@ func (ec *executionContext) _Mutation_createQuestion(ctx context.Context, field 
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.Question); ok {
+		if data, ok := tmp.(*internal.Question); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.Question`, tmp)
@@ -2408,7 +2408,7 @@ func (ec *executionContext) _Mutation_createQuestion(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Question)
+	res := resTmp.(*internal.Question)
 	fc.Result = res
 	return ec.marshalOQuestion2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestion(ctx, field.Selections, res)
 }
@@ -2439,7 +2439,7 @@ func (ec *executionContext) _Mutation_updateQuestion(ctx context.Context, field 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateQuestion(rctx, args["id"].(int), args["input"].(model.QuestionInput))
+			return ec.resolvers.Mutation().UpdateQuestion(rctx, args["id"].(int), args["input"].(internal.QuestionInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -2469,7 +2469,7 @@ func (ec *executionContext) _Mutation_updateQuestion(ctx context.Context, field 
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.Question); ok {
+		if data, ok := tmp.(*internal.Question); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.Question`, tmp)
@@ -2481,7 +2481,7 @@ func (ec *executionContext) _Mutation_updateQuestion(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Question)
+	res := resTmp.(*internal.Question)
 	fc.Result = res
 	return ec.marshalOQuestion2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestion(ctx, field.Selections, res)
 }
@@ -2542,7 +2542,7 @@ func (ec *executionContext) _Mutation_deleteQuestions(ctx context.Context, field
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*model.Question); ok {
+		if data, ok := tmp.([]*internal.Question); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/zdam-egzamin-zawodowy/backend/internal/model.Question`, tmp)
@@ -2554,7 +2554,7 @@ func (ec *executionContext) _Mutation_deleteQuestions(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Question)
+	res := resTmp.([]*internal.Question)
 	fc.Result = res
 	return ec.marshalOQuestion2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionᚄ(ctx, field.Selections, res)
 }
@@ -2585,7 +2585,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateUser(rctx, args["input"].(model.UserInput))
+			return ec.resolvers.Mutation().CreateUser(rctx, args["input"].(internal.UserInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -2615,7 +2615,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.User); ok {
+		if data, ok := tmp.(*internal.User); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.User`, tmp)
@@ -2627,7 +2627,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*internal.User)
 	fc.Result = res
 	return ec.marshalOUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx, field.Selections, res)
 }
@@ -2658,7 +2658,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateUser(rctx, args["id"].(int), args["input"].(model.UserInput))
+			return ec.resolvers.Mutation().UpdateUser(rctx, args["id"].(int), args["input"].(internal.UserInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -2688,7 +2688,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.User); ok {
+		if data, ok := tmp.(*internal.User); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.User`, tmp)
@@ -2700,7 +2700,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*internal.User)
 	fc.Result = res
 	return ec.marshalOUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx, field.Selections, res)
 }
@@ -2731,7 +2731,7 @@ func (ec *executionContext) _Mutation_updateManyUsers(ctx context.Context, field
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateManyUsers(rctx, args["ids"].([]int), args["input"].(model.UserInput))
+			return ec.resolvers.Mutation().UpdateManyUsers(rctx, args["ids"].([]int), args["input"].(internal.UserInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -2761,7 +2761,7 @@ func (ec *executionContext) _Mutation_updateManyUsers(ctx context.Context, field
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*model.User); ok {
+		if data, ok := tmp.([]*internal.User); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/zdam-egzamin-zawodowy/backend/internal/model.User`, tmp)
@@ -2773,7 +2773,7 @@ func (ec *executionContext) _Mutation_updateManyUsers(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.User)
+	res := resTmp.([]*internal.User)
 	fc.Result = res
 	return ec.marshalOUser2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserᚄ(ctx, field.Selections, res)
 }
@@ -2834,7 +2834,7 @@ func (ec *executionContext) _Mutation_deleteUsers(ctx context.Context, field gra
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*model.User); ok {
+		if data, ok := tmp.([]*internal.User); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/zdam-egzamin-zawodowy/backend/internal/model.User`, tmp)
@@ -2846,7 +2846,7 @@ func (ec *executionContext) _Mutation_deleteUsers(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.User)
+	res := resTmp.([]*internal.User)
 	fc.Result = res
 	return ec.marshalOUser2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserᚄ(ctx, field.Selections, res)
 }
@@ -2914,7 +2914,7 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 	return ec.marshalOUserWithToken2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋgraphqlᚋgeneratedᚐUserWithToken(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Profession_id(ctx context.Context, field graphql.CollectedField, obj *model.Profession) (ret graphql.Marshaler) {
+func (ec *executionContext) _Profession_id(ctx context.Context, field graphql.CollectedField, obj *internal.Profession) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2949,7 +2949,7 @@ func (ec *executionContext) _Profession_id(ctx context.Context, field graphql.Co
 	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Profession_slug(ctx context.Context, field graphql.CollectedField, obj *model.Profession) (ret graphql.Marshaler) {
+func (ec *executionContext) _Profession_slug(ctx context.Context, field graphql.CollectedField, obj *internal.Profession) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2984,7 +2984,7 @@ func (ec *executionContext) _Profession_slug(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Profession_name(ctx context.Context, field graphql.CollectedField, obj *model.Profession) (ret graphql.Marshaler) {
+func (ec *executionContext) _Profession_name(ctx context.Context, field graphql.CollectedField, obj *internal.Profession) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3019,7 +3019,7 @@ func (ec *executionContext) _Profession_name(ctx context.Context, field graphql.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Profession_description(ctx context.Context, field graphql.CollectedField, obj *model.Profession) (ret graphql.Marshaler) {
+func (ec *executionContext) _Profession_description(ctx context.Context, field graphql.CollectedField, obj *internal.Profession) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3051,7 +3051,7 @@ func (ec *executionContext) _Profession_description(ctx context.Context, field g
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Profession_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Profession) (ret graphql.Marshaler) {
+func (ec *executionContext) _Profession_createdAt(ctx context.Context, field graphql.CollectedField, obj *internal.Profession) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3086,7 +3086,7 @@ func (ec *executionContext) _Profession_createdAt(ctx context.Context, field gra
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Profession_qualifications(ctx context.Context, field graphql.CollectedField, obj *model.Profession) (ret graphql.Marshaler) {
+func (ec *executionContext) _Profession_qualifications(ctx context.Context, field graphql.CollectedField, obj *internal.Profession) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3116,7 +3116,7 @@ func (ec *executionContext) _Profession_qualifications(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Qualification)
+	res := resTmp.([]*internal.Qualification)
 	fc.Result = res
 	return ec.marshalNQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationᚄ(ctx, field.Selections, res)
 }
@@ -3183,12 +3183,12 @@ func (ec *executionContext) _ProfessionList_items(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Profession)
+	res := resTmp.([]*internal.Profession)
 	fc.Result = res
 	return ec.marshalOProfession2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Qualification_id(ctx context.Context, field graphql.CollectedField, obj *model.Qualification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Qualification_id(ctx context.Context, field graphql.CollectedField, obj *internal.Qualification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3223,7 +3223,7 @@ func (ec *executionContext) _Qualification_id(ctx context.Context, field graphql
 	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Qualification_slug(ctx context.Context, field graphql.CollectedField, obj *model.Qualification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Qualification_slug(ctx context.Context, field graphql.CollectedField, obj *internal.Qualification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3258,7 +3258,7 @@ func (ec *executionContext) _Qualification_slug(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Qualification_name(ctx context.Context, field graphql.CollectedField, obj *model.Qualification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Qualification_name(ctx context.Context, field graphql.CollectedField, obj *internal.Qualification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3293,7 +3293,7 @@ func (ec *executionContext) _Qualification_name(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Qualification_code(ctx context.Context, field graphql.CollectedField, obj *model.Qualification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Qualification_code(ctx context.Context, field graphql.CollectedField, obj *internal.Qualification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3328,7 +3328,7 @@ func (ec *executionContext) _Qualification_code(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Qualification_formula(ctx context.Context, field graphql.CollectedField, obj *model.Qualification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Qualification_formula(ctx context.Context, field graphql.CollectedField, obj *internal.Qualification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3360,7 +3360,7 @@ func (ec *executionContext) _Qualification_formula(ctx context.Context, field gr
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Qualification_description(ctx context.Context, field graphql.CollectedField, obj *model.Qualification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Qualification_description(ctx context.Context, field graphql.CollectedField, obj *internal.Qualification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3392,7 +3392,7 @@ func (ec *executionContext) _Qualification_description(ctx context.Context, fiel
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Qualification_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Qualification) (ret graphql.Marshaler) {
+func (ec *executionContext) _Qualification_createdAt(ctx context.Context, field graphql.CollectedField, obj *internal.Qualification) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3489,7 +3489,7 @@ func (ec *executionContext) _QualificationList_items(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Qualification)
+	res := resTmp.([]*internal.Qualification)
 	fc.Result = res
 	return ec.marshalOQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationᚄ(ctx, field.Selections, res)
 }
@@ -3519,7 +3519,7 @@ func (ec *executionContext) _Query_professions(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Professions(rctx, args["filter"].(*model.ProfessionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
+		return ec.resolvers.Query().Professions(rctx, args["filter"].(*internal.ProfessionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3570,7 +3570,7 @@ func (ec *executionContext) _Query_profession(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Profession)
+	res := resTmp.(*internal.Profession)
 	fc.Result = res
 	return ec.marshalOProfession2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfession(ctx, field.Selections, res)
 }
@@ -3600,7 +3600,7 @@ func (ec *executionContext) _Query_qualifications(ctx context.Context, field gra
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Qualifications(rctx, args["filter"].(*model.QualificationFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
+		return ec.resolvers.Query().Qualifications(rctx, args["filter"].(*internal.QualificationFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3693,7 +3693,7 @@ func (ec *executionContext) _Query_qualification(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Qualification)
+	res := resTmp.(*internal.Qualification)
 	fc.Result = res
 	return ec.marshalOQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualification(ctx, field.Selections, res)
 }
@@ -3724,7 +3724,7 @@ func (ec *executionContext) _Query_questions(ctx context.Context, field graphql.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Questions(rctx, args["filter"].(*model.QuestionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
+			return ec.resolvers.Query().Questions(rctx, args["filter"].(*internal.QuestionFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -3808,7 +3808,7 @@ func (ec *executionContext) _Query_generateTest(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Question)
+	res := resTmp.([]*internal.Question)
 	fc.Result = res
 	return ec.marshalOQuestion2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionᚄ(ctx, field.Selections, res)
 }
@@ -3839,7 +3839,7 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Users(rctx, args["filter"].(*model.UserFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
+			return ec.resolvers.Query().Users(rctx, args["filter"].(*internal.UserFilter), args["limit"].(*int), args["offset"].(*int), args["sort"].([]string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			yes, err := ec.unmarshalNBoolean2bool(ctx, true)
@@ -3945,7 +3945,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.(*model.User); ok {
+		if data, ok := tmp.(*internal.User); ok {
 			return data, nil
 		}
 		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/zdam-egzamin-zawodowy/backend/internal/model.User`, tmp)
@@ -3957,7 +3957,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*internal.User)
 	fc.Result = res
 	return ec.marshalOUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx, field.Selections, res)
 }
@@ -3989,7 +3989,7 @@ func (ec *executionContext) _Query_me(ctx context.Context, field graphql.Collect
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*internal.User)
 	fc.Result = res
 	return ec.marshalOUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx, field.Selections, res)
 }
@@ -4065,7 +4065,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_id(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_id(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4100,7 +4100,7 @@ func (ec *executionContext) _Question_id(ctx context.Context, field graphql.Coll
 	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_from(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_from(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4132,7 +4132,7 @@ func (ec *executionContext) _Question_from(ctx context.Context, field graphql.Co
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_content(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_content(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4167,7 +4167,7 @@ func (ec *executionContext) _Question_content(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_explanation(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_explanation(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4199,7 +4199,7 @@ func (ec *executionContext) _Question_explanation(ctx context.Context, field gra
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_correctAnswer(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_correctAnswer(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4229,12 +4229,12 @@ func (ec *executionContext) _Question_correctAnswer(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.Answer)
+	res := resTmp.(internal.Answer)
 	fc.Result = res
 	return ec.marshalNAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_image(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_image(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4266,7 +4266,7 @@ func (ec *executionContext) _Question_image(ctx context.Context, field graphql.C
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_answerA(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_answerA(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4298,7 +4298,7 @@ func (ec *executionContext) _Question_answerA(ctx context.Context, field graphql
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_answerAImage(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_answerAImage(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4330,7 +4330,7 @@ func (ec *executionContext) _Question_answerAImage(ctx context.Context, field gr
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_answerB(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_answerB(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4362,7 +4362,7 @@ func (ec *executionContext) _Question_answerB(ctx context.Context, field graphql
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_answerBImage(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_answerBImage(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4394,7 +4394,7 @@ func (ec *executionContext) _Question_answerBImage(ctx context.Context, field gr
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_answerC(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_answerC(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4426,7 +4426,7 @@ func (ec *executionContext) _Question_answerC(ctx context.Context, field graphql
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_answerCImage(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_answerCImage(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4458,7 +4458,7 @@ func (ec *executionContext) _Question_answerCImage(ctx context.Context, field gr
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_answerD(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_answerD(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4490,7 +4490,7 @@ func (ec *executionContext) _Question_answerD(ctx context.Context, field graphql
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_answerDImage(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_answerDImage(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4522,7 +4522,7 @@ func (ec *executionContext) _Question_answerDImage(ctx context.Context, field gr
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_qualification(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_qualification(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4549,12 +4549,12 @@ func (ec *executionContext) _Question_qualification(ctx context.Context, field g
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Qualification)
+	res := resTmp.(*internal.Qualification)
 	fc.Result = res
 	return ec.marshalOQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualification(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_createdAt(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4589,7 +4589,7 @@ func (ec *executionContext) _Question_createdAt(ctx context.Context, field graph
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Question_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Question) (ret graphql.Marshaler) {
+func (ec *executionContext) _Question_updatedAt(ctx context.Context, field graphql.CollectedField, obj *internal.Question) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4686,12 +4686,12 @@ func (ec *executionContext) _QuestionList_items(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Question)
+	res := resTmp.([]*internal.Question)
 	fc.Result = res
 	return ec.marshalOQuestion2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *internal.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4726,7 +4726,7 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_displayName(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_displayName(ctx context.Context, field graphql.CollectedField, obj *internal.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4761,7 +4761,7 @@ func (ec *executionContext) _User_displayName(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_role(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_role(ctx context.Context, field graphql.CollectedField, obj *internal.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4791,12 +4791,12 @@ func (ec *executionContext) _User_role(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.Role)
+	res := resTmp.(internal.Role)
 	fc.Result = res
 	return ec.marshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *internal.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4831,7 +4831,7 @@ func (ec *executionContext) _User_email(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_activated(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_activated(ctx context.Context, field graphql.CollectedField, obj *internal.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4866,7 +4866,7 @@ func (ec *executionContext) _User_activated(ctx context.Context, field graphql.C
 	return ec.marshalNBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.CollectedField, obj *internal.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4963,7 +4963,7 @@ func (ec *executionContext) _UserList_items(ctx context.Context, field graphql.C
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.User)
+	res := resTmp.([]*internal.User)
 	fc.Result = res
 	return ec.marshalOUser2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserᚄ(ctx, field.Selections, res)
 }
@@ -5033,7 +5033,7 @@ func (ec *executionContext) _UserWithToken_user(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(*internal.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx, field.Selections, res)
 }
@@ -6125,8 +6125,8 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputProfessionFilter(ctx context.Context, obj interface{}) (model.ProfessionFilter, error) {
-	var it model.ProfessionFilter
+func (ec *executionContext) unmarshalInputProfessionFilter(ctx context.Context, obj interface{}) (internal.ProfessionFilter, error) {
+	var it internal.ProfessionFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6265,8 +6265,8 @@ func (ec *executionContext) unmarshalInputProfessionFilter(ctx context.Context, 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputProfessionInput(ctx context.Context, obj interface{}) (model.ProfessionInput, error) {
-	var it model.ProfessionInput
+func (ec *executionContext) unmarshalInputProfessionInput(ctx context.Context, obj interface{}) (internal.ProfessionInput, error) {
+	var it internal.ProfessionInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6293,8 +6293,8 @@ func (ec *executionContext) unmarshalInputProfessionInput(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputQualificationFilter(ctx context.Context, obj interface{}) (model.QualificationFilter, error) {
-	var it model.QualificationFilter
+func (ec *executionContext) unmarshalInputQualificationFilter(ctx context.Context, obj interface{}) (internal.QualificationFilter, error) {
+	var it internal.QualificationFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6489,8 +6489,8 @@ func (ec *executionContext) unmarshalInputQualificationFilter(ctx context.Contex
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputQualificationFilterOr(ctx context.Context, obj interface{}) (model.QualificationFilterOr, error) {
-	var it model.QualificationFilterOr
+func (ec *executionContext) unmarshalInputQualificationFilterOr(ctx context.Context, obj interface{}) (internal.QualificationFilterOr, error) {
+	var it internal.QualificationFilterOr
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6533,8 +6533,8 @@ func (ec *executionContext) unmarshalInputQualificationFilterOr(ctx context.Cont
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputQualificationInput(ctx context.Context, obj interface{}) (model.QualificationInput, error) {
-	var it model.QualificationInput
+func (ec *executionContext) unmarshalInputQualificationInput(ctx context.Context, obj interface{}) (internal.QualificationInput, error) {
+	var it internal.QualificationInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6593,8 +6593,8 @@ func (ec *executionContext) unmarshalInputQualificationInput(ctx context.Context
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputQuestionFilter(ctx context.Context, obj interface{}) (model.QuestionFilter, error) {
-	var it model.QuestionFilter
+func (ec *executionContext) unmarshalInputQuestionFilter(ctx context.Context, obj interface{}) (internal.QuestionFilter, error) {
+	var it internal.QuestionFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6709,8 +6709,8 @@ func (ec *executionContext) unmarshalInputQuestionFilter(ctx context.Context, ob
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj interface{}) (model.QuestionInput, error) {
-	var it model.QuestionInput
+func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj interface{}) (internal.QuestionInput, error) {
+	var it internal.QuestionInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6873,8 +6873,8 @@ func (ec *executionContext) unmarshalInputQuestionInput(ctx context.Context, obj
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdateManyUsersInput(ctx context.Context, obj interface{}) (model.UserInput, error) {
-	var it model.UserInput
+func (ec *executionContext) unmarshalInputUpdateManyUsersInput(ctx context.Context, obj interface{}) (internal.UserInput, error) {
+	var it internal.UserInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6901,8 +6901,8 @@ func (ec *executionContext) unmarshalInputUpdateManyUsersInput(ctx context.Conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUserFilter(ctx context.Context, obj interface{}) (model.UserFilter, error) {
-	var it model.UserFilter
+func (ec *executionContext) unmarshalInputUserFilter(ctx context.Context, obj interface{}) (internal.UserFilter, error) {
+	var it internal.UserFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7065,8 +7065,8 @@ func (ec *executionContext) unmarshalInputUserFilter(ctx context.Context, obj in
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUserFilterOr(ctx context.Context, obj interface{}) (model.UserFilterOr, error) {
-	var it model.UserFilterOr
+func (ec *executionContext) unmarshalInputUserFilterOr(ctx context.Context, obj interface{}) (internal.UserFilterOr, error) {
+	var it internal.UserFilterOr
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7109,8 +7109,8 @@ func (ec *executionContext) unmarshalInputUserFilterOr(ctx context.Context, obj 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUserInput(ctx context.Context, obj interface{}) (model.UserInput, error) {
-	var it model.UserInput
+func (ec *executionContext) unmarshalInputUserInput(ctx context.Context, obj interface{}) (internal.UserInput, error) {
+	var it internal.UserInput
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7225,7 +7225,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 var professionImplementors = []string{"Profession"}
 
-func (ec *executionContext) _Profession(ctx context.Context, sel ast.SelectionSet, obj *model.Profession) graphql.Marshaler {
+func (ec *executionContext) _Profession(ctx context.Context, sel ast.SelectionSet, obj *internal.Profession) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, professionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -7312,7 +7312,7 @@ func (ec *executionContext) _ProfessionList(ctx context.Context, sel ast.Selecti
 
 var qualificationImplementors = []string{"Qualification"}
 
-func (ec *executionContext) _Qualification(ctx context.Context, sel ast.SelectionSet, obj *model.Qualification) graphql.Marshaler {
+func (ec *executionContext) _Qualification(ctx context.Context, sel ast.SelectionSet, obj *internal.Qualification) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, qualificationImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -7547,7 +7547,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var questionImplementors = []string{"Question"}
 
-func (ec *executionContext) _Question(ctx context.Context, sel ast.SelectionSet, obj *model.Question) graphql.Marshaler {
+func (ec *executionContext) _Question(ctx context.Context, sel ast.SelectionSet, obj *internal.Question) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, questionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -7656,7 +7656,7 @@ func (ec *executionContext) _QuestionList(ctx context.Context, sel ast.Selection
 
 var userImplementors = []string{"User"}
 
-func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *model.User) graphql.Marshaler {
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *internal.User) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, userImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -8012,13 +8012,13 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx context.Context, v interface{}) (model.Answer, error) {
-	var res model.Answer
+func (ec *executionContext) unmarshalNAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx context.Context, v interface{}) (internal.Answer, error) {
+	var res internal.Answer
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx context.Context, sel ast.SelectionSet, v model.Answer) graphql.Marshaler {
+func (ec *executionContext) marshalNAnswer2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx context.Context, sel ast.SelectionSet, v internal.Answer) graphql.Marshaler {
 	return v
 }
 
@@ -8118,7 +8118,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNProfession2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfession(ctx context.Context, sel ast.SelectionSet, v *model.Profession) graphql.Marshaler {
+func (ec *executionContext) marshalNProfession2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfession(ctx context.Context, sel ast.SelectionSet, v *internal.Profession) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8128,7 +8128,7 @@ func (ec *executionContext) marshalNProfession2ᚖgithubᚗcomᚋzdamᚑegzamin�
 	return ec._Profession(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNProfessionInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionInput(ctx context.Context, v interface{}) (model.ProfessionInput, error) {
+func (ec *executionContext) unmarshalNProfessionInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionInput(ctx context.Context, v interface{}) (internal.ProfessionInput, error) {
 	res, err := ec.unmarshalInputProfessionInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8147,7 +8147,7 @@ func (ec *executionContext) marshalNProfessionList2ᚖgithubᚗcomᚋzdamᚑegza
 	return ec._ProfessionList(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Qualification) graphql.Marshaler {
+func (ec *executionContext) marshalNQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*internal.Qualification) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -8184,7 +8184,7 @@ func (ec *executionContext) marshalNQualification2ᚕᚖgithubᚗcomᚋzdamᚑeg
 	return ret
 }
 
-func (ec *executionContext) marshalNQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualification(ctx context.Context, sel ast.SelectionSet, v *model.Qualification) graphql.Marshaler {
+func (ec *executionContext) marshalNQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualification(ctx context.Context, sel ast.SelectionSet, v *internal.Qualification) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8194,7 +8194,7 @@ func (ec *executionContext) marshalNQualification2ᚖgithubᚗcomᚋzdamᚑegzam
 	return ec._Qualification(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNQualificationInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationInput(ctx context.Context, v interface{}) (model.QualificationInput, error) {
+func (ec *executionContext) unmarshalNQualificationInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationInput(ctx context.Context, v interface{}) (internal.QualificationInput, error) {
 	res, err := ec.unmarshalInputQualificationInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8213,7 +8213,7 @@ func (ec *executionContext) marshalNQualificationList2ᚖgithubᚗcomᚋzdamᚑe
 	return ec._QualificationList(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNQuestion2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v *model.Question) graphql.Marshaler {
+func (ec *executionContext) marshalNQuestion2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v *internal.Question) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8223,7 +8223,7 @@ func (ec *executionContext) marshalNQuestion2ᚖgithubᚗcomᚋzdamᚑegzaminᚑ
 	return ec._Question(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNQuestionInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionInput(ctx context.Context, v interface{}) (model.QuestionInput, error) {
+func (ec *executionContext) unmarshalNQuestionInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionInput(ctx context.Context, v interface{}) (internal.QuestionInput, error) {
 	res, err := ec.unmarshalInputQuestionInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8242,13 +8242,13 @@ func (ec *executionContext) marshalNQuestionList2ᚖgithubᚗcomᚋzdamᚑegzami
 	return ec._QuestionList(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx context.Context, v interface{}) (model.Role, error) {
-	var res model.Role
+func (ec *executionContext) unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx context.Context, v interface{}) (internal.Role, error) {
+	var res internal.Role
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v model.Role) graphql.Marshaler {
+func (ec *executionContext) marshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v internal.Role) graphql.Marshaler {
 	return v
 }
 
@@ -8282,12 +8282,12 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) unmarshalNUpdateManyUsersInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserInput(ctx context.Context, v interface{}) (model.UserInput, error) {
+func (ec *executionContext) unmarshalNUpdateManyUsersInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserInput(ctx context.Context, v interface{}) (internal.UserInput, error) {
 	res, err := ec.unmarshalInputUpdateManyUsersInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *internal.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8297,7 +8297,7 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawo
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNUserInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserInput(ctx context.Context, v interface{}) (model.UserInput, error) {
+func (ec *executionContext) unmarshalNUserInput2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserInput(ctx context.Context, v interface{}) (internal.UserInput, error) {
 	res, err := ec.unmarshalInputUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8545,16 +8545,16 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) unmarshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx context.Context, v interface{}) (*model.Answer, error) {
+func (ec *executionContext) unmarshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx context.Context, v interface{}) (*internal.Answer, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(model.Answer)
+	var res = new(internal.Answer)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx context.Context, sel ast.SelectionSet, v *model.Answer) graphql.Marshaler {
+func (ec *executionContext) marshalOAnswer2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐAnswer(ctx context.Context, sel ast.SelectionSet, v *internal.Answer) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8687,7 +8687,7 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return graphql.MarshalInt(*v)
 }
 
-func (ec *executionContext) marshalOProfession2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Profession) graphql.Marshaler {
+func (ec *executionContext) marshalOProfession2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionᚄ(ctx context.Context, sel ast.SelectionSet, v []*internal.Profession) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8727,14 +8727,14 @@ func (ec *executionContext) marshalOProfession2ᚕᚖgithubᚗcomᚋzdamᚑegzam
 	return ret
 }
 
-func (ec *executionContext) marshalOProfession2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfession(ctx context.Context, sel ast.SelectionSet, v *model.Profession) graphql.Marshaler {
+func (ec *executionContext) marshalOProfession2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfession(ctx context.Context, sel ast.SelectionSet, v *internal.Profession) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Profession(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOProfessionFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionFilter(ctx context.Context, v interface{}) (*model.ProfessionFilter, error) {
+func (ec *executionContext) unmarshalOProfessionFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐProfessionFilter(ctx context.Context, v interface{}) (*internal.ProfessionFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -8742,7 +8742,7 @@ func (ec *executionContext) unmarshalOProfessionFilter2ᚖgithubᚗcomᚋzdamᚑ
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Qualification) graphql.Marshaler {
+func (ec *executionContext) marshalOQualification2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationᚄ(ctx context.Context, sel ast.SelectionSet, v []*internal.Qualification) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8782,14 +8782,14 @@ func (ec *executionContext) marshalOQualification2ᚕᚖgithubᚗcomᚋzdamᚑeg
 	return ret
 }
 
-func (ec *executionContext) marshalOQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualification(ctx context.Context, sel ast.SelectionSet, v *model.Qualification) graphql.Marshaler {
+func (ec *executionContext) marshalOQualification2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualification(ctx context.Context, sel ast.SelectionSet, v *internal.Qualification) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Qualification(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOQualificationFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationFilter(ctx context.Context, v interface{}) (*model.QualificationFilter, error) {
+func (ec *executionContext) unmarshalOQualificationFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationFilter(ctx context.Context, v interface{}) (*internal.QualificationFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -8797,7 +8797,7 @@ func (ec *executionContext) unmarshalOQualificationFilter2ᚖgithubᚗcomᚋzdam
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOQualificationFilterOr2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationFilterOr(ctx context.Context, v interface{}) (*model.QualificationFilterOr, error) {
+func (ec *executionContext) unmarshalOQualificationFilterOr2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQualificationFilterOr(ctx context.Context, v interface{}) (*internal.QualificationFilterOr, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -8805,7 +8805,7 @@ func (ec *executionContext) unmarshalOQualificationFilterOr2ᚖgithubᚗcomᚋzd
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOQuestion2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Question) graphql.Marshaler {
+func (ec *executionContext) marshalOQuestion2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionᚄ(ctx context.Context, sel ast.SelectionSet, v []*internal.Question) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8845,14 +8845,14 @@ func (ec *executionContext) marshalOQuestion2ᚕᚖgithubᚗcomᚋzdamᚑegzamin
 	return ret
 }
 
-func (ec *executionContext) marshalOQuestion2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v *model.Question) graphql.Marshaler {
+func (ec *executionContext) marshalOQuestion2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestion(ctx context.Context, sel ast.SelectionSet, v *internal.Question) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Question(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOQuestionFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionFilter(ctx context.Context, v interface{}) (*model.QuestionFilter, error) {
+func (ec *executionContext) unmarshalOQuestionFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐQuestionFilter(ctx context.Context, v interface{}) (*internal.QuestionFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -8860,7 +8860,7 @@ func (ec *executionContext) unmarshalOQuestionFilter2ᚖgithubᚗcomᚋzdamᚑeg
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalORole2ᚕgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRoleᚄ(ctx context.Context, v interface{}) ([]model.Role, error) {
+func (ec *executionContext) unmarshalORole2ᚕgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRoleᚄ(ctx context.Context, v interface{}) ([]internal.Role, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -8873,7 +8873,7 @@ func (ec *executionContext) unmarshalORole2ᚕgithubᚗcomᚋzdamᚑegzaminᚑza
 		}
 	}
 	var err error
-	res := make([]model.Role, len(vSlice))
+	res := make([]internal.Role, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNRole2githubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx, vSlice[i])
@@ -8884,7 +8884,7 @@ func (ec *executionContext) unmarshalORole2ᚕgithubᚗcomᚋzdamᚑegzaminᚑza
 	return res, nil
 }
 
-func (ec *executionContext) marshalORole2ᚕgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRoleᚄ(ctx context.Context, sel ast.SelectionSet, v []model.Role) graphql.Marshaler {
+func (ec *executionContext) marshalORole2ᚕgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRoleᚄ(ctx context.Context, sel ast.SelectionSet, v []internal.Role) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8924,16 +8924,16 @@ func (ec *executionContext) marshalORole2ᚕgithubᚗcomᚋzdamᚑegzaminᚑzawo
 	return ret
 }
 
-func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx context.Context, v interface{}) (*model.Role, error) {
+func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx context.Context, v interface{}) (*internal.Role, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(model.Role)
+	var res = new(internal.Role)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalORole2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
+func (ec *executionContext) marshalORole2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *internal.Role) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9024,7 +9024,7 @@ func (ec *executionContext) marshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 	return graphql.MarshalUpload(*v)
 }
 
-func (ec *executionContext) marshalOUser2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*internal.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9064,14 +9064,14 @@ func (ec *executionContext) marshalOUser2ᚕᚖgithubᚗcomᚋzdamᚑegzaminᚑz
 	return ret
 }
 
-func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *internal.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOUserFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserFilter(ctx context.Context, v interface{}) (*model.UserFilter, error) {
+func (ec *executionContext) unmarshalOUserFilter2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserFilter(ctx context.Context, v interface{}) (*internal.UserFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -9079,7 +9079,7 @@ func (ec *executionContext) unmarshalOUserFilter2ᚖgithubᚗcomᚋzdamᚑegzami
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOUserFilterOr2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserFilterOr(ctx context.Context, v interface{}) (*model.UserFilterOr, error) {
+func (ec *executionContext) unmarshalOUserFilterOr2ᚖgithubᚗcomᚋzdamᚑegzaminᚑzawodowyᚋbackendᚋinternalᚋmodelᚐUserFilterOr(ctx context.Context, v interface{}) (*internal.UserFilterOr, error) {
 	if v == nil {
 		return nil, nil
 	}
