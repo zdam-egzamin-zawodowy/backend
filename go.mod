@@ -30,6 +30,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
+require github.com/getsentry/sentry-go v0.11.0
+
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
 	github.com/go-pg/zerochecker v0.2.0 // indirect
