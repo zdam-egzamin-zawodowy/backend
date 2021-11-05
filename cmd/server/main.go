@@ -5,8 +5,11 @@ import (
 	"github.com/Kichiyaki/appmode"
 	"github.com/Kichiyaki/chilogrus"
 	"github.com/Kichiyaki/goutil/envutil"
+	"github.com/getsentry/sentry-go"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-pg/pg/v10"
+	"github.com/zdam-egzamin-zawodowy/backend/cmd/internal"
 	"log"
 	"net/http"
 	"os"
@@ -38,7 +41,6 @@ import (
 	userrepository "github.com/zdam-egzamin-zawodowy/backend/internal/user/repository"
 	userusecase "github.com/zdam-egzamin-zawodowy/backend/internal/user/usecase"
 
-	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 
 	"github.com/zdam-egzamin-zawodowy/backend/fstorage"
@@ -47,17 +49,22 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func init() {
-	os.Setenv("TZ", "UTC")
+var (
+	Version = "development"
+)
 
-	if appmode.Equals(appmode.DevelopmentMode) {
-		godotenv.Load(".env.local")
+func main() {
+	if err := internal.LoadENVFiles(); err != nil {
+		logrus.Fatal("internal.LoadENVFiles", err)
 	}
 
 	prepareLogger()
-}
 
-func main() {
+	if err := internal.InitSentry(Version); err != nil {
+		logrus.Fatal("internal.InitSentry", err)
+	}
+	defer sentry.Flush(2 * time.Second)
+
 	fileStorage := fstorage.New(&fstorage.Config{
 		BasePath: envutil.GetenvString("FILE_STORAGE_PATH"),
 	})
@@ -93,14 +100,13 @@ func main() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
-	logrus.Info("Shutdown Server ...")
+	logrus.Info("Shutdown signal received, exiting...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
 		logrus.Fatalln("Server Shutdown:", err)
 	}
-	logrus.Info("Server exiting")
 }
 
 func prepareLogger() {
@@ -218,11 +224,18 @@ func prepareUsecases(repos *repositories) (*usecases, error) {
 func prepareRouter(repos *repositories, ucases *usecases) *chi.Mux {
 	r := chi.NewRouter()
 
+	sentryHandler := sentryhttp.New(sentryhttp.Options{
+		Repanic:         true,
+		WaitForDelivery: false,
+		Timeout:         2 * time.Second,
+	})
+
 	r.Use(chimiddleware.RealIP)
 	if envutil.GetenvBool("ENABLE_ACCESS_LOG") {
 		r.Use(chilogrus.Logger(logrus.StandardLogger()))
 	}
 	r.Use(chimiddleware.Recoverer)
+	r.Use(sentryHandler.Handle)
 
 	if appmode.Equals(appmode.DevelopmentMode) {
 		r.Use(cors.Handler(cors.Options{
