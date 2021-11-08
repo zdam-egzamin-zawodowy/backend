@@ -15,7 +15,7 @@ require (
 	github.com/go-pg/pg/v10 v10.10.6
 	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/google/uuid v1.3.0
-	github.com/gosimple/slug v1.11.0
+	github.com/gosimple/slug v1.11.2
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/joho/godotenv v1.4.0
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
@@ -36,7 +36,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
 	github.com/go-pg/zerochecker v0.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/gosimple/unidecode v1.0.0 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
