@@ -11,7 +11,7 @@ RUN go mod download
 
 # Copy the source from the current directory to the Working Directory inside the container
 COPY ../.. .
-ARG VERSION="v0.0.0"
+ARG VERSION="0.0.0"
 RUN apk --no-cache add musl-dev gcc build-base
 RUN go generate ./...
 RUN go build -ldflags="-X 'main.Version=$VERSION'" -o zdamegzawodowy ./cmd/server

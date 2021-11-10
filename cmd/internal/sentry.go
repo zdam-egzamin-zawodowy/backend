@@ -7,11 +7,15 @@ import (
 	"os"
 )
 
-func InitSentry(release string) error {
+const (
+	sentryAppName = "zdam-egzamin-zawodowy-backend"
+)
+
+func InitSentry(version string) error {
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:              os.Getenv("SENTRY_DSN"),
 		Environment:      appmode.Get(),
-		Release:          release,
+		Release:          sentryAppName + "@" + version,
 		Debug:            false,
 		TracesSampleRate: 0.3,
 	})
