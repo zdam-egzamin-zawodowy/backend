@@ -1,5 +1,8 @@
 version: '3.6'
 
+volumes:
+  postgres:
+
 services:
   cdn:
     image: nginx:alpine
@@ -17,7 +20,7 @@ services:
     container_name: zdamegzzawodowydb
     restart: unless-stopped
     volumes:
-      - './dev/pgdata:/var/lib/postgresql/data'
+      - 'postgres:/var/lib/postgresql/data'
     ports:
       - "5432:5432"
     environment:
