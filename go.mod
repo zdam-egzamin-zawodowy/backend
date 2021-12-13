@@ -15,7 +15,7 @@ require (
 	github.com/go-pg/pg/v10 v10.10.6
 	github.com/golang-jwt/jwt/v4 v4.2.0
 	github.com/google/uuid v1.3.0
-	github.com/gosimple/slug v1.11.2
+	github.com/gosimple/slug v1.12.0
 	github.com/joho/godotenv v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/sethvargo/go-password v0.2.0
