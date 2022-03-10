@@ -9,7 +9,7 @@ require (
 	github.com/Kichiyaki/go-pg-logrus-query-logger/v10 v10.0.0-20210502060056-ad595ba7b858
 	github.com/Kichiyaki/gopgutil/v10 v10.0.0-20210521204542-cc672e361b3d
 	github.com/Kichiyaki/goutil v0.1.0
-	github.com/getsentry/sentry-go v0.12.0
+	github.com/getsentry/sentry-go v0.13.0
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-chi/cors v1.2.0
 	github.com/go-pg/pg/v10 v10.10.6
