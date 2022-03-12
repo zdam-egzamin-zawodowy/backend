@@ -21,7 +21,7 @@ require (
 	github.com/sethvargo/go-password v0.2.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/vektah/gqlparser/v2 v2.2.0
-	golang.org/x/crypto v0.0.0-20220307211146-efcb8507fb70
+	golang.org/x/crypto v0.0.0-20220312131142-6068a2e6cfdc
 )
 
 require (
