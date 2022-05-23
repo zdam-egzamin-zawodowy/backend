@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   zdamegzzawodowydb:
-    image: postgres:12.10
+    image: postgres:12.11
     container_name: zdamegzzawodowydb
     restart: unless-stopped
     volumes:
